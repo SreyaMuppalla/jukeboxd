@@ -50,7 +50,7 @@ const ProfilePage = () => {
                   ##
                 </Typography>
                 <Typography variant="subtitle2" style={{ color: "#b3b3b3" }}>
-                  word
+                  Reviews
                 </Typography>
               </StatItem>
               <StatItem>
@@ -58,7 +58,7 @@ const ProfilePage = () => {
                   ##
                 </Typography>
                 <Typography variant="subtitle2" style={{ color: "#b3b3b3" }}>
-                  word
+                  Upvotes
                 </Typography>
               </StatItem>
               <StatItem>
@@ -66,7 +66,7 @@ const ProfilePage = () => {
                   ##
                 </Typography>
                 <Typography variant="subtitle2" style={{ color: "#b3b3b3" }}>
-                  word
+                  Friends
                 </Typography>
               </StatItem>
             </StatsContainer>

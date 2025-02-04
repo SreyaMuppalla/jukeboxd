@@ -18,10 +18,13 @@ import {
   ReviewsSection 
 } from "../styles/StyledComponents"; // Ensure these styled components are created
 import Header from "../bigcomponents/Header";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import Review from "../bigcomponents/Review";
 import albumpic from "../images/albumpic.jpg"; // Import the album cover image
 
 const AlbumPage = () => {
+    const navigate = useNavigate(); // Hook for navigation
+
   return (
     <Background>
       <AlbumContainer>
@@ -44,8 +47,12 @@ const AlbumPage = () => {
               Album Name
             </Typography>
             {/* Artist Name */}
-            <Typography variant="h5" style={{ color: "#b3b3b3", marginBottom: "16px" }}>
-              Artist Name
+            <Typography
+                variant="subtitle2"
+                style={{ color: "#d3d3d3", cursor: "pointer" }} // Pointer cursor
+                onClick={() => navigate("/artist-page")} // Navigate to ArtistPage
+                >
+                Artist Name
             </Typography>
             {/* Rating (Stars Placeholder) */}
             <Typography variant="h6" style={{ color: "#1db954" }}>

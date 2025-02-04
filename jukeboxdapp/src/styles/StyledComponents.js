@@ -14,7 +14,8 @@ export const HeaderBackground = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between; /* Ensures that logo, search bar, and buttons are spaced apart */
-  padding: 0 20px;
+  padding: 0px 20px;
+  gap: 16px;
 `;
 export const ButtonContainer = styled.div`
   display: flex;
@@ -200,3 +201,77 @@ export const SongsListContainer = styled.div`
   margin-right: 16px;
 `;
 
+export const SongDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1; // Ensures it takes the remaining space
+  padding-left: 16px; // Adds spacing from the album cover
+  color: #fff;
+
+  & > * {
+    margin-bottom: 4px; // Adds consistent spacing between text elements
+  }
+
+  & > *:last-child {
+    margin-bottom: 0; // Removes spacing for the last child
+  }
+`;
+
+export const TopSongItem = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: #444; // Subtle background for each item
+  border-radius: 12px;
+
+  &:hover {
+    background-color: #555; // Slight highlight on hover
+    cursor: pointer;
+  }
+
+  img {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+`;
+
+export const SongDetailsRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 16px;
+  flex-grow: 1;
+
+  & > * {
+    margin-right: 8px; // Add space between song name, stars, etc.
+  }
+`;
+
+export const SongDetailsText = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  & > .song-name {
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+    text-decoration: underline;
+  }
+
+  & > .album-name {
+    color: #ccc;
+    font-size: 1rem;
+    margin-bottom: 2px;
+    text-decoration: underline;
+  }
+
+  & > .year {
+    color: #aaa;
+    font-size: 0.9rem;
+  }
+`;
