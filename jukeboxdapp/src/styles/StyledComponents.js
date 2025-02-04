@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 
 export const Background = styled.div`
   background-color: #212121;
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
 `;
