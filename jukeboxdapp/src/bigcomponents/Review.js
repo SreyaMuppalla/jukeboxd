@@ -10,22 +10,28 @@
 import React from "react";
 import { Box, Typography, Rating } from "@mui/material"; // Material UI components
 import { 
-    ReviewContainer, 
-    AlbumCover, 
-    SongInfo, 
-    UserInfo, 
-    ProfilePic, 
-    RatingContainer, 
-    ReviewText 
-  } from "../styles/StyledComponents";
-  import albumpic from "../images/albumpic.jpg"; // Import the album image
+  ReviewContainer, 
+  AlbumCover, 
+  SongInfo, 
+  UserInfo, 
+  ProfilePic, 
+  RatingContainer, 
+  ReviewText 
+} from "../styles/StyledComponents";
+import albumpic from "../images/albumpic.jpg"; // Import the album image
 import pfp from "../images/pfp.jpg"; // Add a placeholder profile pic
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 
 const Review = () => {
+  const navigate = useNavigate(); // Hook for navigation
+
   return (
     <ReviewContainer>
       {/* Album Cover */}
-      <AlbumCover>
+      <AlbumCover
+        onClick={() => navigate("/album-page")} // Navigate to AlbumPage
+        style={{ cursor: "pointer" }} // Pointer cursor for clickable elements
+      >
         <img
           src={albumpic}
           alt="Album Cover"
@@ -35,17 +41,28 @@ const Review = () => {
 
       {/* Song and Artist Info */}
       <SongInfo>
-        <Typography variant="h6" style={{ color: "#fff", marginBottom: "4px" }}>
+        <Typography
+          variant="h6"
+          style={{ color: "#fff", marginBottom: "4px", cursor: "pointer" }} // Pointer cursor
+          onClick={() => navigate("/song-page")} // Navigate to SongPage
+        >
           Song Name
         </Typography>
-        <Typography variant="subtitle2" style={{ color: "#d3d3d3" }}>
+        <Typography
+          variant="subtitle2"
+          style={{ color: "#d3d3d3", cursor: "pointer" }} // Pointer cursor
+          onClick={() => navigate("/artist-page")} // Navigate to ArtistPage
+        >
           Artist Name
         </Typography>
       </SongInfo>
 
       {/* User Info */}
       <UserInfo>
-        <ProfilePic>
+        <ProfilePic
+          onClick={() => navigate("/profile-page")} // Navigate to ProfilePage
+          style={{ cursor: "pointer" }} // Pointer cursor
+        >
           <img
             src={pfp}
             alt="User Profile"
@@ -54,7 +71,8 @@ const Review = () => {
         </ProfilePic>
         <Typography
           variant="subtitle2"
-          style={{ color: "#fff", marginLeft: "8px" }}
+          style={{ color: "#fff", marginLeft: "8px", cursor: "pointer" }} // Pointer cursor
+          onClick={() => navigate("/profile-page")} // Navigate to ProfilePage
         >
           Username
         </Typography>

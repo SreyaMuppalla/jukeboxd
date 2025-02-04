@@ -18,7 +18,6 @@ import pfp from "../images/pfp.jpg"; // Add a placeholder profile pic
 const ProfilePage = () => {
   return (
     <Background>
-      <Header />
       <ProfileContainer>
         {/* Profile Info Section */}
         <ProfileInfo>
@@ -75,11 +74,29 @@ const ProfilePage = () => {
         </ProfileInfo>
 
         {/* Reviews Section */}
-        <ReviewsSection>
-          <Review />
-          <Review />
-          <Review />
-        </ReviewsSection>
+        <Box
+        style={{
+          marginTop: "32px",
+          padding: "16px",
+          backgroundColor: "#333",
+          borderRadius: "16px",
+          width: "90%",
+          margin: "32px auto",
+        }}
+      >
+        {/* Reviews Section Header */}
+        <Typography
+          variant="h5"
+          style={{ color: "#fff", marginBottom: "16px", textAlign: "center" }}
+        >
+          Recent Reviews
+        </Typography>
+
+        {/* Individual Reviews */}
+        <Review />
+        <Review />
+        <Review />
+      </Box>
       </ProfileContainer>
     </Background>
   );

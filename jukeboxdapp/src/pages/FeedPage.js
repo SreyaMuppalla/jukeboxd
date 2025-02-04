@@ -8,12 +8,7 @@ import Review from "../bigcomponents/Review";
 const FeedPage = () => {
   return (
     <Background>
-      {/* Header */}
-      <Header />
-
-      {/* Trending Songs Carousel */}
       <SongsCarousel />
-
       {/* Reviews from Friends */}
       <Box
         style={{

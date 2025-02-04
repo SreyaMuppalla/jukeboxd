@@ -24,7 +24,6 @@ import albumpic from "../images/albumpic.jpg"; // Import the album cover image
 const AlbumPage = () => {
   return (
     <Background>
-      <Header />
       <AlbumContainer>
         {/* Album Info Section */}
         <AlbumInfoContainer>
