@@ -1,7 +1,7 @@
 import React from "react";
 
-const FeedPage = () => {
+const SongPage = () => {
   return <div>Song Page</div>;
 };
 
-export default FeedPage;
+export default SongPage;

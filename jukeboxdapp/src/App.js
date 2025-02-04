@@ -10,7 +10,7 @@ import ArtistPage from "./pages/ArtistPage";
 const App = () => {
   return (
     <div>
-      <FeedPage />
+      <AlbumPage />
     </div>
   );
 };

@@ -113,3 +113,90 @@ export const ReviewText = styled.div`
   font-size: 14px;
   margin-top: 8px;
 `;
+// Main container for the Profile Page
+export const ProfileContainer = styled.div`
+  background-color: #212121;
+  padding: 32px;
+  min-height: 100vh;
+`;
+
+// Profile info section
+export const ProfileInfo = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 32px;
+`;
+
+// Profile picture container
+export const ProfilePicContainer = styled.div`
+  flex-shrink: 0;
+`;
+
+// Profile details container
+export const ProfileDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin-left: 16px;
+`;
+
+// Stats container
+export const StatsContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  gap: 24px;
+  margin-top: 16px;
+`;
+
+// Individual stat item
+export const StatItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+// Reviews section
+export const ReviewsSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 32px;
+`;
+export const ProfileDetailsContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-grow: 1; // Ensures it takes up the remaining space
+`;
+
+export const AlbumContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px;
+`;
+
+// Container for album info (cover + details)
+export const AlbumInfoContainer = styled.div`
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  padding: 16px 32px;
+`;
+
+// Container for album details (name, artist, stars)
+export const AlbumDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
+// Container for the list of songs
+export const SongsListContainer = styled.div`
+  flex: 1;
+  padding: 16px;
+  background-color: #333;
+  border-radius: 16px;
+  margin-right: 16px;
+`;
+

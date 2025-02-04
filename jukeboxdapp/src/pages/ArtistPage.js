@@ -8,8 +8,8 @@
 
 import React from "react";
 
-const FeedPage = () => {
+const ArtistPage = () => {
   return <div>Artist Page</div>;
 };
 
-export default FeedPage;
+export default ArtistPage;

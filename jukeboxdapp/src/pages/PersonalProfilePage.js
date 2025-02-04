@@ -7,8 +7,8 @@
 
 import React from "react";
 
-const FeedPage = () => {
+const PersonalProfilePage = () => {
   return <div>Personal Profile Page</div>;
 };
 
-export default FeedPage;
+export default PersonalProfilePage;
