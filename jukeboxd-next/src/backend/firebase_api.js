@@ -1,4 +1,3 @@
-// firebaseAPI.js
 import { auth, provider, db } from "./firebaseConfig";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where, getDocs } from "firebase/firestore";
