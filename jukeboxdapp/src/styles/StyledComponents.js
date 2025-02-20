@@ -9,8 +9,7 @@ export const Background = styled.div`
 `;
 export const HeaderBackground = styled.header`
   background-color: #121212;
-  height: 108px;
-  width: 100%;
+  height: 88px;
   display: flex;
   align-items: center;
   justify-content: space-between; /* Ensures that logo, search bar, and buttons are spaced apart */
@@ -22,6 +21,7 @@ export const ButtonContainer = styled.div`
   align-items: center;
   justify-content: flex-end;  
   gap: 8px
+  padding: 8px
 `;
 
 // Carousel container

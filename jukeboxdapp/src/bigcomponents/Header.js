@@ -1,23 +1,46 @@
 import React from "react";
-import { Box, Button, Typography } from "@mui/material"; // Import the Material UI Button
-import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
-import { HeaderBackground, ButtonContainer } from "../styles/StyledComponents"; // Keep your styled header background
+import "@fontsource/inter";
+import { Box, Button, Typography } from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
+import { HeaderBackground, ButtonContainer } from "../styles/StyledComponents";
 import SearchBar from "../smallcomponents/SearchBar";
-import jkbxlogo from "../images/jkbxlogo.png"; // Add a placeholder profile pic
-
+import jkbxlogo from "../images/jkbxlogo.png";
 
 const Header = () => {
-  const navigate = useNavigate(); // Initialize navigation
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Determine if we are on the feed or profile page
+  const isFeedPage = location.pathname === "/feed";
+  const isProfilePage = location.pathname === "/profile";
 
   return (
     <HeaderBackground>
       {/* Logo */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center", // Aligns items vertically
+          gap: "16px", // Adds spacing between logo and text
+        }}
+      >
       <img
-          src={jkbxlogo}
-          alt="LOGO"
-          style={{ width: "5%", height: "30%", borderRadius: "8px" }}
-        />
-        <Typography style={{color: '#FFFFFF'}}>jukeboxd</Typography>
+        src={jkbxlogo}
+        alt="LOGO"
+        style={{
+          width: "55px", // Fixed width
+          height: "55px", // Fixed height
+
+          borderRadius: "4px",
+        }}
+      />
+
+      <Typography
+        style={{ color: "#FFFFFF", fontFamily: "Inter", fontSize: "40px", fontWeight: "bold" }}
+      >
+        jukeboxd
+      </Typography>
+      </Box>
       {/* Search Bar */}
       <SearchBar />
 
@@ -25,19 +48,53 @@ const Header = () => {
       <ButtonContainer>
         <Button
           variant="contained"
-          color="primary"
-          sx={{ marginRight: 2 }} // Spacing between buttons
-          onClick={() => navigate("/feed")} // Navigate to FeedPage
+          sx={{
+            marginRight: 2,
+            borderRadius: "50px",
+            height: "52px",
+            width: "90px",
+            backgroundColor: isFeedPage ? "#1DB954" : "#535353",
+            "&:hover": { backgroundColor: isFeedPage ? "#1AAE4E" : "#444444" },
+            textTransform: "none", // Prevents uppercase transformation
+          }}
+          onClick={() => navigate("/feed")}
         >
-          Feed
+          <Typography
+            style={{
+              color: "#FFFFFF",
+              fontFamily: "Inter",
+              fontSize: "24px",
+              fontWeight: "bold",
+            }}
+          >
+            Feed
+          </Typography>
         </Button>
+
         <Button
           variant="contained"
-          color="primary"
-          onClick={() => navigate("/profile")} // Navigate to PersonalProfilePage
+          sx={{
+            borderRadius: "50px",
+            height: "52px",
+            width: "154px",
+            backgroundColor: isProfilePage ? "#1DB954" : "#535353",
+            "&:hover": { backgroundColor: isProfilePage ? "#1AAE4E" : "#444444" },
+            textTransform: "none", // Prevents uppercase transformation
+          }}
+          onClick={() => navigate("/profile")}
         >
-          My Profile
+          <Typography
+            style={{
+              color: "#FFFFFF",
+              fontFamily: "Inter",
+              fontSize: "24px",
+              fontWeight: "bold",
+            }}
+          >
+            My Profile
+          </Typography>
         </Button>
+
       </ButtonContainer>
     </HeaderBackground>
   );
