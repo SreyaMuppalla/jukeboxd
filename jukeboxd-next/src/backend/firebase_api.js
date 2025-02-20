@@ -2,8 +2,8 @@ import { db } from "./firebaseConfig";
 import { collection, doc, setDoc, addDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where } from "firebase/firestore";
 
 /** USERS **/
-export const addUser = async (user) => {
-    await setDoc(doc(db, "users", user.user_id), user);
+export const addUser = async (userId, userData) => {
+    await setDoc(doc(db, "users", userId), userData);
 };
 
 export const getUser = async (user_id) => {
@@ -13,7 +13,7 @@ export const getUser = async (user_id) => {
 
 /** SONGS **/
 export const addSong = async (song) => {
-    await setDoc(doc(db, "songs", song.song_id), song);
+    await addDoc(collection(db, "songs"), song);
 };
 
 export const getSong = async (song_id) => {
@@ -54,12 +54,33 @@ export const dislikeReview = async (review_id) => {
 };
 
 /** COMMENTS **/
-export const addComment = async (comment) => {
-    await setDoc(doc(db, "comments", comment.comment_id), comment);
+export const addComment = async (commentData) => {
+    try {
+        const docRef = await addDoc(collection(db, "comments"), {
+            ...commentData,
+            created_at: new Date()
+        });
+        return docRef.id;
+    } catch (error) {
+        console.error("Error adding comment:", error);
+        return null;
+    }
 };
 
 export const getCommentsForReview = async (review_id) => {
-    const q = query(collection(db, "comments"), where("review_id", "==", review_id));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => doc.data());
+    try {
+        const commentsRef = collection(db, "comments");
+        const q = query(commentsRef, where("review_id", "==", review_id), orderBy("created_at", "desc"));
+        const querySnapshot = await getDocs(q);
+
+        const comments = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+
+        return comments;
+    } catch (error) {
+        console.error("Error fetching comments:", error);
+        return [];
+    }
 };
