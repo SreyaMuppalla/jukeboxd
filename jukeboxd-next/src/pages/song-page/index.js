@@ -12,6 +12,7 @@ import Review from '../../bigcomponents/Review';
 import albumpic from '../../images/albumpic.jpg'; // Import the album cover image
 import Image from 'next/image';
 import Link from 'next/link';
+import ReviewForm from '@/smallcomponents/ReviewForm';
 
 const SongPage = () => {
 
@@ -65,7 +66,7 @@ const SongPage = () => {
                 cursor: 'pointer',
               }}
             >
-              <Link href='/artist-page'>Artist Name</Link>
+              <Link href="/artist-page">Artist Name</Link>
             </Typography>
             {/* Rating (Stars Placeholder) */}
             <Typography variant="h6" style={{ color: '#1db954' }}>
@@ -89,6 +90,7 @@ const SongPage = () => {
           </ReviewsSection>
         </Box>
       </AlbumContainer>
+      <ReviewForm></ReviewForm>
     </Background>
   );
 };
