@@ -1,21 +1,16 @@
-## Jukeboxd
+# Jukeboxd
+## Overview
 Music is a core part of Gen Z’s culture, yet there is no centralized platform for music reviews. Instead, discussions are scattered across several online platforms, which are cluttered and lack structured review systems. Jukeboxd bridges this gap by providing a dedicated, community-driven space for music lovers to rate, review, and discuss their favorite songs and artists.
 
-## Installation and Getting started
-```bash
-npm install && npm run dev
-```
-# Firebase-React App
-
-## Overview
-This is a React application integrated with Firebase, allowing users to manage users, add songs, and leave comments. It leverages Firestore for data storage and authentication.
-
 ## Features
-- User authentication
-- Adding and managing users
-- Adding songs with metadata
-- Commenting on songs
-- Fetching and displaying comments sorted in descending order
+- User Profiles and Social Interactions (following and viewing public reviews)
+- Home Feed
+   - Trending Songs and Albums
+   - Search bar for song, album and artist discovery
+   - Algorithm for recommendations according to friend reviews
+- Song, Album and Artist Pages
+   - View entities with relevant information retreived from the Spotify API
+   - Entrypoint popup to cretae your own reviews
 
 ## Setup Instructions
 ### Prerequisites
