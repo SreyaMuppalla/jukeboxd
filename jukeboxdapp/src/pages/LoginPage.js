@@ -9,6 +9,13 @@ import {
     CardContent,
 } from "@mui/material";
 
+import {
+    Title,
+    SignInButton,
+    LoginBackground,
+    FormContainer,
+} from "../styles/StyledComponents";
+
 const LoginPage = () => {
     const navigate = useNavigate();
     const { currentUser, signInWithGoogle, logout } = useAuth();
@@ -20,22 +27,18 @@ const LoginPage = () => {
     }, [currentUser, navigate]);
 
     return (
-        <Container maxWidth="sm">
-            <Card sx={{ mt: 10, p: 3 }}>
-                <CardContent>
-                    <Typography variant="h4" align="center" gutterBottom>
-                        Login Page
-                    </Typography>
-                    {currentUser ? (
-                        <Button onClick={logout}>Log Out</Button>
-                    ) : (
-                        <Button onClick={signInWithGoogle}>
-                            Sign In with Google
-                        </Button>
-                    )}
-                </CardContent>
-            </Card>
-        </Container>
+        <LoginBackground>
+            <FormContainer>
+                <Title variant="h2">jukeboxd</Title>
+                {currentUser ? (
+                    <SignInButton onClick={logout}>Log Out</SignInButton>
+                ) : (
+                    <SignInButton onClick={signInWithGoogle}>
+                        Sign In with Google
+                    </SignInButton>
+                )}
+            </FormContainer>
+        </LoginBackground>
     );
 };
 
