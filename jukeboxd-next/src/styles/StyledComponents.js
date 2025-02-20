@@ -275,3 +275,106 @@ export const SongDetailsText = styled.div`
     font-size: 0.9rem;
   }
 `;
+// Search bar container
+export const SearchBarContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 20px 0;
+  justify-content: center;
+`;
+
+// Dropdown container
+export const DropdownContainer = styled.div`
+  margin-right: 10px;
+`;
+
+// Search input field
+export const SearchInput = styled.input`
+  padding: 10px;
+  font-size: 16px;
+  width: 60%;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+
+  &:focus {
+    border: 2px solid #1db954;
+  }
+`;
+
+// Dropdown select input
+export const SearchDropdown = styled.select`
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+
+  &:focus {
+    border: 2px solid #1db954;
+  }
+`;
+
+// Recommendation list container
+export const RecommendationList = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  width: 60%;
+  background-color: #121212;
+  border-radius: 16px;
+  padding: 16px;
+  z-index: 1000;
+`;
+
+// Individual recommendation item
+export const RecommendationItem = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #333;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #444;
+  }
+
+  img {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    margin-right: 10px;
+  }
+`;
+
+// Song details in the recommendation list
+export const RecommendationDetails = styled.div`
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+
+  .song-title {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .artist-name {
+    font-size: 14px;
+    color: #ccc;
+  }
+`;
