@@ -4,16 +4,9 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate for naviga
 import { HeaderBackground, ButtonContainer } from "../styles/StyledComponents"; // Keep your styled header background
 import SearchBar from "../smallcomponents/SearchBar";
 import jkbxlogo from "../images/jkbxlogo.png"; // Add a placeholder profile pic
-import { useAuth } from "../firebase/auth.js";
 
 const Header = () => {
     const navigate = useNavigate(); // Initialize navigation
-    const { currentUser, logout } = useAuth();
-
-    const handleLogout = async () => {
-        await logout();
-        navigate("/");
-    };
 
     return (
         <HeaderBackground>
@@ -45,18 +38,6 @@ const Header = () => {
                     My Profile
                 </Button>
             </ButtonContainer>
-            {/* Logout Button */}
-            {currentUser && (
-                <Box sx={{ position: "absolute", top: 16, right: 16 }}>
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={handleLogout}
-                    >
-                        Log Out
-                    </Button>
-                </Box>
-            )}
         </HeaderBackground>
     );
 };
