@@ -8,6 +8,7 @@ import {
   DropdownContainer,
   SearchDropdown,
 } from '../styles/StyledComponents'; // Assuming these styled components exist
+import { useRouter } from 'next/router'; // Import useRouter from Next.js
 import { SpotifyAPIController } from '../utils/SpotifyAPIController'; // Import your API controller
 
 const SearchBar = () => {
@@ -15,12 +16,13 @@ const SearchBar = () => {
   const [recommendations, setRecommendations] = useState([]);
   const [token, setToken] = useState('');
   const [queryType, setQueryType] = useState('track'); // Default to 'track'
+  const router = useRouter(); // Use Next.js router for dynamic navigation
+
 
   // Fetch token on component mount
   useEffect(() => {
     const fetchToken = async () => {
       const token = await SpotifyAPIController.getToken();
-      console.log(token);
       setToken(token);
     };
     fetchToken();
@@ -32,11 +34,11 @@ const SearchBar = () => {
       const fetchRecommendations = async () => {
         let results = [];
         if (queryType === 'track') {
-          results = await SpotifyAPIController.searchTracks(token, query, 20); // Fetch 20 results
+          results = await SpotifyAPIController.searchTracks(token, query); // Fetch 20 results
         } else if (queryType === 'artist') {
-          results = await SpotifyAPIController.searchArtists(token, query, 20); // Fetch 20 results
+          results = await SpotifyAPIController.searchArtists(token, query); // Fetch 20 results
         } else if (queryType === 'album') {
-          results = await SpotifyAPIController.searchAlbums(token, query, 20); // Fetch 20 results
+          results = await SpotifyAPIController.searchAlbums(token, query); // Fetch 20 results
         }
 
         // Filtering logic for albums
@@ -63,7 +65,7 @@ const SearchBar = () => {
           }
         });
 
-        console.log(uniqueResults)
+        console.log(uniqueResults.slice(0, 5))
 
         // Set the first 5 unique recommendations
         setRecommendations(uniqueResults.slice(0, 5));
@@ -74,12 +76,24 @@ const SearchBar = () => {
     }
   }, [query, token, queryType]);
 
+  const handleRecommendationClick = (item) =>
+  {
+     if (queryType === 'album') {
+      router.push(`/album-page/${item.id}`); // Navigate to /album-page/[id]
+    } else if (queryType === 'track') {
+      router.push(`/song-page/${item.id}`); // Navigate to /song-page/[id]
+    } else if (queryType === 'artist') {
+      router.push(`/artist-page/${item.id}`); // Navigate to /artist-page/[id]
+    }
+    setQuery("")
+  }
+
   return (
     <SearchBarContainer>
       <DropdownContainer>
         <SearchDropdown
-          value={queryType} // Make sure this is consistent
-          onChange={(e) => setQueryType(e.target.value)} // Update the state on change
+          value={queryType}
+          onChange={(e) => setQueryType(e.target.value)}
         >
           <option value="track">Track</option>
           <option value="artist">Artist</option>
@@ -89,7 +103,7 @@ const SearchBar = () => {
 
       <SearchInput
         type="text"
-        placeholder={`Search for ${queryType}s...`} // Dynamic placeholder based on the queryType
+        placeholder={`Search for ${queryType}s...`} // Dynamic placeholder
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
@@ -97,25 +111,28 @@ const SearchBar = () => {
       {recommendations.length > 0 && (
         <RecommendationList>
           {recommendations.map((item) => (
-            <RecommendationItem key={item.id}>
-               {queryType === 'track' && item.album && item.album.images.length > 0 && (
-               <img src={item.album.images[0].url} alt={item.name} />
+            <RecommendationItem
+              key={item.id}
+              onClick={() => handleRecommendationClick(item)} // On item click, navigate
+            >
+              {/* Display album images, artist images, or song images */}
+              {queryType === 'track' && item.album && item.album.images.length > 0 && (
+                <img src={item.album.images[0].url} alt={item.name} />
               )}
-
+              {queryType === 'artist' && item.images && item.images.length > 0 && (
+                <img src={item.images[0].url} alt={item.name} />
+              )}
               {queryType === 'album' && item.images && item.images.length > 0 && (
                 <img src={item.images[0].url} alt={item.name} />
               )}
 
-              {queryType === 'artist' && item.images && item.images.length > 0 && (
-                <img src={item.images[0].url} alt={item.name} />
-              )}
               <RecommendationDetails>
                 <span className="song-title">{item.name}</span>
-                {queryType === 'track' || queryType === 'album' && (
-              <span className="artist-name">
-                {item.artists.map(artist => artist.name).join(', ')}
-              </span>
-              )}
+                {queryType === 'track' || queryType === 'album' ? (
+                  <span className="artist-name">
+                    {item.artists.map((artist) => artist.name).join(', ')}
+                  </span>
+                ) : null} {/* No special artist handling for artist search */}
               </RecommendationDetails>
             </RecommendationItem>
           ))}
