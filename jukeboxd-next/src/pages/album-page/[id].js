@@ -12,30 +12,19 @@ import { SpotifyAPIController } from '../../utils/SpotifyAPIController'; // Impo
 import Review from '../../bigcomponents/Review';
 import Link from 'next/link';
 import { useRouter } from 'next/router'; // Import Next.js useRouter
+import { useSpotify } from '../../context/SpotifyContext'; // Import the useSpotify hook
+
 
 const AlbumPage = () => {
   const router = useRouter();
   const { id: albumId } = router.query; // Correctly get the albumId from the dynamic route
-
+  
   const [albumDetails, setAlbumDetails] = useState(null);
   const [albumTracks, setAlbumTracks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState('');
+  const { token, error: tokenError } = useSpotify(); // Use token from SpotifyContext
   const [error, setError] = useState(null);
 
-  // Fetch token on component mount
-  useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        const token = await SpotifyAPIController.getToken();
-        setToken(token);
-      } catch (error) {
-        console.error('Error fetching token:', error);
-        setError('Failed to fetch token.');
-      }
-    };
-    fetchToken();
-  }, []);
 
   useEffect(() => {
     if (albumId && token) { // Ensure albumId and token are present before making API calls
@@ -47,8 +36,6 @@ const AlbumPage = () => {
           // Fetch album details and tracks
           const details = await SpotifyAPIController.getAlbumDetails(token, albumId);
           const tracks = await SpotifyAPIController.getAlbumTracks(token, albumId);
-          console.log(details)
-          console.log(tracks)
 
           // Update state with the fetched data
           setAlbumDetails(details);
@@ -70,8 +57,8 @@ const AlbumPage = () => {
     return <Typography variant="h5" style={{ color: '#fff' }}>Loading...</Typography>;
   }
 
-  if (error) {
-    return <Typography variant="h5" style={{ color: '#ff4d4d' }}>{error}</Typography>; // Display error if any
+  if (tokenError || error) {
+    return <Typography variant="h5" style={{ color: '#ff4d4d' }}>{tokenError || error}</Typography>; // Display any error
   }
 
   if (!albumDetails) {

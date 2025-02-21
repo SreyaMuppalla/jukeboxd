@@ -1,11 +1,3 @@
-// header
-// artist pic 
-// artist name
-// stars
-// top rate songs
-// write a review
-
-
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Rating } from "@mui/material";
 import {
@@ -21,8 +13,9 @@ import {
 } from "../../styles/StyledComponents";
 import albumpic from "../../images/albumpic.jpg"; // Import album image
 import Image from "next/image";
+import { useSpotify } from '../../context/SpotifyContext'; // Import the useSpotify hook
 import { SpotifyAPIController } from '../../utils/SpotifyAPIController'; // Import your API controller
-import { useRouter } from 'next/router'; // Import Next.js useRouter
+import { useRouter } from 'next/router';
 
 const ArtistPage = () => {
   const topSongs = [
@@ -34,65 +27,45 @@ const ArtistPage = () => {
   ];
 
   const router = useRouter();
-  const { id: artistId } = router.query; // Correctly get the albumId from the dynamic route
-
+  const { id: artistId } = router.query; // Get artistId from the dynamic route
+  const { token, error: tokenError } = useSpotify(); // Use token from SpotifyContext
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState('');
-  const [error, setError] = useState(null);
   const [artistDetails, setArtistDetails] = useState(null);
-
-  // Fetch token on component mount
-  useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        const token = await SpotifyAPIController.getToken();
-        setToken(token);
-      } catch (error) {
-        console.error('Error fetching token:', error);
-        setError('Failed to fetch token.');
-      }
-    };
-    fetchToken();
-  }, []);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (artistId && token) { // Ensure albumId and token are present before making API calls
-      const fetchSongData = async () => {
+    if (artistId && token) {
+      const fetchArtistData = async () => {
         try {
           setLoading(true); // Start loading
           setError(null); // Reset any previous errors
 
-          // Fetch album details and tracks
+          // Fetch artist details
           const details = await SpotifyAPIController.getArtistsDetails(token, artistId);
-          console.log(details)
-
-          // Update state with the fetched data
           setArtistDetails(details);
-
         } catch (error) {
-          console.error('Error fetching album data:', error);
-          setError('Failed to fetch album details.');
+          console.error('Error fetching artist data:', error);
+          setError('Failed to fetch artist details.');
         } finally {
           setLoading(false); // Stop loading
         }
       };
 
-      fetchSongData();
+      fetchArtistData();
     }
-  }, [artistId, token]); // Trigger useEffect whenever albumId or token changes
+  }, [artistId, token]);
 
   if (loading) {
     return <Typography variant="h5" style={{ color: '#fff' }}>Loading...</Typography>;
   }
 
-  if (error) {
-    return <Typography variant="h5" style={{ color: '#ff4d4d' }}>{error}</Typography>; // Display error if any
+  if (tokenError || error) {
+    return <Typography variant="h5" style={{ color: '#ff4d4d' }}>{tokenError || error}</Typography>; // Display any error
   }
 
   if (!artistDetails) {
-    return <Typography variant="h5" style={{ color: '#fff' }}>No album details available.</Typography>; // Fallback if no album data is found
+    return <Typography variant="h5" style={{ color: '#fff' }}>No artist details available.</Typography>; // Fallback if no artist data is found
   }
-
 
   return (
     <Background>
@@ -100,11 +73,11 @@ const ArtistPage = () => {
         {/* Profile Info Section */}
         <ProfileInfo>
           <ProfilePicContainer>
-          <img
-            src={artistDetails.images?.[0] ? artistDetails.images[0].url : '../../images/default-image.jpg'} // Fallback to a default image if images[0] does not exist
-            alt="Artist"
-            style={{ width: "150px", height: "150px", borderRadius: "50%", marginRight: "16px" }}
-          />
+            <img
+              src={artistDetails.images?.[0] ? artistDetails.images[0].url : '../../images/default-image.jpg'}
+              alt="Artist"
+              style={{ width: "150px", height: "150px", borderRadius: "50%", marginRight: "16px" }}
+            />
           </ProfilePicContainer>
           <ProfileDetailsContainer>
             <ProfileDetails>
