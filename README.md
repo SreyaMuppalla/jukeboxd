@@ -36,6 +36,7 @@ Music is a core part of Gen Z’s culture, yet there is no centralized platform 
      REACT_APP_FIREBASE_STORAGE_BUCKET=<your_storage_bucket>
      REACT_APP_FIREBASE_MESSAGING_SENDER_ID=<your_sender_id>
      REACT_APP_FIREBASE_APP_ID=<your_app_id>
+     ROOT_DIR=<your_root_dir>
      ```
 4. Run the app locally:
     ```bash
@@ -90,5 +91,17 @@ jukeboxd-next/
 │       ├── globals.css
 │       └── StyledComponents.js
 ├── tailwind.config.mjs
+├── tests
+│   ├── [several test files, ex: "WriteAReview.test.js"/"internalAPIs.test.js"]
+│   ├── __mocks__ (store mock implementations of modules like external dependencies)
+│   │   ├── mockFirestore.js
+├── jest.config.js
+├── jest.setup.js
 └── README.md
+```
+
+## Running Local Tests
+We are using jest testing and so all you need to do is run:
+```bash
+   npm test
 ```
