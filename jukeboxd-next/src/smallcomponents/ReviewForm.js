@@ -14,6 +14,9 @@ import {
 } from '@mui/material';
 import SearchBar from './SearchBar';
 import Image from 'next/image';
+import { useAtom } from 'jotai';
+import { currSong } from '@/states/currSong';
+import { addReview } from '@/backend/firebase_api';
 
 export default function ReviewForm() {
   const [open, setOpen] = useState(false);
@@ -21,7 +24,8 @@ export default function ReviewForm() {
   const [rating, setRating] = useState(5);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
-  const [selectedSong, setSelectedSong] = useState({});
+  const [selectedSong, setSelectedSong] = useAtom(currSong);
+  console.log(selectedSong);
 
   const toggleDrawer = (open) => {
     setOpen(open);
@@ -33,25 +37,37 @@ export default function ReviewForm() {
 
   const handleRatingChange = (e) => {
     setRating(e.target.value);
-  }
+  };
 
   const handleSubmit = async () => {
     setLoading(true);
 
-    // Simulate an async submission
-    setTimeout(() => {
-      console.log("User's review:", review);
+    let reviewObj = {
+      review_id: 'review3',
+      user_id: 'test',
+      song_id: selectedSong.name,
+      rating: rating,
+      review_text: review,
+      likes: 0,
+      dislikes: 0,
+      created_at: new Date(),
+    };
+
+    addReview(reviewObj).then(() => {
       setReview(''); // Clear review after submitting
-      setRating(5);
+      setRating(5); // Reset rating after submission
       setLoading(false);
       setOpen(false);
       setSuccessMessage(true); // Show success message
-    }, 2000);
+      setSelectedSong(null); // Invalidate selected song after submission
+    });
   };
 
   const handleRemoveSong = () => {
-    setSong(null);
+    setSelectedSong(null);
   };
+
+  const isFormValid = selectedSong && review.trim() !== '' && rating !== null;
 
   return (
     <div>
@@ -89,10 +105,10 @@ export default function ReviewForm() {
             top: 'unset',
             borderRadius: '20px',
             backgroundColor: '#535353',
-            overflowY: 'auto', // Enables scrolling
-            scrollbarWidth: 'none', // Hides scrollbar in Firefox
+            overflowY: 'auto',
+            scrollbarWidth: 'none',
             '&::-webkit-scrollbar': {
-              display: 'none', // Hides scrollbar in Chrome/Safari
+              display: 'none',
             },
           },
         }}
@@ -107,6 +123,8 @@ export default function ReviewForm() {
           </Typography>
         </Box>
 
+        <SearchBar />
+
         <Box
           display="flex"
           flexDirection="column"
@@ -114,8 +132,6 @@ export default function ReviewForm() {
           gap={2}
           className="mx-5"
         >
-          <SearchBar />
-
           {/* Selected Song */}
           {selectedSong && (
             <Box
@@ -124,15 +140,15 @@ export default function ReviewForm() {
               gap={2}
               sx={{
                 backgroundColor: '#444',
-                padding: '1px',
+                padding: '10px',
                 borderRadius: '8px',
               }}
             >
               <Image
-                href={selectedSong.image}
+                src={selectedSong.image}
                 alt={selectedSong.name}
-                width={25}
-                height={10}
+                width={50}
+                height={50}
               />
               <Typography sx={{ color: 'white', flexGrow: 1, padding: 0 }}>
                 {selectedSong.name}
@@ -142,10 +158,11 @@ export default function ReviewForm() {
               </IconButton>
             </Box>
           )}
-
+          {/* Rating */}
           <Rating
             size="large"
-            defaultValue={rating}
+            value={rating}
+            onChange={handleRatingChange}
             sx={{
               alignSelf: 'flex-start',
               fontSize: '3rem',
@@ -156,10 +173,10 @@ export default function ReviewForm() {
                 fontSize: 'inherit',
               },
             }}
+            disabled={!selectedSong} // Disable if no song is selected
           />
-        </Box>
 
-        <Box>
+          {/* Review TextField */}
           <TextField
             multiline
             rows={9}
@@ -187,21 +204,22 @@ export default function ReviewForm() {
                 },
               },
             }}
+            disabled={!selectedSong} // Disable if no song is selected
           />
-
-          <Box display="flex" justifyContent="flex-end">
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit}
-              disabled={loading}
-              startIcon={
-                loading ? <CircularProgress size={20} color="inherit" /> : null
-              }
-            >
-              {loading ? 'Posting...' : '+ Post'}
-            </Button>
-          </Box>
+        </Box>
+        {/* Post Button */}
+        <Box display="flex" justifyContent="flex-end">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+            disabled={!isFormValid || loading} // Disable button based on form validity or loading state
+            startIcon={
+              loading ? <CircularProgress size={20} color="inherit" /> : null
+            }
+          >
+            {loading ? 'Posting...' : '+ Post'}
+          </Button>
         </Box>
       </Drawer>
 

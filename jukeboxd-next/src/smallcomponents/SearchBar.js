@@ -9,12 +9,15 @@ import {
   SearchDropdown,
 } from '../styles/StyledComponents'; // Assuming these styled components exist
 import { SpotifyAPIController } from '../utils/SpotifyAPIController'; // Import your API controller
+import { useAtom } from 'jotai';
+import { currSong } from '@/states/currSong';
 
 const SearchBar = () => {
   const [query, setQuery] = useState('');
   const [recommendations, setRecommendations] = useState([]);
   const [token, setToken] = useState('');
   const [queryType, setQueryType] = useState('track'); // Default to 'track'
+  const [selectedSong, setSelectedSong] = useAtom(currSong);
 
   // Fetch token on component mount
   useEffect(() => {
@@ -28,7 +31,8 @@ const SearchBar = () => {
 
   // Fetch recommendations when the query changes
   useEffect(() => {
-    if (query.length > 2) { // Start searching when the user types at least 3 characters
+    if (query.length > 2) {
+      // Start searching when the user types at least 3 characters
       const fetchRecommendations = async () => {
         let results = [];
         if (queryType === 'track') {
@@ -74,6 +78,33 @@ const SearchBar = () => {
     }
   }, [query, token, queryType]);
 
+  // Set selected Song
+  function handleSelection(e, item) {
+    // DEBUGGING PRINT
+    // console.log(item);
+
+    // Determine the image based on queryType
+    let selectedImage = '';
+
+    if (queryType === 'track' && item.album && item.album.images.length > 0) {
+      selectedImage = item.album.images[0].url;
+    } else if (queryType === 'album' && item.images && item.images.length > 0) {
+      selectedImage = item.images[0].url;
+    } else if (
+      queryType === 'artist' &&
+      item.images &&
+      item.images.length > 0
+    ) {
+      selectedImage = item.images[0].url;
+    }
+    setSelectedSong({
+      name: item.name,
+      image: selectedImage,
+    });
+    setRecommendations([]);
+    setQuery('');
+  }
+
   return (
     <SearchBarContainer>
       <DropdownContainer>
@@ -97,10 +128,15 @@ const SearchBar = () => {
       {recommendations.length > 0 && (
         <RecommendationList>
           {recommendations.map((item) => (
-            <RecommendationItem key={item.id}>
-               {queryType === 'track' && item.album && item.album.images.length > 0 && (
-               <img src={item.album.images[0].url} alt={item.name} />
-              )}
+            <RecommendationItem
+              key={item.id}
+              onClick={(e) => handleSelection(e, item)}
+            >
+              {queryType === 'track' &&
+                item.album &&
+                item.album.images.length > 0 && (
+                  <img src={item.album.images[0].url} alt={item.name} />
+                )}
 
               {queryType === 'album' && item.images && item.images.length > 0 && (
                 <img src={item.images[0].url} alt={item.name} />
