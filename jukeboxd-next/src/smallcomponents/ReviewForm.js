@@ -10,14 +10,18 @@ import {
   CircularProgress,
   Snackbar,
   Alert,
+  IconButton,
 } from '@mui/material';
 import SearchBar from './SearchBar';
+import Image from 'next/image';
 
 export default function ReviewForm() {
   const [open, setOpen] = useState(false);
   const [review, setReview] = useState('');
+  const [rating, setRating] = useState(5);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
+  const [selectedSong, setSelectedSong] = useState({});
 
   const toggleDrawer = (open) => {
     setOpen(open);
@@ -27,6 +31,10 @@ export default function ReviewForm() {
     setReview(e.target.value);
   };
 
+  const handleRatingChange = (e) => {
+    setRating(e.target.value);
+  }
+
   const handleSubmit = async () => {
     setLoading(true);
 
@@ -34,10 +42,15 @@ export default function ReviewForm() {
     setTimeout(() => {
       console.log("User's review:", review);
       setReview(''); // Clear review after submitting
+      setRating(5);
       setLoading(false);
       setOpen(false);
       setSuccessMessage(true); // Show success message
     }, 2000);
+  };
+
+  const handleRemoveSong = () => {
+    setSong(null);
   };
 
   return (
@@ -76,14 +89,24 @@ export default function ReviewForm() {
             top: 'unset',
             borderRadius: '20px',
             backgroundColor: '#535353',
+            overflowY: 'auto', // Enables scrolling
+            scrollbarWidth: 'none', // Hides scrollbar in Firefox
+            '&::-webkit-scrollbar': {
+              display: 'none', // Hides scrollbar in Chrome/Safari
+            },
           },
         }}
       >
         <Box display="flex" justifyContent="center">
-          <Typography variant="h3" gutterBottom sx={{ color: 'white' }}>
+          <Typography
+            variant="h3"
+            gutterBottom
+            sx={{ color: 'white', position: 'sticky' }}
+          >
             Write a Review
           </Typography>
         </Box>
+
         <Box
           display="flex"
           flexDirection="column"
@@ -92,8 +115,37 @@ export default function ReviewForm() {
           className="mx-5"
         >
           <SearchBar />
+
+          {/* Selected Song */}
+          {selectedSong && (
+            <Box
+              display="flex"
+              alignItems="center"
+              gap={2}
+              sx={{
+                backgroundColor: '#444',
+                padding: '1px',
+                borderRadius: '8px',
+              }}
+            >
+              <Image
+                href={selectedSong.image}
+                alt={selectedSong.name}
+                width={25}
+                height={10}
+              />
+              <Typography sx={{ color: 'white', flexGrow: 1, padding: 0 }}>
+                {selectedSong.name}
+              </Typography>
+              <IconButton onClick={handleRemoveSong} sx={{ color: 'white' }}>
+                x
+              </IconButton>
+            </Box>
+          )}
+
           <Rating
             size="large"
+            defaultValue={rating}
             sx={{
               alignSelf: 'flex-start',
               fontSize: '3rem',
@@ -110,7 +162,7 @@ export default function ReviewForm() {
         <Box>
           <TextField
             multiline
-            rows={12}
+            rows={9}
             fullWidth
             value={review}
             variant="filled"
