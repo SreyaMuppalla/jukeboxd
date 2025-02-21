@@ -42,3 +42,64 @@ Music is a core part of Gen Z’s culture, yet there is no centralized platform 
     npm run dev
     ```
 The app should now be running on `http://localhost:3000/`.
+
+## Directory Structure
+.
+├── eslint.config.mjs
+├── jsconfig.json
+├── next.config.mjs
+├── node_modules
+├── package.json
+├── package-lock.json
+├── postcss.config.mjs
+├── public
+│   ├── favicon.ico
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── README.md
+├── src
+│   ├── App.css
+│   ├── bigcomponents
+│   │   ├── Comments.js
+│   │   ├── FriendsPopUp.js
+│   │   ├── Header.js
+│   │   ├── Review.js
+│   │   ├── SongsCarousal.js
+│   │   └── WriteAReview.js
+│   ├── images
+│   │   ├── albumpic.jpg
+│   │   ├── jkbxlogo.png
+│   │   └── pfp.jpg
+│   ├── index.css
+│   ├── pages
+│   │   ├── album-page
+│   │   │   └── index.js
+│   │   ├── api
+│   │   │   └── hello.js
+│   │   ├── _app.js
+│   │   ├── artist-page
+│   │   │   └── index.js
+│   │   ├── _document.js
+│   │   ├── feed
+│   │   │   └── index.js
+│   │   ├── index.js
+│   │   ├── profile
+│   │   │   └── index.js
+│   │   ├── profile-page
+│   │   │   └── index.js
+│   │   └── song-page
+│   │       └── index.js
+│   ├── smallcomponents
+│   │   ├── FriendsSearchBar.js
+│   │   ├── Logo.js
+│   │   ├── PostButton.js
+│   │   ├── SearchBar.js
+│   │   └── Stars.js
+│   └── styles
+│       ├── globals.css
+│       └── StyledComponents.js
+├── tailwind.config.mjs
+└── README.md
