@@ -14,10 +14,12 @@ const FeedPage = () => {
         style={{
           marginTop: "32px",
           padding: "16px",
-          backgroundColor: "#333",
           borderRadius: "16px",
           width: "90%",
           margin: "32px auto",
+          display: "flex",
+          flexDirection: "column",
+          gap:"16px"
         }}
       >
         {/* Reviews Section Header */}

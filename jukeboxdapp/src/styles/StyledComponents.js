@@ -43,13 +43,16 @@ export const SongItem = styled.div`
 
 // Placeholder for the album cover
 export const AlbumCover = styled.div`
-  width: 150px;
-  height: 150px;
-  margin-bottom: 10px;
+  width: 150px;           // Fixed width
+  height: 150px;          // Fixed height
+  margin-bottom: 10px;    // Space below the album cover
   background-color: #212121;
-  border-radius: 8px;  // Optional: rounded corners
+  border-radius: 8px;     // Optional: rounded corners
   overflow: hidden;
+  max-width: 150px;       // Ensure it doesn't resize beyond the fixed width
+  max-height: 150px;      // Ensure it doesn't resize beyond the fixed height
 `;
+
 
 // Song name styling
 export const SongName = styled(Typography)`
