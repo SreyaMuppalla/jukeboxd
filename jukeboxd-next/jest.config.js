@@ -1,15 +1,22 @@
 const nextJest = require("next/jest");
+const dotenv = require("dotenv");
 
 const createJestConfig = nextJest({
   dir: "./",
 });
 
+// Load environment variables from `.env` file
+dotenv.config();
+
+// Get ROOT_DIR from environment variable or fallback to current directory
+const ROOT_DIR = process.env.ROOT_DIR || __dirname;
+
 const customJestConfig = {
-  moduleDirectories: ["node_modules", "/Users/user/Documents/GitHub/jukeboxd/jukeboxd-next/"],
+  moduleDirectories: ["node_modules", `${ROOT_DIR}/`],
   testEnvironment: "jest-environment-jsdom",
-  setupFilesAfterEnv: ["/Users/user/Documents/GitHub/jukeboxd/jukeboxd-next/jest.setup.js"], // Ensure Jest setup runs before tests
+  setupFilesAfterEnv: [`${ROOT_DIR}/jest.setup.js`], // Ensure Jest setup runs before tests
   moduleNameMapper: {
-    "^mockFirestore$": "/Users/user/Documents/GitHub/jukeboxd/jukeboxd-next/tests/__mocks__/mockFirestore.js", // Map firebaseConfig to the mock
+    "^mockFirestore$": `${ROOT_DIR}/tests/__mocks__/mockFirestore.js`, // Map firebaseConfig to the mock
   },
 };
 
