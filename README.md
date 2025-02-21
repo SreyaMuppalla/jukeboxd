@@ -45,9 +45,14 @@ Music is a core part of Gen Z’s culture, yet there is no centralized platform 
 The app should now be running on `http://localhost:3000/`.
 
 ## Directory Structure
+The project follows a structures directory layour to keep components, pages and styles organized. The src/ directory contains reusable components such as `bigcomponents/` and `smallcomponents/`, page specific files (`pages/`), global styles (`styles/`) and backend interaction files (`backend/`). A `tests/` directory is included at the root for Jest-based testing, with mock implementations of the database stored in `tests/__mocks__/`. Configuration files like `jest.config.js` and `jest.setup.js` ensure smooth testing setup, whereas `package-lock.json` and `package.json` ensure npm package dependencies are included across development environments. Lastly, `firebase.json`, `firestore.rules` and `firebase.indexes.json` include the standard firebase configurations.
+
 ```
 jukeboxd-next/
 ├── eslint.config.mjs
+├── firebase.json
+├── firebase.indexes.json
+├── firestore.rules
 ├── jsconfig.json
 ├── next.config.mjs
 ├── node_modules
@@ -58,6 +63,10 @@ jukeboxd-next/
 ├── README.md
 ├── src
 │   ├── App.css
+│   ├── backend (Interactions with Firebase)
+│   │   ├── firebase_api.js (all internal api's)
+│   │   ├── firebaseConfig.js (configuration of the firebase project and database)
+│   │   ├── sample_user.js (includes sample data for all of the collections in the database)
 │   ├── bigcomponents (Utilities that will be used on multiple pages)
 │   │   ├── Comments.js
 │   │   ├── FriendsPopUp.js
