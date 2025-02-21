@@ -44,7 +44,8 @@ Music is a core part of Gen Z’s culture, yet there is no centralized platform 
 The app should now be running on `http://localhost:3000/`.
 
 ## Directory Structure
-.
+```
+jukeboxd-next/
 ├── eslint.config.mjs
 ├── jsconfig.json
 ├── next.config.mjs
@@ -52,17 +53,11 @@ The app should now be running on `http://localhost:3000/`.
 ├── package.json
 ├── package-lock.json
 ├── postcss.config.mjs
-├── public
-│   ├── favicon.ico
-│   ├── file.svg
-│   ├── globe.svg
-│   ├── next.svg
-│   ├── vercel.svg
-│   └── window.svg
+├── public (includes images)
 ├── README.md
 ├── src
 │   ├── App.css
-│   ├── bigcomponents
+│   ├── bigcomponents (Utilities that will be used on multiple pages)
 │   │   ├── Comments.js
 │   │   ├── FriendsPopUp.js
 │   │   ├── Header.js
@@ -74,25 +69,18 @@ The app should now be running on `http://localhost:3000/`.
 │   │   ├── jkbxlogo.png
 │   │   └── pfp.jpg
 │   ├── index.css
-│   ├── pages
+│   ├── pages (specific pages to route to)
 │   │   ├── album-page
-│   │   │   └── index.js
 │   │   ├── api
-│   │   │   └── hello.js
 │   │   ├── _app.js
 │   │   ├── artist-page
-│   │   │   └── index.js
 │   │   ├── _document.js
 │   │   ├── feed
-│   │   │   └── index.js
 │   │   ├── index.js
 │   │   ├── profile
-│   │   │   └── index.js
 │   │   ├── profile-page
-│   │   │   └── index.js
 │   │   └── song-page
-│   │       └── index.js
-│   ├── smallcomponents
+│   ├── smallcomponents (small scale utilities adding to our features)
 │   │   ├── FriendsSearchBar.js
 │   │   ├── Logo.js
 │   │   ├── PostButton.js
@@ -103,3 +91,4 @@ The app should now be running on `http://localhost:3000/`.
 │       └── StyledComponents.js
 ├── tailwind.config.mjs
 └── README.md
+```
