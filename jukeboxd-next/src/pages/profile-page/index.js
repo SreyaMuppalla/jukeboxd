@@ -14,25 +14,9 @@ import {
 import Review from "../../bigcomponents/Review";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
 import Image from "next/image";
-import { useAuth } from "@/utils/auth";
 import { useRouter } from "next/router";
 
 const ProfilePage = () => {
-    // const router = useRouter(); // Use Next.js router
-    // const { currentUser, logout } = useAuth();
-    // const [isLoggingOut, setIsLoggingOut] = React.useState(false);
-
-    // const handleLogout = async () => {
-    //     setIsLoggingOut(true);
-    //     try {
-    //         await logout();
-    //         router.push("/"); // Use router.push for redirection in Next.js
-    //     } catch (error) {
-    //         console.error("Logout Error:", error);
-    //     } finally {
-    //         setIsLoggingOut(false);
-    //     }
-    // };
     return (
         <Background>
             <ProfileContainer>
@@ -59,7 +43,7 @@ const ProfilePage = () => {
                                 variant="h4"
                                 style={{ color: "#fff", marginBottom: "8px" }}
                             >
-                                {currentUser ? currentUser.email : "Guest"}
+                                Username
                             </Typography>
                         </ProfileDetails>
 
@@ -140,24 +124,6 @@ const ProfilePage = () => {
                     <Review />
                 </Box>
             </ProfileContainer>
-            {/* Logout Button */}
-            {/* {currentUser && !isLoggingOut && (
-                <Box
-                    sx={{
-                        position: "fixed",
-                        bottom: 16,
-                        right: 16,
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={handleLogout}
-                    >
-                        Log Out
-                    </Button>
-                </Box>
-            )} */}
         </Background>
     );
 };

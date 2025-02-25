@@ -4,9 +4,9 @@
 // both editable
 // review/upvote/friends count
 // recent reviews
-
+"use client";
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import {
     Background,
     ProfileContainer,
@@ -21,32 +21,29 @@ import {
 import Review from "../../bigcomponents/Review";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
 import Image from "next/image";
-import { useAuth } from "../../utils/auth";
 import { useRouter } from "next/router";
+import { useAuth } from "../../backend/auth.js";
 
 const PersonalProfilePage = () => {
     const router = useRouter(); // Initialize navigation using Next.js router
+    const { user, logOut } = useAuth();
 
-    // const { currentUser, logout } = useAuth();
-    const firebaseContext = useAuth();
-    const currentUser = firebaseContext?.currentUser;
-    const logout = firebaseContext?.logout;
+    console.log("user", user);
 
     const [isLoggingOut, setIsLoggingOut] = React.useState(false);
-    console.log("email");
-    console.log(currentUser?.email);
 
-    // const handleLogout = async () => {
-    //     setIsLoggingOut(true);
-    //     try {
-    //         await logout();
-    //         router.push("/"); // Use router.push for redirection in Next.js
-    //     } catch (error) {
-    //         console.error("Logout Error:", error);
-    //     } finally {
-    //         setIsLoggingOut(false);
-    //     }
-    // };
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+        try {
+            await logOut();
+            router.push("/"); // Use router.push for redirection in Next.js
+        } catch (error) {
+            console.error("Logout Error:", error);
+        } finally {
+            setIsLoggingOut(false);
+        }
+    };
+
     return (
         <Background>
             <ProfileContainer>
@@ -73,7 +70,7 @@ const PersonalProfilePage = () => {
                                 variant="h4"
                                 style={{ color: "#fff", marginBottom: "8px" }}
                             >
-                                {currentUser ? currentUser.email : "Guest"}
+                                {user ? user.email : "My Username"}
                             </Typography>
                         </ProfileDetails>
 
@@ -155,7 +152,7 @@ const PersonalProfilePage = () => {
                 </Box>
             </ProfileContainer>
             {/* Logout Button */}
-            {currentUser && !isLoggingOut && (
+            {user && !isLoggingOut && (
                 <Box
                     sx={{
                         position: "fixed",

@@ -1,9 +1,10 @@
-// pages/login.js
+"use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/router"; // Import useRouter from Next.js
-import { useAuth } from "../../utils/auth.js"; // Assuming your auth hook is still in the same location
-import { Button, Typography } from "@mui/material"; // Adjust imports as needed
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { signInWithGoogle, logout } from "../../backend/auth.js";
+import { Button, Typography, TextField } from "@mui/material";
+import { useAuth } from "../../backend/auth.js";
 
 import {
     Title,
@@ -14,25 +15,21 @@ import {
 
 const LoginPage = () => {
     const router = useRouter(); // Use Next.js router
-    const { currentUser, signInWithGoogle, logout } = useAuth();
+    const { user, signIn } = useAuth();
 
     useEffect(() => {
-        if (currentUser) {
-            router.push("/feed"); // Use Next.js router to navigate
+        if (user) {
+            router.push("/feed");
         }
-    }, [currentUser, router]);
+    }, [user, router]);
 
     return (
         <LoginBackground>
             <FormContainer>
                 <Title variant="h2">jukeboxd</Title>
-                {currentUser ? (
-                    <SignInButton onClick={logout}>Log Out</SignInButton>
-                ) : (
-                    <SignInButton onClick={signInWithGoogle}>
-                        Sign In with Google
-                    </SignInButton>
-                )}
+                <SignInButton onClick={signIn}>
+                    Sign In with Google
+                </SignInButton>
             </FormContainer>
         </LoginBackground>
     );
