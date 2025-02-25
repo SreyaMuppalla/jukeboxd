@@ -14,8 +14,7 @@ import {
 
 const LoginPage = () => {
     const router = useRouter(); // Use Next.js router
-    const { user, signInWithGoogle, signInWithEmailAndPassword, signUp } =
-        useAuth();
+    const { user, signInWithGoogle, signInWithEmail, signUp } = useAuth();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -28,18 +27,19 @@ const LoginPage = () => {
         }
     }, [user, router]);
 
-    const handleSignIn = async () => {
+    const handleSignIn = async (e) => {
         e.preventDefault();
         setError("");
         try {
             if (isSigningUp) {
                 await signUp(email, password);
             } else {
-                await signInWithEmailAndPassword(email, password);
+                await signInWithEmail(email, password);
                 router.push("/feed");
             }
         } catch (error) {
-            setError("Invalid email or password");
+            setError(error.message);
+            console.error(error);
         }
     };
 

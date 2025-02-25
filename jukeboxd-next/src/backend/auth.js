@@ -9,7 +9,8 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
 } from "firebase/auth";
-import { auth } from "./firebaseConfig";
+import { auth, db } from "./firebaseConfig";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const AuthContext = createContext();
 
@@ -28,12 +29,44 @@ export function AuthProvider({ children }) {
         return signInWithPopup(auth, provider);
     };
 
-    const signUp = (email, password) => {
-        return createUserWithEmailAndPassword(auth, email, password);
+    const signUp = async (email, password) => {
+        try {
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
+            const user = userCredential.user;
+
+            // check if user exists
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnapshot = await getDoc(userDocRef);
+
+            // if user doesn't exist, add to Firestore
+            if (!userDocSnapshot.exists()) {
+                await setDoc(userDocRef, {
+                    uid: user.uid,
+                    email: user.email,
+                });
+            }
+
+            return userCredential;
+        } catch (err) {
+            throw err;
+        }
     };
 
-    const signInWithEmailAndPassword = (email, password) => {
-        return signInWithEmailAndPassword(auth, email, password);
+    const signInWithEmail = async (email, password) => {
+        try {
+            const userCredential = await signInWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
+            return userCredential;
+        } catch (err) {
+            throw new Error("Invalid email or password");
+        }
     };
 
     const logOut = () => {
@@ -46,7 +79,7 @@ export function AuthProvider({ children }) {
                 user,
                 signInWithGoogle,
                 signUp,
-                signInWithEmailAndPassword,
+                signInWithEmail,
                 logOut,
             }}
         >
