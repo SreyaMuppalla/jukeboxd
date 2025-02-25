@@ -10,83 +10,98 @@ import {
 } from '../styles/StyledComponents'; // Assuming these styled components exist
 import { useRouter } from 'next/router'; // Import useRouter from Next.js
 import { SpotifyAPIController } from '../utils/SpotifyAPIController'; // Import your API controller
+import { useAtom } from 'jotai';
+import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../context/spotifyTokenManager'; // Updated import
 
 const SearchBar = () => {
   const [query, setQuery] = useState('');
   const [recommendations, setRecommendations] = useState([]);
-  const [token, setToken] = useState('');
+  const [token, _] = useAtom(tokenAtom); // Access token state
+  const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
+  const [, fetchToken] = useAtom(fetchTokenAtom); // Trigger token fetch
   const [queryType, setQueryType] = useState('track'); // Default to 'track'
   const router = useRouter(); // Use Next.js router for dynamic navigation
 
-
   // Fetch token on component mount
   useEffect(() => {
-    const fetchToken = async () => {
-      const token = await SpotifyAPIController.getToken();
-      setToken(token);
+    const fetchTokenOnMount = async () => {
+      try {
+        await fetchToken(); // Ensure token is fetched on load
+      } catch (error) {
+        console.error('Error fetching token:', error);
+      }
     };
-    fetchToken();
-  }, []);
+
+    fetchTokenOnMount(); // Call the function
+  }, [fetchToken]); // fetchToken as dependency
 
   // Fetch recommendations when the query changes
   useEffect(() => {
-    if (query.length > 2) { // Start searching when the user types at least 3 characters
-      const fetchRecommendations = async () => {
-        let results = [];
-        if (queryType === 'track') {
-          results = await SpotifyAPIController.searchTracks(token, query); // Fetch 20 results
-        } else if (queryType === 'artist') {
-          results = await SpotifyAPIController.searchArtists(token, query); // Fetch 20 results
-        } else if (queryType === 'album') {
-          results = await SpotifyAPIController.searchAlbums(token, query); // Fetch 20 results
+    const fetchRecommendations = async () => {
+      if (query.length > 2) { // Start searching when the user types at least 3 characters
+
+        console.log(token)
+
+        // Check if the token is expired
+        if (!token || Date.now() >= tokenExpiration) {
+          console.log('Token expired, fetching a new one...');
+          await fetchToken(); // Refresh the token if expired
         }
 
-        // Filtering logic for albums
-        const uniqueResults = results.filter((item, index, self) => {
-          if (queryType === 'album') {
-            // For albums, check name, release date, total tracks, and artists
-            return index === self.findIndex((t) =>
-              t.name === item.name &&
-              t.release_date === item.release_date &&
-              t.total_tracks === item.total_tracks &&
-              t.artists.map(artist => artist.name).join(', ') === item.artists.map(artist => artist.name).join(', ')
-            );
-          } else if (queryType === 'track') {
-            // For tracks, check name, release date, album, and artists
-            return index === self.findIndex((t) =>
-              t.name === item.name &&
-              t.album?.name === item.album?.name && // Check if they belong to the same album
-              t.album?.release_date === item.album?.release_date && // Compare album release date
-              t.artists.map(artist => artist.name).join(', ') === item.artists.map(artist => artist.name).join(', ')
-            );
-          } else {
-            // For artists, fallback to filtering by 'id'
-            return index === self.findIndex((t) => t.id === item.id);
+        try {
+          let results = [];
+          if (queryType === 'track') {
+            results = await SpotifyAPIController.searchTracks(token, query); // Fetch 20 results
+          } else if (queryType === 'artist') {
+            results = await SpotifyAPIController.searchArtists(token, query); // Fetch 20 results
+          } else if (queryType === 'album') {
+            results = await SpotifyAPIController.searchAlbums(token, query); // Fetch 20 results
           }
-        });
 
-        console.log(uniqueResults.slice(0, 5))
+          // Filtering logic for albums
+          const uniqueResults = results.filter((item, index, self) => {
+            if (queryType === 'album') {
+              return index === self.findIndex((t) =>
+                t.name === item.name &&
+                t.release_date === item.release_date &&
+                t.total_tracks === item.total_tracks &&
+                t.artists.map(artist => artist.name).join(', ') === item.artists.map(artist => artist.name).join(', ')
+              );
+            } else if (queryType === 'track') {
+              return index === self.findIndex((t) =>
+                t.name === item.name &&
+                t.album?.name === item.album?.name &&
+                t.album?.release_date === item.album?.release_date &&
+                t.artists.map(artist => artist.name).join(', ') === item.artists.map(artist => artist.name).join(', ')
+              );
+            } else {
+              return index === self.findIndex((t) => t.id === item.id);
+            }
+          });
 
-        // Set the first 5 unique recommendations
-        setRecommendations(uniqueResults.slice(0, 5));
-      };
-      fetchRecommendations();
-    } else {
-      setRecommendations([]); // Clear recommendations if query is too short
-    }
-  }, [query, token, queryType]);
+          // Set the first 5 unique recommendations
+          setRecommendations(uniqueResults.slice(0, 5));
+        } catch (error) {
+          console.error('Error fetching recommendations:', error);
+        }
+      } else {
+        setRecommendations([]); // Clear recommendations if query is too short
+      }
+    };
 
-  const handleRecommendationClick = (item) =>
-  {
-     if (queryType === 'album') {
+    fetchRecommendations();
+  }, [query, token, queryType, fetchToken, tokenExpiration]); // Added tokenExpiration as a dependency to check expiration
+
+  const handleRecommendationClick = (item) => {
+    if (queryType === 'album') {
       router.push(`/album-page/${item.id}`); // Navigate to /album-page/[id]
     } else if (queryType === 'track') {
       router.push(`/song-page/${item.id}`); // Navigate to /song-page/[id]
     } else if (queryType === 'artist') {
       router.push(`/artist-page/${item.id}`); // Navigate to /artist-page/[id]
     }
-    setQuery("")
-  }
+    setQuery(''); // Clear search input after navigation
+  };
 
   return (
     <SearchBarContainer>

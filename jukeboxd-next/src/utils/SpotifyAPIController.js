@@ -25,18 +25,21 @@ export const SpotifyAPIController = (function() {
             const data = await response.json();
 
             if (response.ok) {
-                return data.access_token; // Return the access token
-            } else {
+                const expirationTime = Date.now() + data.expires_in; // Calculate expiration time
+                return {
+                  access_token: data.access_token,
+                  expires_at: Date.now() + data.expires_in * 1000, // Include expiration time in milliseconds
+                };
+              } else {
                 throw new Error(`Error: ${data.error_description}`);
+              }
+            } catch (error) {
+              console.error('Error fetching token:', error);
+              return null; // Return null in case of error
             }
-        } catch (error) {
-            console.error('Error fetching token:', error);
-            return null; // Return null in case of an error
-        }
     }
     
     const _searchTracks = async (token, query) => {
-        console.log(token)
         const result = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`, {
             method: 'GET',
             headers: { 'Authorization' : 'Bearer ' + token }

@@ -16,6 +16,9 @@ import Image from "next/image";
 import { useSpotify } from '../../context/SpotifyContext'; // Import the useSpotify hook
 import { SpotifyAPIController } from '../../utils/SpotifyAPIController'; // Import your API controller
 import { useRouter } from 'next/router';
+import { useAtom } from 'jotai';
+import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../context/spotifyTokenManager'; // Updated import
+
 
 const ArtistPage = () => {
   const topSongs = [
@@ -28,14 +31,34 @@ const ArtistPage = () => {
 
   const router = useRouter();
   const { id: artistId } = router.query; // Get artistId from the dynamic route
-  const { token, error: tokenError } = useSpotify(); // Use token from SpotifyContext
   const [loading, setLoading] = useState(true);
   const [artistDetails, setArtistDetails] = useState(null);
   const [error, setError] = useState(null);
+  const [token, _] = useAtom(tokenAtom); // Access token state
+  const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
+  const [, fetchToken] = useAtom(fetchTokenAtom); // Trigger token fetch
+
+  // Fetch token on component mount
+  useEffect(() => {
+    const fetchTokenOnMount = async () => {
+      try {
+        await fetchToken(); // Ensure token is fetched on load
+      } catch (error) {
+        console.error('Error fetching token:', error);
+      }
+    };
+
+    fetchTokenOnMount(); // Call the function
+  }, [fetchToken]); // fetchToken as dependency
 
   useEffect(() => {
     if (artistId && token) {
       const fetchArtistData = async () => {
+        if (!token || Date.now() >= tokenExpiration) {
+          console.log('Token expired, fetching a new one...');
+          await fetchToken(); // Refresh the token if expired
+        }
+        console.log(token)
         try {
           setLoading(true); // Start loading
           setError(null); // Reset any previous errors
@@ -59,8 +82,8 @@ const ArtistPage = () => {
     return <Typography variant="h5" style={{ color: '#fff' }}>Loading...</Typography>;
   }
 
-  if (tokenError || error) {
-    return <Typography variant="h5" style={{ color: '#ff4d4d' }}>{tokenError || error}</Typography>; // Display any error
+  if (error) {
+    return <Typography variant="h5" style={{ color: '#ff4d4d' }}>{error}</Typography>; // Display any error
   }
 
   if (!artistDetails) {

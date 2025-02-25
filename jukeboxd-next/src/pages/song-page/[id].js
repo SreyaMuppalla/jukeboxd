@@ -12,20 +12,39 @@ import Review from '../../bigcomponents/Review';
 import Link from 'next/link';
 import { SpotifyAPIController } from '../../utils/SpotifyAPIController'; // Import your API controller
 import { useRouter } from 'next/router'; // Import Next.js useRouter
-import { useSpotify } from '../../context/SpotifyContext'; // Import the useSpotify hook
-
+import { useAtom } from 'jotai';
+import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../context/spotifyTokenManager'; // Updated import
 const SongPage = () => {
   const router = useRouter();
   const { id: songId } = router.query; // Correctly get the albumId from the dynamic route
 
-  const { token } = useSpotify(); // Use token from context
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [songDetails, setSongDetails] = useState(null);
+  const [token, _] = useAtom(tokenAtom); // Access token state
+  const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
+  const [, fetchToken] = useAtom(fetchTokenAtom); // Trigger token fetch
+
+  useEffect(() => {
+    const fetchTokenOnMount = async () => {
+      try {
+        await fetchToken(); // Ensure token is fetched on load
+      } catch (error) {
+        console.error('Error fetching token:', error);
+      }
+    };
+  
+    fetchTokenOnMount(); // Call the function
+  }, [fetchToken]); // fetchToken as dependency
 
   useEffect(() => {
     if (songId && token) { // Ensure songId and token are present before making API calls
       const fetchSongData = async () => {
+        if (!token || Date.now() >= tokenExpiration) {
+          console.log('Token expired, fetching a new one...');
+          await fetchToken(); // Refresh the token if expired
+        }
+        console.log(token)
         try {
           setLoading(true); // Start loading
           setError(null); // Reset any previous errors

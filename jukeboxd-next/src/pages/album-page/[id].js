@@ -12,8 +12,8 @@ import { SpotifyAPIController } from '../../utils/SpotifyAPIController'; // Impo
 import Review from '../../bigcomponents/Review';
 import Link from 'next/link';
 import { useRouter } from 'next/router'; // Import Next.js useRouter
-import { useSpotify } from '../../context/SpotifyContext'; // Import the useSpotify hook
-
+import { useAtom } from 'jotai';
+import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../context/spotifyTokenManager'; // Updated import
 
 const AlbumPage = () => {
   const router = useRouter();
@@ -22,13 +22,33 @@ const AlbumPage = () => {
   const [albumDetails, setAlbumDetails] = useState(null);
   const [albumTracks, setAlbumTracks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { token, error: tokenError } = useSpotify(); // Use token from SpotifyContext
   const [error, setError] = useState(null);
+  const [token, _] = useAtom(tokenAtom); // Access token state
+  const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
+  const [, fetchToken] = useAtom(fetchTokenAtom); // Trigger token fetch
 
+ // Fetch token on component mount
+ useEffect(() => {
+  const fetchTokenOnMount = async () => {
+    try {
+      await fetchToken(); // Ensure token is fetched on load
+    } catch (error) {
+      console.error('Error fetching token:', error);
+    }
+  };
+
+  fetchTokenOnMount(); // Call the function
+}, [fetchToken]); // fetchToken as dependency
 
   useEffect(() => {
+    
     if (albumId && token) { // Ensure albumId and token are present before making API calls
       const fetchAlbumData = async () => {
+        if (!token || Date.now() >= tokenExpiration) {
+          console.log('Token expired, fetching a new one...');
+          await fetchToken(); // Refresh the token if expired
+        }
+        console.log(token)
         try {
           setLoading(true); // Start loading
           setError(null); // Reset any previous errors
@@ -57,7 +77,7 @@ const AlbumPage = () => {
     return <Typography variant="h5" style={{ color: '#fff' }}>Loading...</Typography>;
   }
 
-  if (tokenError || error) {
+  if (error) {
     return <Typography variant="h5" style={{ color: '#ff4d4d' }}>{tokenError || error}</Typography>; // Display any error
   }
 
