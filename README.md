@@ -28,7 +28,7 @@ Music is a core part of Gen Z’s culture, yet there is no centralized platform 
    npm install
    ```
 3. Configure Firebase:
-   - Create a `.env` file in the `jukeboxd-next` directory and add the Firebase configurations:
+   - Create a `.env.local` file in the `jukeboxd-next` directory and add the Firebase configurations:
      ```sh
      NEXT_PUBLIC_FIREBASE_API_KEY=<your_api_key>
      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=<your_auth_domain>
