@@ -28,14 +28,16 @@ Music is a core part of Gen Z’s culture, yet there is no centralized platform 
    npm install
    ```
 3. Configure Firebase:
-   - Create a `.env` file and add the Firebase configurations:
+   - Create a `.env` file in the `jukeboxd-next` directory and add the Firebase configurations:
      ```sh
-     REACT_APP_FIREBASE_API_KEY=<your_api_key>
-     REACT_APP_FIREBASE_AUTH_DOMAIN=<your_auth_domain>
-     REACT_APP_FIREBASE_PROJECT_ID=<your_project_id>
-     REACT_APP_FIREBASE_STORAGE_BUCKET=<your_storage_bucket>
-     REACT_APP_FIREBASE_MESSAGING_SENDER_ID=<your_sender_id>
-     REACT_APP_FIREBASE_APP_ID=<your_app_id>
+     NEXT_PUBLIC_FIREBASE_API_KEY=<your_api_key>
+     NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=<your_auth_domain>
+     NEXT_PUBLIC_DATABASE_URL=<your_database_url>
+     NEXT_PUBLIC_FIREBASE_PROJECT_ID=<your_project_id>
+     NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=<your_storage_bucket>
+     NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=<your_sender_id>
+     NEXT_PUBLIC_FIREBASE_APP_ID=<your_app_id>
+     NEXT_PUBLIC_MEASUREMENT_ID=<your_measurement_id>
      ROOT_DIR=<your_root_dir>
      ```
 4. Run the app locally:
