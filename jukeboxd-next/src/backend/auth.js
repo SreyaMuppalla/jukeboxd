@@ -6,6 +6,8 @@ import {
     signInWithPopup,
     GoogleAuthProvider,
     signOut,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "./firebaseConfig";
 
@@ -21,9 +23,17 @@ export function AuthProvider({ children }) {
         return () => unsubscribe();
     }, []);
 
-    const signIn = () => {
+    const signInWithGoogle = () => {
         const provider = new GoogleAuthProvider();
         return signInWithPopup(auth, provider);
+    };
+
+    const signUp = (email, password) => {
+        return createUserWithEmailAndPassword(auth, email, password);
+    };
+
+    const signInWithEmailAndPassword = (email, password) => {
+        return signInWithEmailAndPassword(auth, email, password);
     };
 
     const logOut = () => {
@@ -31,7 +41,15 @@ export function AuthProvider({ children }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, signIn, logOut }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                signInWithGoogle,
+                signUp,
+                signInWithEmailAndPassword,
+                logOut,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );

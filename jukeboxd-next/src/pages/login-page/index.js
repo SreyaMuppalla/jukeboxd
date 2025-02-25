@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { signInWithGoogle, logout } from "../../backend/auth.js";
 import { Button, Typography, TextField } from "@mui/material";
 import { useAuth } from "../../backend/auth.js";
 
@@ -15,7 +14,13 @@ import {
 
 const LoginPage = () => {
     const router = useRouter(); // Use Next.js router
-    const { user, signIn } = useAuth();
+    const { user, signInWithGoogle, signInWithEmailAndPassword, signUp } =
+        useAuth();
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [isSigningUp, setIsSigningUp] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         if (user) {
@@ -23,11 +28,68 @@ const LoginPage = () => {
         }
     }, [user, router]);
 
+    const handleSignIn = async () => {
+        e.preventDefault();
+        setError("");
+        try {
+            if (isSigningUp) {
+                await signUp(email, password);
+            } else {
+                await signInWithEmailAndPassword(email, password);
+                router.push("/feed");
+            }
+        } catch (error) {
+            setError("Invalid email or password");
+        }
+    };
+
+    const toggleSignUp = () => {
+        setIsSigningUp((prev) => !prev);
+        setEmail(""); // Reset email
+        setPassword(""); // Reset password
+        setError(""); // Clear any previous errors
+    };
+
     return (
         <LoginBackground>
             <FormContainer>
                 <Title variant="h2">jukeboxd</Title>
-                <SignInButton onClick={signIn}>
+
+                {/* Error message */}
+                {error && <Typography color="error">{error}</Typography>}
+
+                <form onSubmit={handleSignIn}>
+                    <TextField
+                        label="Email"
+                        type="email"
+                        variant="outlined"
+                        fullWidth
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                    <TextField
+                        label="Password"
+                        type="password"
+                        variant="outlined"
+                        fullWidth
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+
+                    <Button type="submit" variant="contained" fullWidth>
+                        {isSigningUp ? "Sign Up" : "Sign In"}
+                    </Button>
+                </form>
+
+                <Button onClick={toggleSignUp}>
+                    {isSigningUp
+                        ? "Already have an account? Sign In"
+                        : "Don't have an account? Sign Up"}
+                </Button>
+
+                <SignInButton onClick={signInWithGoogle}>
                     Sign In with Google
                 </SignInButton>
             </FormContainer>
