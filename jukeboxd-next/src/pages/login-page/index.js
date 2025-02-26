@@ -4,13 +4,17 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Button, Typography, TextField } from "@mui/material";
 import { useAuth } from "../../backend/auth.js";
+import Image from "next/image";
 
 import {
     Title,
     SignInButton,
     LoginBackground,
     FormContainer,
+    InputField,
+    ToggleText,
 } from "../../styles/StyledComponents";
+import jkbxlogo from "../../images/jkbxlogo.png"; // Add a placeholder profile pic
 
 const LoginPage = () => {
     const router = useRouter(); // Use Next.js router
@@ -30,6 +34,12 @@ const LoginPage = () => {
     const handleSignIn = async (e) => {
         e.preventDefault();
         setError("");
+
+        if (!email || !password) {
+            setError("Please enter email and password.");
+            return;
+        }
+
         try {
             if (isSigningUp) {
                 await signUp(email, password);
@@ -41,6 +51,8 @@ const LoginPage = () => {
             setError(error.message);
             console.error(error);
         }
+
+        console.log("Sign-in attempt:", email, password);
     };
 
     const toggleSignUp = () => {
@@ -53,37 +65,41 @@ const LoginPage = () => {
     return (
         <LoginBackground>
             <FormContainer>
+                <Image
+                    src={jkbxlogo}
+                    alt="LOGO"
+                    style={{ width: "10%", height: "30%", borderRadius: "8px" }}
+                />
                 <Title variant="h2">jukeboxd</Title>
 
                 {/* Error message */}
                 {error && <Typography color="error">{error}</Typography>}
 
                 <form onSubmit={handleSignIn}>
-                    <TextField
+                    <InputField
                         label="Email"
+                        placeholder="Email"
                         type="email"
-                        variant="outlined"
-                        fullWidth
+                        color="success"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     />
-                    <TextField
+                    <InputField
                         label="Password"
+                        placeholder="Password"
                         type="password"
-                        variant="outlined"
-                        fullWidth
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
 
-                    <Button type="submit" variant="contained" fullWidth>
+                    <SignInButton type="submit">
                         {isSigningUp ? "Sign Up" : "Sign In"}
-                    </Button>
+                    </SignInButton>
                 </form>
 
-                <Button onClick={toggleSignUp}>
+                <Button sx={{ color: "white" }} onClick={toggleSignUp}>
                     {isSigningUp
                         ? "Already have an account? Sign In"
                         : "Don't have an account? Sign Up"}

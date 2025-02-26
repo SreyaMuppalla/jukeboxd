@@ -380,56 +380,77 @@ export const RecommendationDetails = styled.div`
 `;
 
 export const LoginBackground = styled.div`
-    background: linear-gradient(135deg, #121212, #535353);
+    background: linear-gradient(to bottom right, #121212, #535353);
     background-size: 400% 400%;
-    animation: gradientBG 6s ease infinite;
     height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
-
-    @keyframes gradientBG {
-        0% {
-            background-position: 0% 50%;
-        }
-        50% {
-            background-position: 100% 50%;
-        }
-        100% {
-            background-position: 0% 50%;
-        }
-    }
+    align-items: center;
 `;
 
-// Login Title
 export const Title = styled(Typography)`
-    color: #ffffff; /*  white */
-    font-size: 10rem;
+    color: #ffffff;
+    font-size: 3rem;
     font-weight: bold;
     text-align: center;
     margin-bottom: 20px;
 `;
 
-// Sign in Button
-export const SignInButton = styled.button`
-    background-color: #1db954; /*  green */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-
-    &:hover {
-        background-color: #535353; /* Darker green on hover */
-    }
-`;
-
-// container for title and sign in button
 export const FormContainer = styled.div`
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
     gap: 20px;
+    background-color: #121212;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 100%;
+    margin: 0 auto;
+`;
+
+export const InputField = styled.input`
+    padding: 12px;
+    font-size: 16px;
+    width: 100%;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 16px;
+
+    &::placeholder {
+        color: #888; // Lighter gray for placeholder text
+    }
+
+    &:focus {
+        border: 2px solid #1db954; // Highlight with Spotify's signature green
+    }
+`;
+
+export const SignInButton = styled.button`
+    background-color: #1db954;
+    justify-content: center;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+
+    &:hover {
+        background-color: #1aa34a; // Slightly darker green on hover
+        transform: scale(1.05); // Small scale effect on hover
+    }
+
+    &:active {
+        transform: scale(1); // Reset scale on click
+    }
 `;
