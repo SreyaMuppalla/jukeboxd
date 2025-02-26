@@ -99,7 +99,7 @@ const PersonalProfilePage = () => {
               </StatItem>
               <StatItem>
                 <Typography variant="h5" style={{ color: '#1db954' }}>
-                {userData?.followering?.length || 0}
+                {userData?.following?.length || 0}
                 </Typography>
                 <Typography variant="subtitle2" style={{ color: '#b3b3b3' }}>
                   Following
