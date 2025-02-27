@@ -138,7 +138,7 @@ const PersonalProfilePage = () => {
 
           {reviews.length > 0 ? (
                 reviews.map((review) => (
-                <Review userName={userData.user_id} userProfilePic={userData.profilePicture} rating= {review.rating} review_text={review.review_text} songName={review.song_id} />
+                <Review userName={userData.username} userProfilePic={userData.profilePicture} rating= {review.rating} review_text={review.review_text} songName={review.song_id} />
                 ))
             ) : (
                 <>

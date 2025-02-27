@@ -1,11 +1,11 @@
 import {db} from "./firebaseConfig";
-import {doc, setDoc, getDoc, addDoc} from "firebase/firestore";
+import {doc, setDoc, getDoc, addDoc, getDocs, query, collection, where} from "firebase/firestore";
 
 
 export const getReview = async (review_id) => {
     try{
         if(!review_id){
-            throw new Error("Missing required parameters");
+            throw new Error("Missing review_id parameter");
         }
 
         const reviewDoc = await getDoc(doc(db, "reviews", review_id));
@@ -23,7 +23,15 @@ export const getReview = async (review_id) => {
 export const createReview = async (user_id, is_song, name, rating, review_text) => {
     try{
         if(!user_id || typeof rating !== 'number' || !name){
-            throw new Error("Missing required parameters");
+            if (!user_id) {
+            throw new Error("Missing user_id parameter");
+            }
+            if (typeof rating !== 'number') {
+            throw new Error("Invalid rating parameter");
+            }
+            if (!name) {
+            throw new Error("Missing name parameter");
+            }
         }
         const userRef = doc(db, "users", user_id);
         const userDoc = await getDoc(userRef);
@@ -54,10 +62,40 @@ export const createReview = async (user_id, is_song, name, rating, review_text) 
     }
 }
 
-export const getAllReviews = async () => {
+export const getFriendReviews = async (user_id) => {
     try{
+        if(!user_id){
+            throw new Error("Missing user_id parameter");
+        }
+        const userRef = doc(db, "users", user_id);
+        const userDoc = await getDoc(userRef);
+        const user_friends = userDoc.data().following || [];
+        if(user_friends.length === 0){
+            return [];
+        }
         const reviews = [];
-        const querySnapshot = await getDocs(collection(db, "reviews"));
+        const querySnapshot = await getDocs(query(collection(db, "reviews"), where("user_id", "in", user_friends)));
+        querySnapshot.forEach((doc) => {
+            reviews.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        return reviews;
+    }
+    catch(error){
+        throw error;
+    }
+}
+
+export const getSongReviews = async (song_id) => {
+    try{
+        if(!song_id){
+            throw new Error("Missing song_id");
+        }
+
+        const reviews = [];
+        const querySnapshot = await getDocs(query(collection(db, "reviews"), where("is_song", "==", true), where("name", "==", song_id)));
         querySnapshot.forEach((doc) => {
             reviews.push(doc.data());
         });
