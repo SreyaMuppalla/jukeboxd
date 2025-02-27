@@ -95,7 +95,7 @@ export const getSongReviews = async (song_id) => {
         }
 
         const reviews = [];
-        const querySnapshot = await getDocs(query(collection(db, "reviews"), where("is_song", "==", true), where("name", "==", song_id)));
+        const querySnapshot = await getDocs(query(collection(db, "reviews"), where("is_song", "==", true), where("song_id", "==", song_id)));
         querySnapshot.forEach((doc) => {
             reviews.push(doc.data());
         });
