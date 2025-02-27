@@ -4,7 +4,7 @@ import {doc, setDoc, getDoc} from "firebase/firestore";
 export const getUser = async (user_id) => {
     try{
         if(!user_id){
-            throw new Error("Missing required parameters");
+            throw new Error("Missing user_id parameter");
         }
 
         const userDoc = await getDoc(doc(db, "users", user_id));
@@ -22,7 +22,12 @@ export const getUser = async (user_id) => {
 export const createUser = async (user_id, email, profilePicture, user_bio) => {
     try{
         if(!user_id || !email){
-            throw new Error("Missing required parameters");
+            if(!user_id){
+                throw new Error("Missing user_id parameter");
+            }
+            if(!email){
+                throw new Error("Missing email parameter");
+            }
         }
 
         const user = {
@@ -38,7 +43,12 @@ export const createUser = async (user_id, email, profilePicture, user_bio) => {
         };
 
         const userRef = doc(db, "users", user_id);
+        const existingUserDoc = await getDoc(userRef);
+        if (existingUserDoc.exists()) {
+            throw new Error("User already exists");
+        }
         await setDoc(userRef, user);
+        return user;
     }
     catch(error){
         throw error;
