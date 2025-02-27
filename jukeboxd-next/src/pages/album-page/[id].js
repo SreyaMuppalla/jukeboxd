@@ -13,7 +13,7 @@ import Review from '../../bigcomponents/Review';
 import Link from 'next/link';
 import { useRouter } from 'next/router'; // Import Next.js useRouter
 import { useAtom } from 'jotai';
-import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../context/spotifyTokenManager'; // Updated import
+import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spotifyTokenManager'; // Updated import
 
 const AlbumPage = () => {
   const router = useRouter();

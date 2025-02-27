@@ -7,13 +7,14 @@ import {
   RecommendationDetails,
   DropdownContainer,
   SearchDropdown,
-} from '../styles/StyledComponents'; // Assuming these styled components exist
+} from '@/styles/StyledComponents'; // Assuming these styled components exist
 import { useRouter } from 'next/router'; // Import useRouter from Next.js
-import { SpotifyAPIController } from '../utils/SpotifyAPIController'; // Import your API controller
+import { SpotifyAPIController } from '@/utils/SpotifyAPIController'; // Import your API controller
 import { useAtom } from 'jotai';
-import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../context/spotifyTokenManager'; // Updated import
+import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '@/states/spotifyTokenManager'; // Updated import
+import { currSong } from '@/states/currSong';
 
-const SearchBar = () => {
+const SearchBar = (props) => {
   const [query, setQuery] = useState('');
   const [recommendations, setRecommendations] = useState([]);
   const [token, _] = useAtom(tokenAtom); // Access token state
@@ -21,6 +22,8 @@ const SearchBar = () => {
   const [, fetchToken] = useAtom(fetchTokenAtom); // Trigger token fetch
   const [queryType, setQueryType] = useState('track'); // Default to 'track'
   const router = useRouter(); // Use Next.js router for dynamic navigation
+  const [selectedSong, setSelectedSong] = useAtom(currSong);
+  const searchBarType = props.type; // Use props.type for search bar type
 
   // Fetch token on component mount
   useEffect(() => {
@@ -39,8 +42,8 @@ const SearchBar = () => {
   useEffect(() => {
     const fetchRecommendations = async () => {
       if (query.length > 2) { // Start searching when the user types at least 3 characters
-
-        console.log(token)
+        
+        console.log(searchBarType)
 
         // Check if the token is expired
         if (!token || Date.now() >= tokenExpiration) {
@@ -92,7 +95,7 @@ const SearchBar = () => {
     fetchRecommendations();
   }, [query, token, queryType, fetchToken, tokenExpiration]); // Added tokenExpiration as a dependency to check expiration
 
-  const handleRecommendationClick = (item) => {
+  const handleHeaderClick = (item) => {
     if (queryType === 'album') {
       router.push(`/album-page/${item.id}`); // Navigate to /album-page/[id]
     } else if (queryType === 'track') {
@@ -100,8 +103,45 @@ const SearchBar = () => {
     } else if (queryType === 'artist') {
       router.push(`/artist-page/${item.id}`); // Navigate to /artist-page/[id]
     }
+
     setQuery(''); // Clear search input after navigation
+    setRecommendations([]);
   };
+
+  // Set selected Song
+  function handleReviewClick(item) {
+    // DEBUGGING PRINT
+    // console.log(item);
+
+    // Determine the image based on queryType
+    let selectedImage = '';
+
+    if (queryType === 'track' && item.album && item.album.images.length > 0) {
+      selectedImage = item.album.images[0].url;
+    } else if (queryType === 'album' && item.images && item.images.length > 0) {
+      selectedImage = item.images[0].url;
+    } else if (
+      queryType === 'artist' &&
+      item.images &&
+      item.images.length > 0
+    ) {
+      selectedImage = item.images[0].url;
+    }
+    setSelectedSong({
+      name: item.name,
+      image: selectedImage,
+    });
+    setRecommendations([]);
+    setQuery('');
+  }
+
+  function handleClick(item) {
+    if (searchBarType === 'review') {
+      handleReviewClick(item);
+    } else if (searchBarType === 'header') {
+      handleHeaderClick(item);
+    }
+  }
 
   return (
     <SearchBarContainer>
@@ -110,9 +150,20 @@ const SearchBar = () => {
           value={queryType}
           onChange={(e) => setQueryType(e.target.value)}
         >
-          <option value="track">Track</option>
-          <option value="artist">Artist</option>
-          <option value="album">Album</option>
+          {/* Conditionally render dropdown options based on searchBarType */}
+          {searchBarType === 'header' && (
+            <>
+              <option value="track">Track</option>
+              <option value="artist">Artist</option>
+              <option value="album">Album</option>
+            </>
+          )}
+          {searchBarType === 'review' && (
+            <>
+              <option value="track">Track</option>
+              <option value="album">Album</option>
+            </>
+          )}
         </SearchDropdown>
       </DropdownContainer>
 
@@ -128,7 +179,7 @@ const SearchBar = () => {
           {recommendations.map((item) => (
             <RecommendationItem
               key={item.id}
-              onClick={() => handleRecommendationClick(item)} // On item click, navigate
+              onClick={() => handleClick(item)} // On item click, navigate
             >
               {/* Display album images, artist images, or song images */}
               {queryType === 'track' && item.album && item.album.images.length > 0 && (

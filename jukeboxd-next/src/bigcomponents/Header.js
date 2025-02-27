@@ -19,7 +19,7 @@ const Header = () => {
       />
       <Typography style={{ color: '#FFFFFF' }}>jukeboxd</Typography>
       {/* Search Bar */}
-      <SearchBar />
+      <SearchBar type = "header"/>
 
       {/* Navigation Buttons */}
       <ButtonContainer>

@@ -3,6 +3,7 @@ import { Box, Typography } from '@mui/material';
 import { Background } from '../../styles/StyledComponents';
 import SongsCarousel from '../../bigcomponents/SongsCarousal';
 import Review from '../../bigcomponents/Review';
+import ReviewForm from '@/smallcomponents/ReviewForm';
 
 const FeedPage = () => {
   return (
@@ -32,6 +33,7 @@ const FeedPage = () => {
         <Review />
         <Review />
       </Box>
+      <ReviewForm></ReviewForm>
     </Background>
   );
 };

@@ -13,11 +13,10 @@ import {
 } from "../../styles/StyledComponents";
 import albumpic from "../../images/albumpic.jpg"; // Import album image
 import Image from "next/image";
-import { useSpotify } from '../../context/SpotifyContext'; // Import the useSpotify hook
 import { SpotifyAPIController } from '../../utils/SpotifyAPIController'; // Import your API controller
 import { useRouter } from 'next/router';
 import { useAtom } from 'jotai';
-import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../context/spotifyTokenManager'; // Updated import
+import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spotifyTokenManager'; // Updated import
 
 
 const ArtistPage = () => {

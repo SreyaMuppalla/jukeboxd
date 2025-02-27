@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { SpotifyAPIController } from '../../utils/SpotifyAPIController'; // Import your API controller
 import { useRouter } from 'next/router'; // Import Next.js useRouter
 import { useAtom } from 'jotai';
-import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../context/spotifyTokenManager'; // Updated import
+import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spotifyTokenManager'; // Updated import
 const SongPage = () => {
   const router = useRouter();
   const { id: songId } = router.query; // Correctly get the albumId from the dynamic route

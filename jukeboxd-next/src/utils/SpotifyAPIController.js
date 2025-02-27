@@ -21,11 +21,12 @@ export const SpotifyAPIController = (function() {
                 },
                 body: body.toString()
             });
+            
+            console.log(process.env.SPOTIFY_CLIENT_ID);
 
             const data = await response.json();
 
             if (response.ok) {
-                const expirationTime = Date.now() + data.expires_in; // Calculate expiration time
                 return {
                   access_token: data.access_token,
                   expires_at: Date.now() + data.expires_in * 1000, // Include expiration time in milliseconds
