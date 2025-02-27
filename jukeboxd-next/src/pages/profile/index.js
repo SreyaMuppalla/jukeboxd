@@ -6,7 +6,6 @@
 // recent reviews
 
 import React, {useState, useEffect} from 'react';
-import React, {useState, useEffect} from 'react';
 import { Box, Typography } from '@mui/material';
 import {
   Background,
@@ -85,7 +84,6 @@ const PersonalProfilePage = () => {
                 style={{ color: '#fff', marginBottom: '8px' }}
               >
                 {userData?.username || "Username"}
-                {userData?.username || "Username"}
               </Typography>
             </ProfileDetails>
 
@@ -93,7 +91,6 @@ const PersonalProfilePage = () => {
             <StatsContainer>
               <StatItem>
                 <Typography variant="h5" style={{ color: '#1db954' }}>
-                {userData?.reviews?.length || 0}
                 {userData?.reviews?.length || 0}
                 </Typography>
                 <Typography variant="subtitle2" style={{ color: '#b3b3b3' }}>
@@ -103,10 +100,8 @@ const PersonalProfilePage = () => {
               <StatItem>
                 <Typography variant="h5" style={{ color: '#1db954' }}>
                 {userData?.followers?.length || 0}
-                {userData?.followers?.length || 0}
                 </Typography>
                 <Typography variant="subtitle2" style={{ color: '#b3b3b3' }}>
-                  Followers
                   Followers
                 </Typography>
               </StatItem>
@@ -115,7 +110,6 @@ const PersonalProfilePage = () => {
                 {userData?.followering?.length || 0}
                 </Typography>
                 <Typography variant="subtitle2" style={{ color: '#b3b3b3' }}>
-                  Following
                   Following
                 </Typography>
               </StatItem>
