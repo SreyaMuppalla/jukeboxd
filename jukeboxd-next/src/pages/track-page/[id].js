@@ -44,14 +44,12 @@ const SongPage = () => {
           console.log('Token expired, fetching a new one...');
           await fetchToken(); // Refresh the token if expired
         }
-        console.log(token)
         try {
           setLoading(true); // Start loading
           setError(null); // Reset any previous errors
 
           // Fetch song details
           const details = await SpotifyAPIController.getSongDetails(token, songId);
-          console.log(details);
 
           // Update state with the fetched data
           setSongDetails(details);

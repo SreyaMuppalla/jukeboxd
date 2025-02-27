@@ -22,8 +22,6 @@ export const SpotifyAPIController = (function() {
                 body: body.toString()
             });
             
-            console.log(process.env.SPOTIFY_CLIENT_ID);
-
             const data = await response.json();
 
             if (response.ok) {
