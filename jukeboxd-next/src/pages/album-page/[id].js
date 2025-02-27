@@ -146,7 +146,7 @@ const AlbumPage = () => {
               <ol style={{ paddingLeft: '16px', color: '#b3b3b3' }}>
                 {albumTracks.map((track, index) => (
                   <li key={track.id} style={{ marginBottom: '8px' }}>
-                    <Link href = {`/song-page/${track.id}`}>
+                    <Link href = {`/track-page/${track.id}`}>
                     {track.track_number}. {track.name} ({formatDuration(track.duration_ms)})
                     </Link>
                   </li>
