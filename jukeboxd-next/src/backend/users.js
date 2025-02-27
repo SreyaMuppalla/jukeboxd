@@ -1,5 +1,5 @@
 import {db} from "./firebaseConfig";
-import {doc, setDoc, getDoc} from "firebase/firestore";
+import {doc, setDoc, getDoc, updateDoc} from "firebase/firestore";
 
 export const getUser = async (user_id) => {
     try{
@@ -54,3 +54,26 @@ export const createUser = async (user_id, email, profilePicture, user_bio) => {
         throw error;
     }
 }
+
+export const updateUserBio = async (user_id, new_bio) => {
+    try {
+        if (!user_id || !new_bio) {
+            throw new Error("Missing user_id or new_bio parameter");
+        }
+
+        const userRef = doc(db, "users", user_id);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+            throw new Error("User not found");
+        }
+
+        await updateDoc(userRef, {
+            bio: new_bio
+        });
+
+        return { message: "User bio updated successfully" };
+    } catch (error) {
+        throw error;
+    }
+};
