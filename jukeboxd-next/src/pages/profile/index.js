@@ -6,7 +6,7 @@
 // recent reviews
 "use client";
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, TextField } from "@mui/material";
 import {
     Background,
     ProfileContainer,
@@ -25,18 +25,22 @@ import { getUser } from "../../backend/users";
 import { useRouter } from "next/router";
 import { useAuth } from "../../backend/auth.js";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../backend/firebaseConfig";
 
 const PersonalProfilePage = () => {
+    const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [editingBio, setEditingBio] = useState(false);
+    const [bio, setBio] = useState("");
+
     const router = useRouter(); // Initialize navigation using Next.js router
     const { user, logOut } = useAuth();
 
     console.log("user", user);
 
     const [isLoggingOut, setIsLoggingOut] = React.useState(false);
-
-    const [userData, setUserData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     const handleLogout = async () => {
         setIsLoggingOut(true);
@@ -48,6 +52,25 @@ const PersonalProfilePage = () => {
         } finally {
             setIsLoggingOut(false);
         }
+    };
+
+    const handleEditBio = async () => {
+        if (!userData) return;
+
+        if (editingBio) {
+            // Save the updated bio to Firebase
+            try {
+                const userRef = doc(db, "users", "user1"); // Replace with dynamic user ID
+                await updateDoc(userRef, { bio: bio });
+
+                // Update local state
+                setUserData((prevData) => ({ ...prevData, bio: bio }));
+            } catch (err) {
+                console.error("Error updating bio:", err);
+            }
+        }
+
+        setEditingBio(!editingBio);
     };
 
     useEffect(() => {
@@ -153,6 +176,65 @@ const PersonalProfilePage = () => {
                         </ProfileDetailsContainer>
                     </ProfileInfo>
 
+                    {/* Bio Section */}
+                    <Box
+                        style={{
+                            marginTop: "16px",
+                            padding: "16px",
+                            backgroundColor: "#333",
+                            borderRadius: "16px",
+                            width: "90%",
+                            margin: "auto",
+                        }}
+                    >
+                        <Typography
+                            variant="h6"
+                            style={{ color: "#fff", marginBottom: "8px" }}
+                        >
+                            Bio
+                        </Typography>
+
+                        {editingBio ? (
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={3}
+                                value={bio}
+                                onChange={(e) => setBio(e.target.value)}
+                                variant="outlined"
+                                sx={{
+                                    backgroundColor: "#444",
+                                    color: "#fff",
+                                    borderRadius: "8px",
+                                    "& .MuiOutlinedInput-root": {
+                                        "& fieldset": {
+                                            borderColor: "#1db954",
+                                        },
+                                        "&:hover fieldset": {
+                                            borderColor: "#1db954",
+                                        },
+                                    },
+                                }}
+                            />
+                        ) : (
+                            <Typography style={{ color: "#b3b3b3" }}>
+                                {bio}
+                            </Typography>
+                        )}
+
+                        <Button
+                            onClick={handleEditBio}
+                            variant="contained"
+                            style={{
+                                backgroundColor: "#1db954",
+                                color: "#fff",
+                                marginTop: "8px",
+                                textTransform: "none",
+                            }}
+                        >
+                            {editingBio ? "Save Bio" : "Edit Bio"}
+                        </Button>
+                    </Box>
                     {/* Reviews Section */}
                     <Box
                         style={{
@@ -188,7 +270,6 @@ const PersonalProfilePage = () => {
                         )}
                     </Box>
                 </ProfileContainer>
-
                 {/* Logout Button */}
                 {user && !isLoggingOut && (
                     <Box
