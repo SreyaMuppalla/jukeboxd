@@ -5,7 +5,7 @@
 // review/upvote/friends count
 // recent reviews
 "use client";
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { Box, Typography, Button } from "@mui/material";
 import {
     Background,
@@ -24,6 +24,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useAuth } from "../../backend/auth.js";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
+import { getUser } from '../../backend/users';
 
 const PersonalProfilePage = () => {
     const router = useRouter(); // Initialize navigation using Next.js router
@@ -45,7 +46,32 @@ const PersonalProfilePage = () => {
         }
     };
 
-    return (
+    const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Replace 'user123' with the actual user ID
+        // This could come from authentication context, URL params, etc.
+        const userId = 'user1'; // Example: Use dynamic ID in production
+        const data = await getUser(userId);
+        setUserData(data);
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (loading) return <div>Loading profile...</div>;
+  if (error) return <div>Error loading profile: {error}</div>;
+  return (
         <ProtectedRoute>
             <Background>
                 <ProfileContainer>
@@ -54,7 +80,7 @@ const PersonalProfilePage = () => {
                         {/* Profile Picture */}
                         <ProfilePicContainer>
                             <Image
-                                src={pfp}
+                                src={userData?.profilePicture || pfp}
                                 alt="Profile"
                                 style={{
                                     width: "150px",
@@ -65,6 +91,16 @@ const PersonalProfilePage = () => {
                             />
                         </ProfilePicContainer>
 
+          {/* Username and Stats */}
+          <ProfileDetailsContainer>
+            <ProfileDetails>
+              <Typography
+                variant="h4"
+                style={{ color: '#fff', marginBottom: '8px' }}
+              >
+                {userData?.username || "Username"}
+              </Typography>
+            </ProfileDetails>
                         {/* Username and Stats */}
                         <ProfileDetailsContainer>
                             <ProfileDetails>
@@ -86,7 +122,7 @@ const PersonalProfilePage = () => {
                                         variant="h5"
                                         style={{ color: "#1db954" }}
                                     >
-                                        ##
+                                      {userData?.reviews?.length || 0}
                                     </Typography>
                                     <Typography
                                         variant="subtitle2"
@@ -100,13 +136,13 @@ const PersonalProfilePage = () => {
                                         variant="h5"
                                         style={{ color: "#1db954" }}
                                     >
-                                        ##
+                                      {userData?.followers?.length || 0}
                                     </Typography>
                                     <Typography
                                         variant="subtitle2"
                                         style={{ color: "#b3b3b3" }}
                                     >
-                                        Upvotes
+                                        Followers
                                     </Typography>
                                 </StatItem>
                                 <StatItem>
@@ -114,13 +150,13 @@ const PersonalProfilePage = () => {
                                         variant="h5"
                                         style={{ color: "#1db954" }}
                                     >
-                                        ##
+                                      {userData?.following?.length || 0}
                                     </Typography>
                                     <Typography
                                         variant="subtitle2"
                                         style={{ color: "#b3b3b3" }}
                                     >
-                                        Friends
+                                        Following
                                     </Typography>
                                 </StatItem>
                             </StatsContainer>
@@ -151,10 +187,16 @@ const PersonalProfilePage = () => {
                         </Typography>
 
                         {/* Individual Reviews */}
-                        <Review />
-                        <Review />
-                        <Review />
-                    </Box>
+                        {userData?.recentReviews?.map((review, index) => (
+            <Review key={index} reviewData={review} />
+          )) || (
+            <>
+              <Review />
+                            <Review />
+                            <Review />
+                        </>
+          )}
+        </Box>
                 </ProfileContainer>
                 {/* Logout Button */}
                 {user && !isLoggingOut && (
