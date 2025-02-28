@@ -2,7 +2,7 @@ import {db} from "./firebaseConfig";
 import {doc, setDoc, getDoc, addDoc, getDocs, query, collection, where} from "firebase/firestore";
 
 
-export const getReview = async (review_id) => {
+export const getReviewById = async (review_id) => {
     try{
         if(!review_id){
             throw new Error("Missing review_id parameter");
@@ -20,17 +20,17 @@ export const getReview = async (review_id) => {
     }
 };
 
-export const createReview = async (user_id, is_song, name, rating, review_text) => {
+export const createReview = async (user_id, album_id, song_id, rating, review_text) => {
     try{
-        if(!user_id || typeof rating !== 'number' || !name){
+        if(!user_id || typeof rating !== 'number' || (!album_id && !song_id)){
             if (!user_id) {
             throw new Error("Missing user_id parameter");
             }
             if (typeof rating !== 'number') {
             throw new Error("Invalid rating parameter");
             }
-            if (!name) {
-            throw new Error("Missing name parameter");
+            if (!album_id && !song_id) {
+            throw new Error("Need to provide either album_id or song_id");
             }
         }
         const userRef = doc(db, "users", user_id);
@@ -41,8 +41,8 @@ export const createReview = async (user_id, is_song, name, rating, review_text) 
 
         const review = {
             user_id,
-            is_song,
-            name,
+            album_id,
+            song_id,
             rating,
             review_text,
             likes: 0,

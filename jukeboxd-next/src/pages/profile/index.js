@@ -22,7 +22,7 @@ import Review from '../../bigcomponents/Review';
 import pfp from '../../images/pfp.jpg'; // Add a placeholder profile pic
 import Image from 'next/image';
 import { getUser } from '../../backend/users';
-import { getReview } from '@/backend/reviews';
+import { getReviewById } from '@/backend/reviews';
 
 const PersonalProfilePage = () => {
   const [userData, setUserData] = useState(null);
@@ -38,7 +38,7 @@ const PersonalProfilePage = () => {
         const data = await getUser(userId);
         const reviews = [];
         for (const reviewId of data.reviews) {
-          const review = await getReview(reviewId);
+          const review = await getReviewById(reviewId);
           if (review) {
             reviews.push(review);
           }

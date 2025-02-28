@@ -23,7 +23,7 @@ import pfp from '../images/pfp.jpg'; // Add a placeholder profile pic
 import Link from 'next/link';
 import Image from 'next/image';
 
-const Review = ({albumCover, songName, ArtistName, userProfilePic, userName, rating, review_text}) => {
+const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rating, review_text}) => {
   console.log(userName, rating, review_text)
   return (
     <ReviewContainer>
@@ -46,7 +46,7 @@ const Review = ({albumCover, songName, ArtistName, userProfilePic, userName, rat
           variant="h6"
           style={{ color: '#fff', marginBottom: '4px', cursor: 'pointer' }} // Pointer cursor
         >
-          <Link href="/song-page">{songName || "Song Name"}</Link>
+          <Link href="/song-page">{song_id || "Song Name"}</Link>
         </Typography>
         <Typography
           variant="subtitle2"
