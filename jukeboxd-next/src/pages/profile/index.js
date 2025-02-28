@@ -27,11 +27,13 @@ import { useAuth } from "../../backend/auth.js";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../backend/firebaseConfig";
+import { getReviewById } from '@/backend/reviews';
 
 const PersonalProfilePage = () => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+  const [reviews, setReviews] = useState([]);
     const [editingBio, setEditingBio] = useState(false);
     const [bio, setBio] = useState("");
 
@@ -76,10 +78,17 @@ const PersonalProfilePage = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                // Replace 'user123' with the actual user ID
-                // This could come from authentication context, URL params, etc.
-                const userId = "user1"; // Example: Use dynamic ID in production
+                // Replace 'user1' with the actual user ID
+                        const userId = "user1";
                 const data = await getUser(userId);
+        const reviews = [];
+        for (const reviewId of data.reviews) {
+          const review = await getReviewById(reviewId);
+          if (review) {
+            reviews.push(review);
+          }
+        }
+        setReviews(reviews);
                 setUserData(data);
             } catch (err) {
                 console.error("Error fetching user data:", err);
@@ -113,7 +122,6 @@ const PersonalProfilePage = () => {
                                 }}
                             />
                         </ProfilePicContainer>
-
                         {/* Username and Stats */}
                         <ProfileDetailsContainer>
                             <ProfileDetails>
@@ -259,15 +267,20 @@ const PersonalProfilePage = () => {
                         </Typography>
 
                         {/* Individual Reviews */}
-                        {userData?.recentReviews?.map((review, index) => (
-                            <Review key={index} reviewData={review} />
-                        )) || (
-                            <>
-                                <Review />
-                                <Review />
-                                <Review />
-                            </>
-                        )}
+                                {reviews.length > 0 ? (
+                        reviews.map((review) => (
+                        <Review userName={userData.username} userProfilePic={userData.profilePicture} rating= {review.rating} review_text={review.review_text} songName={review.song_id} />
+                        ))
+                    ) : (
+                        <>
+                        <Typography 
+                            variant="body1" 
+                            style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
+                        >
+                            No reviews yet.
+                        </Typography>
+                        </>
+                    )}
                     </Box>
                 </ProfileContainer>
                 {/* Logout Button */}
@@ -292,5 +305,4 @@ const PersonalProfilePage = () => {
         </ProtectedRoute>
     );
 };
-
 export default PersonalProfilePage;

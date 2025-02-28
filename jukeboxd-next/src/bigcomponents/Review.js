@@ -23,7 +23,8 @@ import pfp from '../images/pfp.jpg'; // Add a placeholder profile pic
 import Link from 'next/link';
 import Image from 'next/image';
 
-const Review = () => {
+const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rating, review_text}) => {
+  console.log(userName, rating, review_text)
   return (
     <ReviewContainer>
       {/* Album Cover */}
@@ -32,7 +33,7 @@ const Review = () => {
       >
         <Link href="/album-page">
           <Image
-            src={albumpic}
+            src={albumCover || albumpic}
             alt="Album Cover"
             style={{ width: '100%', height: '100%', borderRadius: '8px' }}
           />
@@ -45,13 +46,13 @@ const Review = () => {
           variant="h6"
           style={{ color: '#fff', marginBottom: '4px', cursor: 'pointer' }} // Pointer cursor
         >
-          <Link href="/song-page">Song Name</Link>
+          <Link href="/song-page">{song_id || "Song Name"}</Link>
         </Typography>
         <Typography
           variant="subtitle2"
           style={{ color: '#d3d3d3', cursor: 'pointer' }} // Pointer cursor
         >
-          <Link href="artist-page">Artist Name</Link>
+          <Link href="artist-page">{ArtistName || "Artist Name"}</Link>
         </Typography>
       </SongInfo>
 
@@ -62,7 +63,7 @@ const Review = () => {
         >
           <Link href="/profile-page">
             <Image
-              src={pfp}
+              src={userProfilePic || pfp}
               alt="User Profile"
               style={{ width: '100%', height: '100%', borderRadius: '50%' }}
             />
@@ -72,17 +73,16 @@ const Review = () => {
           variant="subtitle2"
           style={{ color: '#fff', marginLeft: '8px', cursor: 'pointer' }} // Pointer cursor
         >
-          <Link href="/profile-page">Username</Link>
+          <Link href="/profile-page">{userName || "Username"}</Link>
         </Typography>
         <RatingContainer>
-          <Rating name="read-only" value={5} readOnly />
+          <Rating name="read-only" value={rating} readOnly />
         </RatingContainer>
       </UserInfo>
 
       {/* Review Text */}
       <ReviewText>
-        This is a placeholder review. The user loved this song and wrote a lot
-        of amazing things about it! 🎵
+        {review_text || "Review Text"}
       </ReviewText>
     </ReviewContainer>
   );
