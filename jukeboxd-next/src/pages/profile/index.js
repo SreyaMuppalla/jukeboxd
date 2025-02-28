@@ -5,7 +5,7 @@
 // review/upvote/friends count
 // recent reviews
 "use client";
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import {
     Background,
@@ -21,10 +21,10 @@ import {
 import Review from "../../bigcomponents/Review";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
 import Image from "next/image";
+import { getUser } from "../../backend/users";
 import { useRouter } from "next/router";
 import { useAuth } from "../../backend/auth.js";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
-import { getUser } from '../../backend/users';
 
 const PersonalProfilePage = () => {
     const router = useRouter(); // Initialize navigation using Next.js router
@@ -33,6 +33,10 @@ const PersonalProfilePage = () => {
     console.log("user", user);
 
     const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+
+    const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const handleLogout = async () => {
         setIsLoggingOut(true);
@@ -46,32 +50,28 @@ const PersonalProfilePage = () => {
         }
     };
 
-    const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                // Replace 'user123' with the actual user ID
+                // This could come from authentication context, URL params, etc.
+                const userId = "user1"; // Example: Use dynamic ID in production
+                const data = await getUser(userId);
+                setUserData(data);
+            } catch (err) {
+                console.error("Error fetching user data:", err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        // Replace 'user123' with the actual user ID
-        // This could come from authentication context, URL params, etc.
-        const userId = 'user1'; // Example: Use dynamic ID in production
-        const data = await getUser(userId);
-        setUserData(data);
-      } catch (err) {
-        console.error("Error fetching user data:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+        fetchUserData();
+    }, []);
 
-    fetchUserData();
-  }, []);
-
-  if (loading) return <div>Loading profile...</div>;
-  if (error) return <div>Error loading profile: {error}</div>;
-  return (
+    if (loading) return <div>Loading profile...</div>;
+    if (error) return <div>Error loading profile: {error}</div>;
+    return (
         <ProtectedRoute>
             <Background>
                 <ProfileContainer>
@@ -91,16 +91,6 @@ const PersonalProfilePage = () => {
                             />
                         </ProfilePicContainer>
 
-          {/* Username and Stats */}
-          <ProfileDetailsContainer>
-            <ProfileDetails>
-              <Typography
-                variant="h4"
-                style={{ color: '#fff', marginBottom: '8px' }}
-              >
-                {userData?.username || "Username"}
-              </Typography>
-            </ProfileDetails>
                         {/* Username and Stats */}
                         <ProfileDetailsContainer>
                             <ProfileDetails>
@@ -111,7 +101,7 @@ const PersonalProfilePage = () => {
                                         marginBottom: "8px",
                                     }}
                                 >
-                                    {user ? user.email : "My Username"}
+                                    {userData?.username || "Username"}
                                 </Typography>
                             </ProfileDetails>
 
@@ -122,7 +112,7 @@ const PersonalProfilePage = () => {
                                         variant="h5"
                                         style={{ color: "#1db954" }}
                                     >
-                                      {userData?.reviews?.length || 0}
+                                        {userData?.reviews?.length || 0}
                                     </Typography>
                                     <Typography
                                         variant="subtitle2"
@@ -136,7 +126,7 @@ const PersonalProfilePage = () => {
                                         variant="h5"
                                         style={{ color: "#1db954" }}
                                     >
-                                      {userData?.followers?.length || 0}
+                                        {userData?.followers?.length || 0}
                                     </Typography>
                                     <Typography
                                         variant="subtitle2"
@@ -150,7 +140,7 @@ const PersonalProfilePage = () => {
                                         variant="h5"
                                         style={{ color: "#1db954" }}
                                     >
-                                      {userData?.following?.length || 0}
+                                        {userData?.following?.length || 0}
                                     </Typography>
                                     <Typography
                                         variant="subtitle2"
@@ -188,16 +178,17 @@ const PersonalProfilePage = () => {
 
                         {/* Individual Reviews */}
                         {userData?.recentReviews?.map((review, index) => (
-            <Review key={index} reviewData={review} />
-          )) || (
-            <>
-              <Review />
-                            <Review />
-                            <Review />
-                        </>
-          )}
-        </Box>
+                            <Review key={index} reviewData={review} />
+                        )) || (
+                            <>
+                                <Review />
+                                <Review />
+                                <Review />
+                            </>
+                        )}
+                    </Box>
                 </ProfileContainer>
+
                 {/* Logout Button */}
                 {user && !isLoggingOut && (
                     <Box
@@ -212,7 +203,7 @@ const PersonalProfilePage = () => {
                             color="secondary"
                             onClick={handleLogout}
                         >
-                            Log Out
+                            Logout
                         </Button>
                     </Box>
                 )}
