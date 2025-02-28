@@ -18,7 +18,7 @@ import { currSong } from '@/states/currSong';
 const SearchBar = ({ type: searchBarType }) => {
   const [query, setQuery] = useState('');
   const [recommendations, setRecommendations] = useState([]);
-  const [queryType, setQueryType] = useState('track');
+  const [queryType, setQueryType] = useState('song');
 
   const router = useRouter();
   const [selectedSong, setSelectedSong] = useAtom(currSong);
@@ -50,8 +50,8 @@ const debouncedFetchRecommendations = useCallback(
 
       try {
         let results = [];
-        if (queryType === 'track') {
-          results = await SpotifyAPIController.searchTracks(token, inputQuery);
+        if (queryType === 'song') {
+          results = await SpotifyAPIController.searchSongs(token, inputQuery);
         } else if (queryType === 'artist') {
           results = await SpotifyAPIController.searchArtists(token, inputQuery);
         } else if (queryType === 'album') {
@@ -66,7 +66,7 @@ const debouncedFetchRecommendations = useCallback(
               t.total_tracks === item.total_tracks &&
               t.artists.map((artist) => artist.name).join(', ') === item.artists.map((artist) => artist.name).join(', ')
             );
-          } else if (queryType === 'track') {
+          } else if (queryType === 'song') {
             return index === self.findIndex((t) =>
               t.name === item.name &&
               t.album?.name === item.album?.name &&
@@ -105,7 +105,7 @@ useEffect(() => {
 
     const handleReviewSelection = () => {
       const selectedImage =
-        item.album?.images?.[0]?.url || item.images?.[0]?.url || ''; // Handle track, artist, or album image
+        item.album?.images?.[0]?.url || item.images?.[0]?.url || ''; // Handle song, artist, or album image
 
       setSelectedSong({ name: item.name, image: selectedImage });
       setQuery(''); // Clear input after selection
@@ -122,14 +122,14 @@ useEffect(() => {
           {/* Dynamic dropdown options based on searchBarType */}
           {searchBarType === 'header' && (
             <>
-              <option value="track">Track</option>
+              <option value="song">Song</option>
               <option value="artist">Artist</option>
               <option value="album">Album</option>
             </>
           )}
           {searchBarType === 'review' && (
             <>
-              <option value="track">Track</option>
+              <option value="song">Song</option>
               <option value="album">Album</option>
             </>
           )}
@@ -147,8 +147,8 @@ useEffect(() => {
         <RecommendationList>
           {recommendations.map((item) => (
             <RecommendationItem key={item.id} onClick={() => handleItemClick(item)}>
-              {/* Conditionally render images for track, artist, or album */}
-              {(queryType === 'track' && item.album?.images?.[0]?.url) ||
+              {/* Conditionally render images for song, artist, or album */}
+              {(queryType === 'song' && item.album?.images?.[0]?.url) ||
               (queryType === 'artist' && item.images?.[0]?.url) ||
               (queryType === 'album' && item.images?.[0]?.url) ? (
                 <img src={item.album?.images?.[0]?.url || item.images?.[0]?.url} alt={item.name} />
@@ -156,7 +156,7 @@ useEffect(() => {
 
               <RecommendationDetails>
               <span className="song-title">{item.name}</span>
-            {(queryType === 'track' || queryType === 'album') && (
+            {(queryType === 'song' || queryType === 'album') && (
               <>
                 {console.log('Current item:', item, 'Query Type:', queryType)}
                 <span className="artist-name">

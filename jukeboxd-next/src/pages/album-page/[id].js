@@ -20,7 +20,7 @@ const AlbumPage = () => {
   const { id: albumId } = router.query; // Correctly get the albumId from the dynamic route
   
   const [albumDetails, setAlbumDetails] = useState(null);
-  const [albumTracks, setAlbumTracks] = useState([]);
+  const [albumSongs, setAlbumSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [token, _] = useAtom(tokenAtom); // Access token state
@@ -55,11 +55,11 @@ const AlbumPage = () => {
 
           // Fetch album details and tracks
           const details = await SpotifyAPIController.getAlbumDetails(token, albumId);
-          const tracks = await SpotifyAPIController.getAlbumTracks(token, albumId);
+          const tracks = await SpotifyAPIController.getAlbumSongs(token, albumId);
 
           // Update state with the fetched data
           setAlbumDetails(details);
-          setAlbumTracks(tracks); // Track list is often nested under 'items'
+          setAlbumSongs(tracks); // Track list is often nested under 'items'
 
         } catch (error) {
           console.error('Error fetching album data:', error);
@@ -144,9 +144,9 @@ const AlbumPage = () => {
                 Songs:
               </Typography>
               <ol style={{ paddingLeft: '16px', color: '#b3b3b3' }}>
-                {albumTracks.map((track, index) => (
+                {albumSongs.map((track, index) => (
                   <li key={track.id} style={{ marginBottom: '8px' }}>
-                    <Link href = {`/track-page/${track.id}`}>
+                    <Link href = {`/song-page/${track.id}`}>
                     {track.track_number}. {track.name} ({formatDuration(track.duration_ms)})
                     </Link>
                   </li>

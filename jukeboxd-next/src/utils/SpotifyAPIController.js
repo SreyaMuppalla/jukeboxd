@@ -38,7 +38,7 @@ export const SpotifyAPIController = (function() {
             }
     }
     
-    const _searchTracks = async (token, query) => {
+    const _searchSongs = async (token, query) => {
         const result = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`, {
             method: 'GET',
             headers: { 'Authorization' : 'Bearer ' + token }
@@ -68,7 +68,7 @@ export const SpotifyAPIController = (function() {
         return data.albums.items;
     }
 
-    const _getAlbumTracks = async (token, id) => {
+    const _getAlbumSongs = async (token, id) => {
         const apiUrl = `https://api.spotify.com/v1/albums/${id}/tracks`;
         
         try {
@@ -203,8 +203,8 @@ export const SpotifyAPIController = (function() {
         getToken() {
             return _getToken();
         },
-        searchTracks(token, query) {
-            return _searchTracks(token, query);
+        searchSongs(token, query) {
+            return _searchSongs(token, query);
         },
         searchArtists(token, query) {
             return _searchArtists(token, query);
@@ -212,9 +212,9 @@ export const SpotifyAPIController = (function() {
         searchAlbums(token, query) {
             return _searchAlbums(token, query);
         },
-        getAlbumTracks(token, id)
+        getAlbumSongs(token, id)
         {
-            return _getAlbumTracks(token, id);
+            return _getAlbumSongs(token, id);
         },
         getAlbumDetails(token, id)
         {
