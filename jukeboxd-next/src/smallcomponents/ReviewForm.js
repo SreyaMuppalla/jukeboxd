@@ -97,10 +97,10 @@ export default function ReviewForm() {
           flexShrink: 0,
           '& .MuiDrawer-paper': {
             width: '500px',
-            padding: '20px',
+            padding: '0 20px 20px',
             boxSizing: 'border-box',
-            height: '650px',
-            bottom: '10vh',
+            height: '50vh',
+            bottom: '100px',
             right: '20px',
             top: 'unset',
             borderRadius: '20px',
@@ -113,17 +113,23 @@ export default function ReviewForm() {
           },
         }}
       >
-        <Box display="flex" justifyContent="center">
-          <Typography
-            variant="h3"
-            gutterBottom
-            sx={{ color: 'white', position: 'sticky' }}
-          >
+        <Box
+          display="flex"
+          justifyContent="center"
+          sx={{
+            position: 'sticky',
+            top: 0,
+            backgroundColor: '#535353',
+            zIndex: 10,
+            paddingTop: '20px',
+          }}
+        >
+          <Typography variant="h3" gutterBottom sx={{ color: 'white' }}>
             Write a Review
           </Typography>
         </Box>
 
-        <SearchBar type = "review" />
+        <SearchBar type="review" />
 
         <Box
           display="flex"
