@@ -1,11 +1,4 @@
-// header
-// artist pic
-// artist name
-// stars
-// top rate songs
-// write a review
-
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Rating } from "@mui/material";
 import {
     Background,
@@ -20,6 +13,11 @@ import {
 } from "../../styles/StyledComponents";
 import albumpic from "../../images/albumpic.jpg"; // Import album image
 import Image from "next/image";
+import { SpotifyAPIController } from '../../utils/SpotifyAPIController'; // Import your API controller
+import { useRouter } from 'next/router';
+import { useAtom } from 'jotai';
+import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spotifyTokenManager'; // Updated import
+
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 
 const ArtistPage = () => {
@@ -61,39 +59,89 @@ const ArtistPage = () => {
         },
     ];
 
-    return (
-        <ProtectedRoute>
-            <Background>
-                <ProfileContainer>
-                    {/* Profile Info Section */}
-                    <ProfileInfo>
-                        <ProfilePicContainer>
-                            <Image
-                                src={albumpic}
-                                alt="Artist"
-                                style={{
-                                    width: "150px",
-                                    height: "150px",
-                                    borderRadius: "50%",
-                                    marginRight: "16px",
-                                }}
-                            />
-                        </ProfilePicContainer>
-                        <ProfileDetailsContainer>
-                            <ProfileDetails>
-                                <Typography
-                                    variant="h4"
-                                    style={{
-                                        color: "#fff",
-                                        marginBottom: "8px",
-                                    }}
-                                >
-                                    Artist Name
-                                </Typography>
-                                <Rating name="read-only" value={5} readOnly />
-                            </ProfileDetails>
-                        </ProfileDetailsContainer>
-                    </ProfileInfo>
+  const router = useRouter();
+  const { id: artistId } = router.query; // Get artistId from the dynamic route
+  const [loading, setLoading] = useState(true);
+  const [artistDetails, setArtistDetails] = useState(null);
+  const [error, setError] = useState(null);
+  const [token, _] = useAtom(tokenAtom); // Access token state
+  const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
+  const [, fetchToken] = useAtom(fetchTokenAtom); // Trigger token fetch
+
+  // Fetch token on component mount
+  useEffect(() => {
+    const fetchTokenOnMount = async () => {
+      try {
+        await fetchToken(); // Ensure token is fetched on load
+      } catch (error) {
+        console.error('Error fetching token:', error);
+      }
+    };
+
+    fetchTokenOnMount(); // Call the function
+  }, [fetchToken]); // fetchToken as dependency
+
+  useEffect(() => {
+    if (artistId && token) {
+      const fetchArtistData = async () => {
+        if (!token || Date.now() >= tokenExpiration) {
+          console.log('Token expired, fetching a new one...');
+          await fetchToken(); // Refresh the token if expired
+        }
+        console.log(token)
+        try {
+          setLoading(true); // Start loading
+          setError(null); // Reset any previous errors
+
+          // Fetch artist details
+          const details = await SpotifyAPIController.getArtistsDetails(token, artistId);
+          setArtistDetails(details);
+        } catch (error) {
+          console.error('Error fetching artist data:', error);
+          setError('Failed to fetch artist details.');
+        } finally {
+          setLoading(false); // Stop loading
+        }
+      };
+
+      fetchArtistData();
+    }
+  }, [artistId, token]);
+
+  if (loading) {
+    return <Typography variant="h5" style={{ color: '#fff' }}>Loading...</Typography>;
+  }
+
+  if (error) {
+    return <Typography variant="h5" style={{ color: '#ff4d4d' }}>{error}</Typography>; // Display any error
+  }
+
+  if (!artistDetails) {
+    return <Typography variant="h5" style={{ color: '#fff' }}>No artist details available.</Typography>; // Fallback if no artist data is found
+  }
+
+  return (
+    <ProtectedRoute>
+    <Background>
+      <ProfileContainer>
+        {/* Profile Info Section */}
+        <ProfileInfo>
+          <ProfilePicContainer>
+            <img
+              src={artistDetails.images?.[0] ? artistDetails.images[0].url : '../../images/default-image.jpg'}
+              alt="Artist"
+              style={{ width: "150px", height: "150px", borderRadius: "50%", marginRight: "16px" }}
+            />
+          </ProfilePicContainer>
+          <ProfileDetailsContainer>
+            <ProfileDetails>
+              <Typography variant="h4" style={{ color: "#fff", marginBottom: "8px" }}>
+                {artistDetails.name}
+              </Typography>
+              <Rating name="read-only" value={5} readOnly />
+            </ProfileDetails>
+          </ProfileDetailsContainer>
+        </ProfileInfo>
 
                     {/* Top Rated Songs Section */}
                     <Box

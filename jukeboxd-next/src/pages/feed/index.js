@@ -5,6 +5,7 @@ import SongsCarousel from "../../bigcomponents/SongsCarousal";
 import Review from "../../bigcomponents/Review";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 import { getFriendReviews } from '@/backend/reviews';
+import ReviewForm from '@/smallcomponents/ReviewForm'
 
 const FeedPage = () => {
   const [loading, setLoading] = useState(true);
@@ -79,6 +80,7 @@ const FeedPage = () => {
             </Typography>
           )}
         </Box>
+        <ReviewForm></ReviewForm>
       </Background>
     </ProtectedRoute>
   );
