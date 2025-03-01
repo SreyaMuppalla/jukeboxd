@@ -14,6 +14,9 @@ import { SpotifyAPIController } from '../../utils/SpotifyAPIController'; // Impo
 import { useRouter } from 'next/router'; // Import Next.js useRouter
 import { useAtom } from 'jotai';
 import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spotifyTokenManager'; // Updated import
+import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
+import {getSongReviews} from '@/backend/reviews';
+
 const SongPage = () => {
   const router = useRouter();
   const { id: songId } = router.query; // Correctly get the albumId from the dynamic route
@@ -24,6 +27,30 @@ const SongPage = () => {
   const [token, _] = useAtom(tokenAtom); // Access token state
   const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
   const [, fetchToken] = useAtom(fetchTokenAtom); // Trigger token fetch
+  const [song_reviews, setReviews] = useState([]);
+
+
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        // Replace 'user1' with the actual user ID
+        const songId = 'song1';
+        const reviews_data = await getSongReviews(songId);
+        console.log(reviews_data)
+        setReviews(reviews_data);
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+
 
   useEffect(() => {
     const fetchTokenOnMount = async () => {
@@ -79,6 +106,7 @@ const SongPage = () => {
   }
 
   return (
+    <ProtectedRoute>
     <Background>
       <AlbumContainer>
         {/* Song Info Section */}
@@ -160,6 +188,7 @@ const SongPage = () => {
         </Box>
       </AlbumContainer>
     </Background>
+    </ProtectedRoute>
   );
 };
 

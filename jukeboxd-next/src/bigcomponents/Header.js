@@ -5,40 +5,38 @@ import SearchBar from "../smallcomponents/SearchBar";
 import jkbxlogo from "../images/jkbxlogo.png"; // Add a placeholder profile pic
 import Link from "next/link";
 import Image from "next/image";
-
+import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 
 const Header = () => {
+    return (
+        <ProtectedRoute>
+            <HeaderBackground>
+                {/* Logo */}
+                <Image
+                    src={jkbxlogo}
+                    alt="LOGO"
+                    style={{ width: "5%", height: "30%", borderRadius: "8px" }}
+                />
+                <Typography style={{ color: "#FFFFFF" }}>jukeboxd</Typography>
+                {/* Search Bar */}
+                <SearchBar type = "header"/>
 
-  return (
-    <HeaderBackground>
-      {/* Logo */}
-      <Image
-        src={jkbxlogo}
-        alt="LOGO"
-        style={{ width: '5%', height: '30%', borderRadius: '8px' }}
-      />
-      <Typography style={{ color: '#FFFFFF' }}>jukeboxd</Typography>
-      {/* Search Bar */}
-      <SearchBar type = "header"/>
-
-      {/* Navigation Buttons */}
-      <ButtonContainer>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ marginRight: 2 }} // Spacing between buttons
-        >
-          <Link href="/feed">Feed</Link>
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-        >
-          <Link href='/profile'>My Profile</Link>
-        </Button>
-      </ButtonContainer>
-    </HeaderBackground>
-  );
+                {/* Navigation Buttons */}
+                <ButtonContainer>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{ marginRight: 2 }} // Spacing between buttons
+                    >
+                        <Link href="/feed">Feed</Link>
+                    </Button>
+                    <Button variant="contained" color="primary">
+                        <Link href="/profile">My Profile</Link>
+                    </Button>
+                </ButtonContainer>
+            </HeaderBackground>
+        </ProtectedRoute>
+    );
 };
 
 export default Header;

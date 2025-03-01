@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router'; // Import Next.js useRouter
 import { useAtom } from 'jotai';
 import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spotifyTokenManager'; // Updated import
+import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 
 const AlbumPage = () => {
   const router = useRouter();
@@ -26,6 +27,7 @@ const AlbumPage = () => {
   const [token, _] = useAtom(tokenAtom); // Access token state
   const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
   const [, fetchToken] = useAtom(fetchTokenAtom); // Trigger token fetch
+
 
  // Fetch token on component mount
  useEffect(() => {
@@ -92,6 +94,7 @@ const AlbumPage = () => {
   };
 
     return (
+      <ProtectedRoute>
       <Background>
         <AlbumContainer>
           {/* Album Info Section */}
@@ -169,6 +172,7 @@ const AlbumPage = () => {
           </Box>
         </AlbumContainer>
       </Background>
+      </ProtectedRoute>
     );
 };
 
