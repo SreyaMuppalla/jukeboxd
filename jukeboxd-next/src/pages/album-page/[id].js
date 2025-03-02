@@ -14,15 +14,19 @@ import Link from 'next/link';
 import { useRouter } from 'next/router'; // Import Next.js useRouter
 import { useAtom } from 'jotai';
 import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spotifyTokenManager'; // Updated import
+import unknownArtwork from '@/images/unknown_artwork.jpg'
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 
 const AlbumPage = () => {
   const router = useRouter();
   const { id: albumId } = router.query; // Correctly get the albumId from the dynamic route
   
-  const [albumDetails, setAlbumDetails] = useState(null);
+  const [albumDetails, setAlbumDetails] = useState({
+    name: "",
+    artists: [{id: "", name: ""}],
+    images: [{},{url: unknownArtwork}],
+  });
   const [albumSongs, setAlbumSongs] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [token, _] = useAtom(tokenAtom); // Access token state
   const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
@@ -52,7 +56,6 @@ const AlbumPage = () => {
         }
         console.log(token)
         try {
-          setLoading(true); // Start loading
           setError(null); // Reset any previous errors
 
           // Fetch album details and tracks
@@ -66,8 +69,6 @@ const AlbumPage = () => {
         } catch (error) {
           console.error('Error fetching album data:', error);
           setError('Failed to fetch album details.');
-        } finally {
-          setLoading(false); // Stop loading
         }
       };
 
@@ -75,17 +76,10 @@ const AlbumPage = () => {
     }
   }, [albumId, token]); // Trigger useEffect whenever albumId or token changes
 
-  if (loading) {
-    return <Typography variant="h5" style={{ color: '#fff' }}>Loading...</Typography>;
-  }
-
   if (error) {
     return <Typography variant="h5" style={{ color: '#ff4d4d' }}>{tokenError || error}</Typography>; // Display any error
   }
 
-  if (!albumDetails) {
-    return <Typography variant="h5" style={{ color: '#fff' }}>No album details available.</Typography>; // Fallback if no album data is found
-  }
 
   const formatDuration = (ms) => {
     const minutes = Math.floor(ms / 60000);
@@ -120,11 +114,19 @@ const AlbumPage = () => {
               </Typography>
               {/* Artist Name */}
               <Typography
-                variant="subtitle2"
+                variant="h6"
                 style={{ color: '#d3d3d3', cursor: 'pointer' }}
               >
                 {albumDetails.artists.map((artist) => (
-                  <Link key={artist.id} href={`/artist-page/${artist.id}`}>
+                  <Link key={artist.id} href={`/artist-page/${artist.id}`}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = '#fff';
+                          e.currentTarget.style.textDecoration = 'underline';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = '#b3b3b3';
+                          e.currentTarget.style.textDecoration = 'none';
+                        }}>
                     {artist.name}
                   </Link>
                 ))}

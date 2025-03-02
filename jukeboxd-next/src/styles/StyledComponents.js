@@ -51,6 +51,17 @@ export const AlbumCover = styled.div`
     overflow: hidden;
 `;
 
+// Placeholder for the album cover
+export const LargeAlbumCover = styled.div`
+    width: 320px;
+    height: 320px;
+    margin-bottom: 10px;
+    background-color: #212121;
+    border-radius: 8px; // Optional: rounded corners
+    overflow: hidden;
+`;
+
+
 // Song name styling
 export const SongName = styled(Typography)`
     font-size: 14px;
