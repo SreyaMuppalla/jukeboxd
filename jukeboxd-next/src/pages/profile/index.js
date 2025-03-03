@@ -21,19 +21,17 @@ import {
 import Review from "../../bigcomponents/Review";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
 import Image from "next/image";
-import { getUser } from "../../backend/users";
+import { getUser, updateUserBio} from "../../backend/users";
 import { useRouter } from "next/router";
 import { useAuth } from "../../backend/auth.js";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../backend/firebaseConfig";
 import { getReviewById } from '@/backend/reviews';
 
 const PersonalProfilePage = () => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-  const [reviews, setReviews] = useState([]);
+    const [reviews, setReviews] = useState([]);
     const [editingBio, setEditingBio] = useState(false);
     const [bio, setBio] = useState("");
 
@@ -57,22 +55,16 @@ const PersonalProfilePage = () => {
     };
 
     const handleEditBio = async () => {
-        if (!userData) return;
-
-        if (editingBio) {
-            // Save the updated bio to Firebase
-            try {
-                const userRef = doc(db, "users", "user1"); // Replace with dynamic user ID
-                await updateDoc(userRef, { bio: bio });
-
-                // Update local state
-                setUserData((prevData) => ({ ...prevData, bio: bio }));
-            } catch (err) {
-                console.error("Error updating bio:", err);
-            }
-        }
-
-        setEditingBio(!editingBio);
+      if (editingBio) {
+          try {
+            // Replace 'user1' with the actual user ID
+            const user_id = "user1";
+            await updateUserBio(user_id, bio);
+          } catch (error) {
+              console.error("Error updating bio:", error);
+          }
+      }
+      setEditingBio(!editingBio);
     };
 
     useEffect(() => {
@@ -81,15 +73,17 @@ const PersonalProfilePage = () => {
                 // Replace 'user1' with the actual user ID
                         const userId = "user1";
                 const data = await getUser(userId);
-        const reviews = [];
-        for (const reviewId of data.reviews) {
-          const review = await getReviewById(reviewId);
-          if (review) {
-            reviews.push(review);
-          }
-        }
-        setReviews(reviews);
+          
+                const reviews = [];
+                for (const reviewId of data.reviews) {
+                  const review = await getReviewById(reviewId);
+                  if (review) {
+                    reviews.push(review);
+                  }
+                }
+                setReviews(reviews);
                 setUserData(data);
+                setBio(data.user_bio)
             } catch (err) {
                 console.error("Error fetching user data:", err);
                 setError(err.message);

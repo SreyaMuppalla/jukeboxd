@@ -69,7 +69,7 @@ export const updateUserBio = async (user_id, new_bio) => {
         }
 
         await updateDoc(userRef, {
-            bio: new_bio
+            user_bio: new_bio
         });
 
         return { message: "User bio updated successfully" };
