@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Rating, Typography } from '@mui/material';
 import {
   Background,
   AlbumContainer,
@@ -17,6 +17,7 @@ import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spo
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 import {getSongReviews} from '@/backend/reviews';
 import unknownArtwork from '@/images/unknown_artwork.jpg'
+import Image from 'next/image';
 
 const SongPage = () => {
   const router = useRouter();
@@ -103,20 +104,12 @@ const SongPage = () => {
           {/* Song Info Section */}
           <AlbumInfoContainer>
             {/* Album Cover */}
-            <LargeAlbumCover
-              style={{ cursor: 'pointer' }} // Pointer cursor for clickable elements
-            >
-              <img
+              <Image
                 src={songDetails.images[1]?.url} // First image from the images array
                 alt={songDetails.name + ' Album Cover'}
-                style={{
-                  width: '200px',
-                  height: '200px',
-                  borderRadius: '16px',
-                  marginRight: '16px',
-                }}
+                width={250}
+                height={250}
               />
-            </LargeAlbumCover>
             <AlbumDetails>
               {/* Song Title */}
               <Typography
@@ -137,10 +130,10 @@ const SongPage = () => {
                 <Link
                   href={`/album-page/${songDetails.album.id}`}
                   passHref
-                  style={{ 
+                  style={{
                     color: '#b3b3b3',
-                    textDecoration: 'none', 
-                    transition: 'color 0.3s' 
+                    textDecoration: 'none',
+                    transition: 'color 0.3s',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = '#fff';
@@ -151,7 +144,8 @@ const SongPage = () => {
                     e.currentTarget.style.textDecoration = 'none';
                   }}
                 >
-                  {songDetails.album.name} {/* Display the song or album name */}
+                  {songDetails.album.name}{' '}
+                  {/* Display the song or album name */}
                 </Link>
               </Typography>
               {/* Artist Names */}
@@ -167,10 +161,10 @@ const SongPage = () => {
                     <Link
                       href={`/artist-page/${artist.id}`}
                       passHref
-                      style={{ 
-                        color: '#b3b3b3', 
-                        textDecoration: 'none', 
-                        transition: 'color 0.3s' 
+                      style={{
+                        color: '#b3b3b3',
+                        textDecoration: 'none',
+                        transition: 'color 0.3s',
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.color = '#fff';
@@ -189,12 +183,24 @@ const SongPage = () => {
                 ))}
               </Typography>
               {/* Rating (Stars Placeholder) */}
-              <Typography variant="h6" style={{ color: '#1db954' }}>
-                ★★★★★
-              </Typography>
+              <Rating
+                size="medium"
+                value={5}
+                readOnly
+                sx={{
+                  alignSelf: 'flex-start',
+                  fontSize: '3rem',
+                  '& .MuiRating-iconEmpty': {
+                    color: 'white',
+                  },
+                  '& .MuiRating-iconFilled': {
+                    fontSize: 'inherit',
+                  },
+                }}
+              />
             </AlbumDetails>
           </AlbumInfoContainer>
-  
+
           {/* Reviews Section */}
           <Box marginTop="32px" width="100%">
             <ReviewsSection>

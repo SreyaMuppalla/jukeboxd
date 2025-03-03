@@ -191,9 +191,9 @@ export const AlbumContainer = styled.div`
 // Container for album info (cover + details)
 export const AlbumInfoContainer = styled.div`
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     width: 100%;
-    padding: 16px 32px;
+    padding: 16px 42px;
 `;
 
 // Container for album details (name, artist, stars)
@@ -201,6 +201,8 @@ export const AlbumDetails = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
+    margin-left: 32px;
 `;
 
 // Container for the list of songs
