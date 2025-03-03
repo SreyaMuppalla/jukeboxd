@@ -117,18 +117,30 @@ const AlbumPage = () => {
                 variant="h6"
                 style={{ color: '#d3d3d3', cursor: 'pointer' }}
               >
-                {albumDetails.artists.map((artist) => (
-                  <Link key={artist.id} href={`/artist-page/${artist.id}`}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.color = '#fff';
-                          e.currentTarget.style.textDecoration = 'underline';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.color = '#b3b3b3';
-                          e.currentTarget.style.textDecoration = 'none';
-                        }}>
-                    {artist.name}
-                  </Link>
+                {albumDetails.artists.map((artist, index) => (
+                  <span key={artist.id}>
+                    <Link
+                      href={`/artist-page/${artist.id}`}
+                      passHref
+                      style={{ 
+                        color: '#b3b3b3', 
+                        textDecoration: 'none', 
+                        transition: 'color 0.3s' 
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = '#fff';
+                        e.currentTarget.style.textDecoration = 'underline';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = '#b3b3b3';
+                        e.currentTarget.style.textDecoration = 'none';
+                      }}
+                    >
+                      {artist.name}
+                    </Link>
+                    {/* Add a comma between artist names, but not after the last one */}
+                    {index < albumDetails.artists.length - 1 && ', '}
+                  </span>
                 ))}
               </Typography>
               {/* Rating (Stars Placeholder) */}
@@ -139,7 +151,7 @@ const AlbumPage = () => {
           </AlbumInfoContainer>
     
           {/* Content Section (Songs and Reviews) */}
-          <Box display="flex" width="100%" marginTop="32px">
+          <Box display="flex" width="95%" marginTop="32px">
             {/* Songs List */}
             <SongsListContainer>
               <Typography
@@ -151,8 +163,16 @@ const AlbumPage = () => {
               <ol style={{ paddingLeft: '16px', color: '#b3b3b3' }}>
                 {albumSongs.map((track, index) => (
                   <li key={track.id} style={{ marginBottom: '8px' }}>
-                    <Link href = {`/song-page/${track.id}`}>
-                    {track.track_number}. {track.name} ({formatDuration(track.duration_ms)})
+                    <Link href = {`/song-page/${track.id}`}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#fff';
+                      e.currentTarget.style.textDecoration = 'underline';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = '#b3b3b3';
+                      e.currentTarget.style.textDecoration = 'none';
+                    }}>
+                    {track.track_number}. {track.name}
                     </Link>
                   </li>
                 ))}

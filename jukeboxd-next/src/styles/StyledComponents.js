@@ -205,7 +205,7 @@ export const AlbumDetails = styled.div`
 
 // Container for the list of songs
 export const SongsListContainer = styled.div`
-    flex: 1;
+    flex: 0 0 50%;  /* Take up 50% of the parent container */
     padding: 16px;
     background-color: #333;
     border-radius: 16px;
@@ -305,7 +305,7 @@ export const DropdownContainer = styled.div`
 export const SearchInput = styled.input`
     padding: 10px;
     font-size: 16px;
-    width: 60%;
+    width: 100%;
     border-radius: 20px;
     border: none;
     outline: none;
@@ -335,6 +335,14 @@ export const SearchDropdown = styled.select`
     }
 `;
 
+export const SearchInputContainer = styled.div`
+    display: flex;
+    align-items: center;
+    width: 60%;
+    justify-content: center;
+    position: relative;
+`;
+
 // Recommendation list container
 export const RecommendationList = styled.div`
     position: absolute;
@@ -343,7 +351,7 @@ export const RecommendationList = styled.div`
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
-    width: 60%;
+    width: 100%;
     background-color: #121212;
     border-radius: 16px;
     padding: 16px;
