@@ -42,7 +42,6 @@ const SongPage = () => {
         // Replace 'user1' with the actual user ID
         const songId = 'song1';
         const reviews_data = await getSongReviews(songId);
-        console.log(reviews_data)
         setReviews(reviews_data);
       } catch (err) {
         console.error("Error fetching reviews:", err);

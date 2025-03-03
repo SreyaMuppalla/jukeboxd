@@ -93,7 +93,6 @@ const ArtistPage = () => {
           console.log('Token expired, fetching a new one...');
           await fetchToken(); // Refresh the token if expired
         }
-        console.log(token)
         try {
           setError(null); // Reset any previous errors
 

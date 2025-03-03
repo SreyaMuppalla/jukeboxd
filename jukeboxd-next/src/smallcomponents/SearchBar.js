@@ -160,7 +160,6 @@ useEffect(() => {
               <span className="song-title">{item.name}</span>
             {(queryType === 'song' || queryType === 'album') && (
               <>
-                {console.log('Current item:', item, 'Query Type:', queryType)}
                 <span className="artist-name">
                   {item.artists && item.artists.length > 0 ? item.artists.map((artist) => artist.name).join(', ') : 'Unknown Artist'}
                 </span>
