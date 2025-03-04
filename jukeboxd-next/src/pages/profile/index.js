@@ -55,6 +55,7 @@ const PersonalProfilePage = () => {
     };
 
     const handleEditBio = async () => {
+      if (!userData) return;
       if (editingBio) {
           try {
             // Replace 'user1' with the actual user ID
