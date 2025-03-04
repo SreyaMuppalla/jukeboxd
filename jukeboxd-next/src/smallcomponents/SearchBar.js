@@ -14,6 +14,7 @@ import { SpotifyAPIController } from '@/utils/SpotifyAPIController';
 import { useAtom } from 'jotai';
 import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '@/states/spotifyTokenManager';
 import { currSong } from '@/states/currSong';
+import { getUser } from '@/backend/firebase_api';
 
 const SearchBar = ({ type: searchBarType }) => {
   const [query, setQuery] = useState('');
@@ -56,6 +57,24 @@ const debouncedFetchRecommendations = useCallback(
           results = await SpotifyAPIController.searchArtists(token, inputQuery);
         } else if (queryType === 'album') {
           results = await SpotifyAPIController.searchAlbums(token, inputQuery);
+        } else if (queryType === 'user') {
+          results = await getUser(inputQuery);
+        }
+
+        if (queryType === 'user') {
+          if (results) {
+            if (Array.isArray(results)) {
+              setRecommendations(results);
+            } 
+            else if (results.user_id) {
+              setRecommendations([results]);
+            } 
+            // If no results
+            else {
+              setRecommendations([]);
+            }
+          }        
+          return;
         }
 
         const uniqueResults = results.filter((item, index, self) => {
@@ -73,7 +92,8 @@ const debouncedFetchRecommendations = useCallback(
               t.album?.release_date === item.album?.release_date &&
               t.artists.map((artist) => artist.name).join(', ') === item.artists.map((artist) => artist.name).join(', ')
             );
-          } else {
+          }
+          else {
             return index === self.findIndex((t) => t.id === item.id);
           }
         });
@@ -102,7 +122,11 @@ useEffect(() => {
       setQuery(''); // Clear input after navigation
       setRecommendations([]);
     };
-
+    
+    if (item.user_id){
+      navigateToPage('profile', item.user_id);
+      return;
+    }
     const handleReviewSelection = () => {
       const selectedImage =
         item.album?.images?.[0]?.url || item.images?.[0]?.url || ''; // Handle song, artist, or album image
@@ -122,6 +146,7 @@ useEffect(() => {
           {/* Dynamic dropdown options based on searchBarType */}
           {searchBarType === 'header' && (
             <>
+              <option value="user">User</option>
               <option value="song">Song</option>
               <option value="artist">Artist</option>
               <option value="album">Album</option>
@@ -148,22 +173,31 @@ useEffect(() => {
           {recommendations.map((item) => (
             <RecommendationItem key={item.id} onClick={() => handleItemClick(item)}>
               {/* Conditionally render images for song, artist, or album */}
-              {(queryType === 'song' && item.album?.images?.[0]?.url) ||
+              {
+              (queryType === 'user' && item.profilePicture) ||
+              (queryType === 'song' && item.album?.images?.[0]?.url) ||
               (queryType === 'artist' && item.images?.[0]?.url) ||
               (queryType === 'album' && item.images?.[0]?.url) ? (
                 <img src={item.album?.images?.[0]?.url || item.images?.[0]?.url} alt={item.name} />
               ) : null}
 
               <RecommendationDetails>
-              <span className="song-title">{item.name}</span>
-            {(queryType === 'song' || queryType === 'album') && (
-              <>
-                {console.log('Current item:', item, 'Query Type:', queryType)}
-                <span className="artist-name">
-                  {item.artists && item.artists.length > 0 ? item.artists.map((artist) => artist.name).join(', ') : 'Unknown Artist'}
-                </span>
-              </>
-          )}
+              {queryType === 'user' ? (
+                <>
+                  <span className="user-name">{item.user_id || 'Unknown User'}</span>
+                </>
+              ) : (
+                <>
+                  <span className="song-title">{item.name}</span>
+                  {(queryType === 'song' || queryType === 'album') && (
+                    <span className="artist-name">
+                      {item.artists && item.artists.length > 0 
+                        ? item.artists.map((artist) => artist.name).join(', ') 
+                        : 'Unknown Artist'}
+                    </span>
+                  )}
+                </>
+              )}
               </RecommendationDetails>
             </RecommendationItem>
           ))}
