@@ -9,10 +9,8 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
 } from "firebase/auth";
-import { auth, db } from "./firebaseConfig";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { auth } from "./firebaseConfig";
 import { createUser } from "./users";
-import { create } from "lodash";
 
 const AuthContext = createContext();
 
