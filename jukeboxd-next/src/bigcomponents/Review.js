@@ -65,7 +65,9 @@ const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rati
             <Image
               src={userProfilePic || pfp}
               alt="User Profile"
-              style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+              width={150}
+              height={150}
+              style={{ borderRadius: '50%' }}
             />
           </Link>
         </ProfilePic>

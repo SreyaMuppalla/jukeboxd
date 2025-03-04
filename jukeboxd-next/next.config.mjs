@@ -5,8 +5,8 @@ const nextConfig = {
     styledComponents: true,
   },
   images: {
-    domains: ['i.scdn.co'], // Add 'i.scdn.co' here to allow loading images from spotify
-  }
+    domains: ['i.scdn.co', 'profile-pictures-jukeboxd.s3.us-east-1.amazonaws.com', 'profile-pictures-jukeboxd.s3.amazonaws.com'], // Add your S3 domain here
+  },
 };
 
 export default nextConfig;

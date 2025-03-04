@@ -5,7 +5,7 @@
 // review/upvote/friends count
 // recent reviews
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef} from "react";
 import { Box, Typography, Button, TextField } from "@mui/material";
 import {
     Background,
@@ -21,7 +21,7 @@ import {
 import Review from "../../bigcomponents/Review";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
 import Image from "next/image";
-import { getUser, updateUserBio} from "../../backend/users";
+import { getUser, updateUserBio, updateUserProfilePicture} from "../../backend/users";
 import { useRouter } from "next/router";
 import { useAuth } from "../../backend/auth.js";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
@@ -34,7 +34,9 @@ const PersonalProfilePage = () => {
     const [reviews, setReviews] = useState([]);
     const [editingBio, setEditingBio] = useState(false);
     const [bio, setBio] = useState("");
-
+    const fileInputRef = useRef(null);
+    const [imageUrl, setImageUrl] = useState(null);
+    
     const router = useRouter(); // Initialize navigation using Next.js router
     const { user, logOut } = useAuth();
 
@@ -68,6 +70,27 @@ const PersonalProfilePage = () => {
       setEditingBio(!editingBio);
     };
 
+    const handleImageUpload = async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      try {
+          const response = await fetch("http://localhost:5000/s3Url");
+          const { url } = await response.json();
+          await fetch(url, { method: "PUT", body: file });
+
+          const uploadedImageUrl = url.split("?")[0];
+          await updateUserProfilePicture("user1", uploadedImageUrl);
+          setImageUrl(uploadedImageUrl);
+      } catch (error) {
+          console.error("Upload failed:", error);
+      }
+    };
+
+    const handleButtonClick = () => {
+        fileInputRef.current.click();
+    };
+
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -85,6 +108,7 @@ const PersonalProfilePage = () => {
                 setReviews(reviews);
                 setUserData(data);
                 setBio(data.user_bio)
+                setImageUrl(data.profile_picture);
             } catch (err) {
                 console.error("Error fetching user data:", err);
                 setError(err.message);
@@ -106,17 +130,26 @@ const PersonalProfilePage = () => {
                     <ProfileInfo>
                         {/* Profile Picture */}
                         <ProfilePicContainer>
-                            <Image
-                                src={userData?.profilePicture || pfp}
-                                alt="Profile"
-                                style={{
-                                    width: "150px",
-                                    height: "150px",
-                                    borderRadius: "50%",
-                                    marginRight: "16px",
-                                }}
-                            />
-                        </ProfilePicContainer>
+                              <Image
+                                  src={imageUrl || pfp}
+                                  alt="Profile"
+                                  width={150}
+                                  height={150}
+                                  style={{ borderRadius: "50%", marginRight: "16px" }}
+                              />
+                              <input 
+                                  type="file" 
+                                  ref={fileInputRef} 
+                                  style={{ display: "none" }} 
+                                  onChange={handleImageUpload} 
+                              />
+                              <button 
+                                  onClick={handleButtonClick} 
+                                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                              >
+                                  Upload Image
+                              </button>
+                          </ProfilePicContainer>
                         {/* Username and Stats */}
                         <ProfileDetailsContainer>
                             <ProfileDetails>
@@ -264,7 +297,7 @@ const PersonalProfilePage = () => {
                         {/* Individual Reviews */}
                                 {reviews.length > 0 ? (
                         reviews.map((review) => (
-                        <Review userName={userData.username} userProfilePic={userData.profilePicture} rating= {review.rating} review_text={review.review_text} songName={review.song_id} />
+                        <Review userName={userData.username} userProfilePic={userData.profile_picture} rating= {review.rating} review_text={review.review_text} songName={review.song_id} />
                         ))
                     ) : (
                         <>
