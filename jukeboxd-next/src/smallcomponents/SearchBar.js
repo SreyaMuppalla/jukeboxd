@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { debounce } from 'lodash'; // Import debounce from lodash
 import {
   SearchBarContainer,
+  SearchInputContainer,
   SearchInput,
   RecommendationList,
   RecommendationItem,
@@ -161,6 +162,7 @@ useEffect(() => {
         </SearchDropdown>
       </DropdownContainer>
 
+      <SearchInputContainer>
       <SearchInput
         type="text"
         placeholder={`Search for ${queryType}s...`}
@@ -203,6 +205,7 @@ useEffect(() => {
           ))}
         </RecommendationList>
       )}
+    </SearchInputContainer>
     </SearchBarContainer>
   );
 };
