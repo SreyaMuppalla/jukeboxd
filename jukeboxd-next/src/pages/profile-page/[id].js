@@ -22,6 +22,7 @@ import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 import { getReviewById } from '@/backend/reviews';
 
 const ProfilePage = () => {
+    const { user } = useAuth();
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
