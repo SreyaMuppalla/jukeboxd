@@ -103,23 +103,23 @@ export const SpotifyAPIController = (function() {
         
             const tracksData = await tracksResponse.json();
         
-            // Step 3: Combine the album details with its tracks
-            const albumWithTracks = {
-              id: albumData.id,
-              name: albumData.name,
-              artists: albumData.artists.map(artist => ({
-                id: artist.id,
-                name: artist.name,
-              })),
-              images: albumData.images, // Album art
-              songs: tracksData.items.map(track => ({
-                id: track.id,
-                name: track.name,
-              })), // List of track IDs and names
-            };
         
             // Step 4: Return the combined album and tracks data
-            return albumWithTracks;
+            return {
+                id: albumData.id,
+                name: albumData.name,
+                artists: albumData.artists.map(artist => ({
+                  id: artist.id,
+                  name: artist.name,
+                })),
+                images: albumData.images, // Album art
+                songs: tracksData.items.map(track => ({
+                  id: track.id,
+                  name: track.name,
+                })), // List of track IDs and names
+                review_score: 0,
+                num_reviews: 0
+              };
         
           } catch (error) {
             console.error('Error fetching album details and tracks:', error);
@@ -154,7 +154,9 @@ export const SpotifyAPIController = (function() {
                 id: artist.id,
                 name: artist.name
             })),
-            images: data.album.images // Array of image objects (useful for displaying album art)
+            images: data.album.images, // Array of image objects (useful for displaying album art)
+            review_score: 0,
+            num_reviews: 0
             };
         } catch (error) {
             console.error('Error fetching song details:', error);
