@@ -93,6 +93,15 @@ const debouncedFetchRecommendations = useCallback(
               t.album?.release_date === item.album?.release_date &&
               t.artists.map((artist) => artist.name).join(', ') === item.artists.map((artist) => artist.name).join(', ')
             );
+          } else if (queryType === 'user') {
+            if (results)
+            {
+              if (Array.isArray(results) === false) {
+                uniqueResults = [results];
+              }
+            } else {
+              uniqueResults = [];
+            }
           }
           else {
             return index === self.findIndex((t) => t.id === item.id);
