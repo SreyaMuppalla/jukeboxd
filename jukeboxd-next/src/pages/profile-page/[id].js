@@ -1,11 +1,12 @@
-import React from "react";
-import { Box, Typography, Button } from "@mui/material";
+"use client";
+import React, { useState, useEffect } from "react";
+import { Box, Typography } from "@mui/material";
 import {
     Background,
     ProfileContainer,
     ProfileInfo,
     ProfilePicContainer,
-    ProfileDetailsContainer, // New container for alignment
+    ProfileDetailsContainer,
     ProfileDetails,
     StatsContainer,
     StatItem,
@@ -14,10 +15,53 @@ import {
 import Review from "../../bigcomponents/Review";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
 import Image from "next/image";
+import { getUser } from "../../backend/users";
 import { useRouter } from "next/router";
+import { useAuth } from "../../backend/auth.js";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
+import { getReviewById } from '@/backend/reviews';
 
 const ProfilePage = () => {
+    const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [reviews, setReviews] = useState([]);
+
+    const router = useRouter();
+    const { id } = router.query;
+
+    useEffect(() => {
+        if (!id) return;
+
+        const fetchUserData = async () => {
+            try {
+                const data = await getUser(id);
+                
+                const userReviews = [];
+                for (const reviewId of data.reviews || []) {
+                    const review = await getReviewById(reviewId);
+                    if (review) {
+                        userReviews.push(review);
+                    }
+                }
+                
+                setReviews(userReviews);
+                setUserData(data);
+            } catch (err) {
+                console.error("Error fetching user data:", err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, [id]); // Re-run the effect when the id changes
+
+    if (!id) return <div>Loading...</div>;
+    if (loading) return <div>Loading profile...</div>;
+    if (error) return <div>Error loading profile: {error}</div>;
+    
     return (
         <ProtectedRoute>
             <Background>
@@ -27,7 +71,7 @@ const ProfilePage = () => {
                         {/* Profile Picture */}
                         <ProfilePicContainer>
                             <Image
-                                src={pfp}
+                                src={userData?.profilePicture || pfp}
                                 alt="Profile"
                                 style={{
                                     width: "150px",
@@ -37,7 +81,6 @@ const ProfilePage = () => {
                                 }}
                             />
                         </ProfilePicContainer>
-
                         {/* Username and Stats */}
                         <ProfileDetailsContainer>
                             <ProfileDetails>
@@ -48,7 +91,7 @@ const ProfilePage = () => {
                                         marginBottom: "8px",
                                     }}
                                 >
-                                    Username
+                                    {userData?.username || "Username"}
                                 </Typography>
                             </ProfileDetails>
 
@@ -59,7 +102,7 @@ const ProfilePage = () => {
                                         variant="h5"
                                         style={{ color: "#1db954" }}
                                     >
-                                        ##
+                                        {userData?.reviews?.length || 0}
                                     </Typography>
                                     <Typography
                                         variant="subtitle2"
@@ -73,13 +116,13 @@ const ProfilePage = () => {
                                         variant="h5"
                                         style={{ color: "#1db954" }}
                                     >
-                                        ##
+                                        {userData?.followers?.length || 0}
                                     </Typography>
                                     <Typography
                                         variant="subtitle2"
                                         style={{ color: "#b3b3b3" }}
                                     >
-                                        Upvotes
+                                        Followers
                                     </Typography>
                                 </StatItem>
                                 <StatItem>
@@ -87,19 +130,40 @@ const ProfilePage = () => {
                                         variant="h5"
                                         style={{ color: "#1db954" }}
                                     >
-                                        ##
+                                        {userData?.following?.length || 0}
                                     </Typography>
                                     <Typography
                                         variant="subtitle2"
                                         style={{ color: "#b3b3b3" }}
                                     >
-                                        Friends
+                                        Following
                                     </Typography>
                                 </StatItem>
                             </StatsContainer>
                         </ProfileDetailsContainer>
                     </ProfileInfo>
 
+                    {/* Bio Section */}
+                    <Box
+                        style={{
+                            marginTop: "16px",
+                            padding: "16px",
+                            backgroundColor: "#333",
+                            borderRadius: "16px",
+                            width: "90%",
+                            margin: "auto",
+                        }}
+                    >
+                        <Typography
+                            variant="h6"
+                            style={{ color: "#fff", marginBottom: "8px" }}
+                        >
+                            Bio
+                        </Typography>
+                        <Typography style={{ color: "#b3b3b3" }}>
+                            {userData?.user_bio || "No bio available."}
+                        </Typography>
+                    </Box>
                     {/* Reviews Section */}
                     <Box
                         style={{
@@ -124,9 +188,25 @@ const ProfilePage = () => {
                         </Typography>
 
                         {/* Individual Reviews */}
-                        <Review />
-                        <Review />
-                        <Review />
+                        {reviews.length > 0 ? (
+                            reviews.map((review, index) => (
+                                <Review 
+                                    key={index}
+                                    userName={userData.username} 
+                                    userProfilePic={userData.profilePicture} 
+                                    rating={review.rating} 
+                                    review_text={review.review_text} 
+                                    songName={review.song_id} 
+                                />
+                            ))
+                        ) : (
+                            <Typography 
+                                variant="body1" 
+                                style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
+                            >
+                                No reviews yet.
+                            </Typography>
+                        )}
                     </Box>
                 </ProfileContainer>
             </Background>
