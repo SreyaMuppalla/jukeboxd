@@ -19,6 +19,7 @@ import { useAtom } from 'jotai';
 import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spotifyTokenManager'; // Updated import
 
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
+import UnknownArtwork from '@/images/unknown_artwork.jpg'
 
 const ArtistPage = () => {
     const topSongs = [
@@ -61,8 +62,12 @@ const ArtistPage = () => {
 
   const router = useRouter();
   const { id: artistId } = router.query; // Get artistId from the dynamic route
-  const [loading, setLoading] = useState(true);
-  const [artistDetails, setArtistDetails] = useState(null);
+  const [artistDetails, setArtistDetails] = useState(
+    {
+      name: "",
+      images: {url: UnknownArtwork}
+    }
+  );
   const [error, setError] = useState(null);
   const [token, _] = useAtom(tokenAtom); // Access token state
   const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
@@ -88,9 +93,7 @@ const ArtistPage = () => {
           console.log('Token expired, fetching a new one...');
           await fetchToken(); // Refresh the token if expired
         }
-        console.log(token)
         try {
-          setLoading(true); // Start loading
           setError(null); // Reset any previous errors
 
           // Fetch artist details
@@ -99,8 +102,6 @@ const ArtistPage = () => {
         } catch (error) {
           console.error('Error fetching artist data:', error);
           setError('Failed to fetch artist details.');
-        } finally {
-          setLoading(false); // Stop loading
         }
       };
 
@@ -108,16 +109,8 @@ const ArtistPage = () => {
     }
   }, [artistId, token]);
 
-  if (loading) {
-    return <Typography variant="h5" style={{ color: '#fff' }}>Loading...</Typography>;
-  }
-
   if (error) {
     return <Typography variant="h5" style={{ color: '#ff4d4d' }}>{error}</Typography>; // Display any error
-  }
-
-  if (!artistDetails) {
-    return <Typography variant="h5" style={{ color: '#fff' }}>No artist details available.</Typography>; // Fallback if no artist data is found
   }
 
   return (
