@@ -82,9 +82,9 @@ export const searchUsers = async (username) => {
     const usersRef = collection(db, "users");
     const q = query(
       usersRef,
-      orderBy("username"), // Firestore requires ordering when using range filters
+      orderBy("username"),
       startAt(username),
-      endAt(username + "\uf8ff") // Ensures all usernames that start with input are included
+      endAt(username + "\uf8ff")
     );
   
     try {
