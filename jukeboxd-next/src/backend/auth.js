@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
         return signInWithPopup(auth, provider);
     };
 
-    const signUp = async (username, email, password, bio) => {
+    const signUp = async (username, email, password, profilePicture, bio) => {
         try {
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
@@ -37,7 +37,8 @@ export function AuthProvider({ children }) {
                 password
             );
             const user = userCredential.user;
-            const create = await createUser(username, email, "example_pic.com", bio);
+
+            const create = await createUser(user.uid, username, email, profilePicture, bio);
 
             return userCredential;
         } catch (err) {

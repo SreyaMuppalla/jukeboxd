@@ -63,7 +63,7 @@ const LoginPage = () => {
         }
 
         try {
-            await signUp(username, email, password, bio);
+            await signUp(username, email, password, null, bio); //profilePicture passthrough
         } catch (error) {
             setError(error.message);
             console.error(error);

@@ -19,7 +19,7 @@ export const getUser = async (user_id) => {
     }
 };
 
-export const createUser = async (user_id, email, profilePicture, user_bio) => {
+export const createUser = async (user_id, username, email, profilePicture, user_bio) => {
     try{
         if(!user_id || !email){
             if(!user_id){
@@ -31,7 +31,7 @@ export const createUser = async (user_id, email, profilePicture, user_bio) => {
         }
 
         const user = {
-            username: user_id,
+            username: username,
             email,
             profilePicture,
             user_bio,
