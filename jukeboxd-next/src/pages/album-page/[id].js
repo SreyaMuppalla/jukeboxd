@@ -84,7 +84,7 @@ const AlbumPage = () => {
           <AlbumInfoContainer>
             {/* Album Cover */}
             <img
-              src={albumDetails.images[0]?.url || '/default-album.jpg'} // Fallback to a default image if unavailable
+              src={albumDetails.images[1]?.url || unknownArtwork} // Fallback to a default image if unavailable
               alt="Album Cover"
               width={250}
               height={250}
