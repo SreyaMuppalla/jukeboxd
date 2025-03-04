@@ -8,7 +8,7 @@ import {
   SongsListContainer,
   ReviewsSection,
 } from '../../styles/StyledComponents'; // Ensure these styled components are created
-import { SpotifyAPIController } from '../../utils/SpotifyAPIController'; // Import your API controller
+import { fetchAlbumData } from '../../utils/fetchContentData'; // Import your API controller
 import Review from '../../bigcomponents/Review';
 import Link from 'next/link';
 import { useRouter } from 'next/router'; // Import Next.js useRouter
@@ -29,30 +29,18 @@ const AlbumPage = () => {
     name: '',
     artists: [{ id: '', name: '' }],
     images: [{}, { url: unknownArtwork }],
+    songs: []
   });
-  const [albumSongs, setAlbumSongs] = useState([]);
   const [error, setError] = useState(null);
   const [token, _] = useAtom(tokenAtom); // Access token state
   const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
   const [, fetchToken] = useAtom(fetchTokenAtom); // Trigger token fetch
 
-  // Fetch token on component mount
-  useEffect(() => {
-    const fetchTokenOnMount = async () => {
-      try {
-        await fetchToken(); // Ensure token is fetched on load
-      } catch (error) {
-        console.error('Error fetching token:', error);
-      }
-    };
-
-    fetchTokenOnMount(); // Call the function
-  }, [fetchToken]); // fetchToken as dependency
 
   useEffect(() => {
     if (albumId && token) {
       // Ensure albumId and token are present before making API calls
-      const fetchAlbumData = async () => {
+      const getAlbumData = async () => {
         if (!token || Date.now() >= tokenExpiration) {
           console.log('Token expired, fetching a new one...');
           await fetchToken(); // Refresh the token if expired
@@ -61,25 +49,16 @@ const AlbumPage = () => {
           setError(null); // Reset any previous errors
 
           // Fetch album details and tracks
-          const details = await SpotifyAPIController.getAlbumDetails(
-            token,
-            albumId
-          );
-          const tracks = await SpotifyAPIController.getAlbumSongs(
-            token,
-            albumId
-          );
-
+          const details = await fetchAlbumData(albumId, token);
           // Update state with the fetched data
           setAlbumDetails(details);
-          setAlbumSongs(tracks); // Track list is often nested under 'items'
         } catch (error) {
           console.error('Error fetching album data:', error);
           setError('Failed to fetch album details.');
         }
       };
 
-      fetchAlbumData();
+      getAlbumData();
     }
   }, [albumId, token]); // Trigger useEffect whenever albumId or token changes
 
@@ -105,7 +84,7 @@ const AlbumPage = () => {
           <AlbumInfoContainer>
             {/* Album Cover */}
             <img
-              src={albumDetails.images[0]?.url || '/default-album.jpg'} // Fallback to a default image if unavailable
+              src={albumDetails.images[1]?.url || unknownArtwork} // Fallback to a default image if unavailable
               alt="Album Cover"
               width={250}
               height={250}
@@ -179,7 +158,7 @@ const AlbumPage = () => {
                 Songs:
               </Typography>
               <ol style={{ paddingLeft: '16px', color: '#b3b3b3' }}>
-                {albumSongs.map((track, index) => (
+                {albumDetails.songs.map((track, index) => (
                   <li key={track.id} style={{ marginBottom: '8px' }}>
                     <Link
                       href={`/song-page/${track.id}`}
@@ -200,7 +179,7 @@ const AlbumPage = () => {
                           variant="h6"
                           sx={{ minWidth: 30, textAlign: 'right' }}
                         >
-                          {track.track_number}
+                          {index + 1}
                         </Typography>
                         <Typography variant="h6">{track.name}</Typography>
                       </Box>

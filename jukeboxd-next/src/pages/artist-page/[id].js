@@ -13,7 +13,7 @@ import {
 } from "../../styles/StyledComponents";
 import albumpic from "../../images/albumpic.jpg"; // Import album image
 import Image from "next/image";
-import { SpotifyAPIController } from '../../utils/SpotifyAPIController'; // Import your API controller
+import { fetchArtistData } from '../../utils/fetchContentData'; // Import your API controller
 import { useRouter } from 'next/router';
 import { useAtom } from 'jotai';
 import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spotifyTokenManager'; // Updated import
@@ -65,7 +65,7 @@ const ArtistPage = () => {
   const [artistDetails, setArtistDetails] = useState(
     {
       name: "",
-      images: {url: UnknownArtwork}
+      images: [{url: UnknownArtwork}]
     }
   );
   const [error, setError] = useState(null);
@@ -73,22 +73,9 @@ const ArtistPage = () => {
   const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
   const [, fetchToken] = useAtom(fetchTokenAtom); // Trigger token fetch
 
-  // Fetch token on component mount
-  useEffect(() => {
-    const fetchTokenOnMount = async () => {
-      try {
-        await fetchToken(); // Ensure token is fetched on load
-      } catch (error) {
-        console.error('Error fetching token:', error);
-      }
-    };
-
-    fetchTokenOnMount(); // Call the function
-  }, [fetchToken]); // fetchToken as dependency
-
   useEffect(() => {
     if (artistId && token) {
-      const fetchArtistData = async () => {
+      const getArtistData = async () => {
         if (!token || Date.now() >= tokenExpiration) {
           console.log('Token expired, fetching a new one...');
           await fetchToken(); // Refresh the token if expired
@@ -97,7 +84,10 @@ const ArtistPage = () => {
           setError(null); // Reset any previous errors
 
           // Fetch artist details
-          const details = await SpotifyAPIController.getArtistsDetails(token, artistId);
+          const details = await fetchArtistData(artistId, token);
+
+          console.log(artistDetails)
+
           setArtistDetails(details);
         } catch (error) {
           console.error('Error fetching artist data:', error);
@@ -105,7 +95,7 @@ const ArtistPage = () => {
         }
       };
 
-      fetchArtistData();
+      getArtistData();
     }
   }, [artistId, token]);
 
