@@ -11,6 +11,8 @@ import {
 } from "firebase/auth";
 import { auth, db } from "./firebaseConfig";
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import { createUser } from "./users";
+import { create } from "lodash";
 
 const AuthContext = createContext();
 
@@ -29,7 +31,7 @@ export function AuthProvider({ children }) {
         return signInWithPopup(auth, provider);
     };
 
-    const signUp = async (email, password) => {
+    const signUp = async (username, email, password, bio) => {
         try {
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
@@ -37,18 +39,7 @@ export function AuthProvider({ children }) {
                 password
             );
             const user = userCredential.user;
-
-            // check if user exists
-            const userDocRef = doc(db, "users", user.uid);
-            const userDocSnapshot = await getDoc(userDocRef);
-
-            // if user doesn't exist, add to Firestore
-            if (!userDocSnapshot.exists()) {
-                await setDoc(userDocRef, {
-                    uid: user.uid,
-                    email: user.email,
-                });
-            }
+            const create = await createUser(username, email, "example_pic.com", bio);
 
             return userCredential;
         } catch (err) {
