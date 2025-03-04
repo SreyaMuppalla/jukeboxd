@@ -51,6 +51,17 @@ export const AlbumCover = styled.div`
     overflow: hidden;
 `;
 
+// Placeholder for the album cover
+export const LargeAlbumCover = styled.div`
+    width: 320px;
+    height: 320px;
+    margin-bottom: 10px;
+    background-color: #212121;
+    border-radius: 8px; // Optional: rounded corners
+    overflow: hidden;
+`;
+
+
 // Song name styling
 export const SongName = styled(Typography)`
     font-size: 14px;
@@ -180,9 +191,9 @@ export const AlbumContainer = styled.div`
 // Container for album info (cover + details)
 export const AlbumInfoContainer = styled.div`
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     width: 100%;
-    padding: 16px 32px;
+    padding: 16px 42px;
 `;
 
 // Container for album details (name, artist, stars)
@@ -190,11 +201,13 @@ export const AlbumDetails = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
+    margin-left: 32px;
 `;
 
 // Container for the list of songs
 export const SongsListContainer = styled.div`
-    flex: 1;
+    flex: 0 0 50%;  /* Take up 50% of the parent container */
     padding: 16px;
     background-color: #333;
     border-radius: 16px;
@@ -294,7 +307,7 @@ export const DropdownContainer = styled.div`
 export const SearchInput = styled.input`
     padding: 10px;
     font-size: 16px;
-    width: 60%;
+    width: 100%;
     border-radius: 20px;
     border: none;
     outline: none;
@@ -324,6 +337,14 @@ export const SearchDropdown = styled.select`
     }
 `;
 
+export const SearchInputContainer = styled.div`
+    display: flex;
+    align-items: center;
+    width: 60%;
+    justify-content: center;
+    position: relative;
+`;
+
 // Recommendation list container
 export const RecommendationList = styled.div`
     position: absolute;
@@ -332,7 +353,7 @@ export const RecommendationList = styled.div`
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
-    width: 60%;
+    width: 100%;
     background-color: #121212;
     border-radius: 16px;
     padding: 16px;
