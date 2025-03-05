@@ -56,9 +56,7 @@ const PersonalProfilePage = () => {
         if (editingBio) {
             // Save the updated bio to Firebase
             try {
-                const curr_user = user.uid;
-                const userRef = doc(db, "users", curr_user);
-                await updateDoc(userRef, { bio: bio });
+                await updateUserBio(user.uid, bio);
 
                 // Update local state
                 setUserData((prevData) => ({ ...prevData, bio: bio }));
@@ -74,9 +72,7 @@ const PersonalProfilePage = () => {
       if (!userData) return;
       if (editingUsername) {
           try {
-            // Replace 'user1' with the actual user ID
-            const user_id = "user1";
-            await updateUsername(user_id, username);
+            await updateUsername(user.uid, username);
           } catch (error) {
               console.error("Error updating username:", error);
           }
@@ -94,7 +90,7 @@ const PersonalProfilePage = () => {
           await fetch(url, { method: "PUT", body: file });
 
           const uploadedImageUrl = url.split("?")[0];
-          await updateUserProfilePicture("user1", uploadedImageUrl);
+          await updateUserProfilePicture(user.uid, uploadedImageUrl);
           setImageUrl(uploadedImageUrl);
       } catch (error) {
           console.error("Upload failed:", error);
@@ -126,7 +122,7 @@ const PersonalProfilePage = () => {
                 setUserData(data);
                 setBio(data.user_bio)
                 setUsername(data.username)
-                setImageUrl(data.profile_picture);
+                setImageUrl(data.profilePicture);
             } catch (err) {
                 console.error("Error fetching user data:", err);
                 setError(err.message);
@@ -348,7 +344,7 @@ const PersonalProfilePage = () => {
                         {/* Individual Reviews */}
                                 {reviews.length > 0 ? (
                         reviews.map((review) => (
-                        <Review userName={userData.username} userProfilePic={userData.profile_picture} rating= {review.rating} review_text={review.review_text} songName={review.song_id} />
+                        <Review userName={userData.username} userProfilePic={userData.profilePicture} rating= {review.rating} review_text={review.review_text} songName={review.song_id} />
                         ))
                     ) : (
                         <>

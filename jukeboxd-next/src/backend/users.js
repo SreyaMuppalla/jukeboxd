@@ -33,7 +33,7 @@ export const createUser = async (user_id, username, email, profilePicture, user_
         const user = {
             username: username,
             email,
-            profile_picture,
+            profilePicture,
             user_bio,
             bookmarkedSongs: [],
             created_at: new Date().toISOString(),
@@ -115,7 +115,7 @@ export const updateUserProfilePicture = async (user_id, profile_picture_url) => 
         }
 
         await updateDoc(userRef, {
-            profile_picture: profile_picture_url
+            profilePicture: profile_picture_url
         });
 
         return { message: "Profile picture updated successfully" };
