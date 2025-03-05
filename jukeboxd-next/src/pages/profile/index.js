@@ -1,9 +1,3 @@
-// header
-// pfp
-// name
-// both editable
-// review/upvote/friends count
-// recent reviews
 "use client";
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, TextField } from "@mui/material";
@@ -40,8 +34,6 @@ const PersonalProfilePage = () => {
     const router = useRouter(); // Initialize navigation using Next.js router
     const { user, logOut } = useAuth();
 
-    console.log("user", user);
-
     const [isLoggingOut, setIsLoggingOut] = React.useState(false);
 
     const handleLogout = async () => {
@@ -62,7 +54,8 @@ const PersonalProfilePage = () => {
         if (editingBio) {
             // Save the updated bio to Firebase
             try {
-                const userRef = doc(db, "users", "user1"); // Replace with dynamic user ID
+                const curr_user = user.uid;
+                const userRef = doc(db, "users", curr_user);
                 await updateDoc(userRef, { bio: bio });
 
                 // Update local state
@@ -77,18 +70,22 @@ const PersonalProfilePage = () => {
 
     useEffect(() => {
         const fetchUserData = async () => {
+            // Only proceed if user is not null
+            if (!user) {
+                return;
+            }
+    
             try {
-                // Replace 'user1' with the actual user ID
-                        const userId = "user1";
-                const data = await getUser(userId);
-        const reviews = [];
-        for (const reviewId of data.reviews) {
-          const review = await getReviewById(reviewId);
-          if (review) {
-            reviews.push(review);
-          }
-        }
-        setReviews(reviews);
+                const curr_user = user.uid;
+                const data = await getUser(curr_user);
+                const reviews = [];
+                for (const reviewId of data.reviews) {
+                    const review = await getReviewById(reviewId);
+                    if (review) {
+                        reviews.push(review);
+                    }
+                }
+                setReviews(reviews);
                 setUserData(data);
             } catch (err) {
                 console.error("Error fetching user data:", err);
@@ -97,9 +94,9 @@ const PersonalProfilePage = () => {
                 setLoading(false);
             }
         };
-
+    
         fetchUserData();
-    }, []);
+    }, [user]);
 
     if (loading) return <div>Loading profile...</div>;
     if (error) return <div>Error loading profile: {error}</div>;
