@@ -56,7 +56,7 @@ export default function ReviewForm() {
       created_at: new Date(),
     };
 
-    createReview(user.uid, null, selectedSong.name, rating, review).then(() => {
+    createReview(user.uid, null, selectedSong.name, Number(rating), review).then(() => {
       setReview(''); // Clear review after submitting
       setRating(5); // Reset rating after submission
       setLoading(false);
