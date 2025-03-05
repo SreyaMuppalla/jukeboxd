@@ -15,6 +15,7 @@ import {
     ToggleText,
 } from "../../styles/StyledComponents";
 import jkbxlogo from "../../images/jkbxlogo.png";
+import { checkUser, createUser } from "@/backend/users.js";
 
 const LoginPage = () => {
     const router = useRouter();
@@ -81,6 +82,38 @@ const LoginPage = () => {
 
         console.log("Sign-Up attempt:", email, password);
     };
+
+const handleGoogleSignIn = async () => {
+  setError('');
+  setLoading(true);
+
+  try {
+    const result = await signInWithGoogle();
+    const user = result.user;
+    console.log(result);
+
+    if (!user) {
+      throw new Error('Google Sign-In failed.');
+    }
+
+    // Check if user exists in Firebase database
+    const userExist = await checkUser(user.uid);
+    console.log(userExist);
+
+    if (!userExist) {
+      // Create a new user in Firestore
+      await createUser(user.uid, user.displayName, user.email, user.photoURL, "");
+    }
+
+    router.push('/feed'); // Redirect to feed after sign-in
+  } catch (error) {
+    console.error('Google Sign-In Error:', error);
+    setError(error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     // Toggle between Sign In and Sign Up modes
     const toggleSignUp = () => {
@@ -179,7 +212,7 @@ const LoginPage = () => {
                         : "Don't have an account? Sign Up"}
                 </Button>
 
-                <SignInButton onClick={signInWithGoogle} disabled={loading}>
+                <SignInButton onClick={handleGoogleSignIn} disabled={loading}>
                     Sign In with Google
                 </SignInButton>
             </FormContainer>
