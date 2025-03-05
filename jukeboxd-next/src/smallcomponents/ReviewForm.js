@@ -44,10 +44,8 @@ export default function ReviewForm() {
 
   const handleSubmit = async () => {
     setLoading(true);
-// user_id, album_id, song_id, rating, review_text
     let reviewObj = {
-      review_id: 'review3',
-      user_id: 'test',
+      user_id: user.uid,
       song_id: selectedSong.name,
       rating: rating,
       review_text: review,
@@ -56,7 +54,7 @@ export default function ReviewForm() {
       created_at: new Date(),
     };
 
-    createReview(user.uid, null, selectedSong.name, Number(rating), review).then(() => {
+    createReview(reviewObj).then(() => {
       setReview(''); // Clear review after submitting
       setRating(5); // Reset rating after submission
       setLoading(false);
