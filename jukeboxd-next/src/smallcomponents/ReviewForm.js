@@ -15,8 +15,9 @@ import {
 import SearchBar from './SearchBar';
 import Image from 'next/image';
 import { useAtom } from 'jotai';
-import { currItem } from '@/states/currItem';
-import { addReview } from '@/backend/firebase_api';
+import { currSong } from '@/states/currSong';
+import { createReview } from '@/backend/reviews';
+import { useAuth } from '@/backend/auth';
 
 export default function ReviewForm() {
   const [open, setOpen] = useState(false);
@@ -25,6 +26,8 @@ export default function ReviewForm() {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
   const [selectedItem, setSelectedItem] = useAtom(currItem);
+
+  const {user} = useAuth();
 
   const toggleDrawer = (open) => {
     setOpen(open);
@@ -40,16 +43,24 @@ export default function ReviewForm() {
 
   const handleSubmit = async () => {
     setLoading(true);
+    let reviewObj = {
+      user_id: user.uid,
+      song_id: selectedSong.name,
+      rating: rating,
+      review_text: review,
+      likes: 0,
+      dislikes: 0,
+      created_at: new Date(),
+    };
 
-    console.log(selectedItem);
-
-
-    setReview(''); // Clear review after submitting
-    setRating(5); // Reset rating after submission
-    setLoading(false);
-    setOpen(false);
-    setSuccessMessage(true); // Show success message
-    setSelectedItem(null); // Invalidate selected song after submission
+    createReview(reviewObj).then(() => {
+      setReview(''); // Clear review after submitting
+      setRating(5); // Reset rating after submission
+      setLoading(false);
+      setOpen(false);
+      setSuccessMessage(true); // Show success message
+      setSelectedSong(null); // Invalidate selected song after submission
+    });
   };
 
   const handleRemoveSong = () => {
