@@ -119,7 +119,7 @@ useEffect(() => {
   return (
     <SearchBarContainer>
       <DropdownContainer>
-        <SearchDropdown value={queryType} onChange={(e) => setQueryType(e.target.value)}>
+        <SearchDropdown value={queryType} onChange={(e) => setQueryType(e.target.value)} style={{fontFamily:"Inter"}}>
           {/* Dynamic dropdown options based on searchBarType */}
           {searchBarType === 'header' && (
             <>
@@ -143,6 +143,7 @@ useEffect(() => {
         placeholder={`Search for ${queryType}s...`}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        style={{fontFamily: "Inter"}}
       />
 
       {recommendations.length > 0 && (
