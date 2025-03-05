@@ -21,7 +21,7 @@ import {
 import Review from "../../bigcomponents/Review";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
 import Image from "next/image";
-import { getUser, updateUserBio, updateUserProfilePicture} from "../../backend/users";
+import { getUser, updateUserBio, updateUsername, updateUserProfilePicture} from "../../backend/users";
 import { useRouter } from "next/router";
 import { useAuth } from "../../backend/auth.js";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
@@ -34,6 +34,8 @@ const PersonalProfilePage = () => {
     const [reviews, setReviews] = useState([]);
     const [editingBio, setEditingBio] = useState(false);
     const [bio, setBio] = useState("");
+    const [editingUsername, setEditingUsername] = useState(false);
+    const [username, setUsername] = useState("");
     const fileInputRef = useRef(null);
     const [imageUrl, setImageUrl] = useState(null);
     
@@ -68,6 +70,20 @@ const PersonalProfilePage = () => {
           }
       }
       setEditingBio(!editingBio);
+    };
+
+    const handleEditUsername = async () => {
+      if (!userData) return;
+      if (editingUsername) {
+          try {
+            // Replace 'user1' with the actual user ID
+            const user_id = "user1";
+            await updateUsername(user_id, username);
+          } catch (error) {
+              console.error("Error updating username:", error);
+          }
+      }
+      setEditingUsername(!editingUsername);
     };
 
     const handleImageUpload = async (event) => {
@@ -108,6 +124,7 @@ const PersonalProfilePage = () => {
                 setReviews(reviews);
                 setUserData(data);
                 setBio(data.user_bio)
+                setUsername(data.username)
                 setImageUrl(data.profile_picture);
             } catch (err) {
                 console.error("Error fetching user data:", err);
@@ -153,15 +170,48 @@ const PersonalProfilePage = () => {
                         {/* Username and Stats */}
                         <ProfileDetailsContainer>
                             <ProfileDetails>
-                                <Typography
-                                    variant="h4"
-                                    style={{
-                                        color: "#fff",
-                                        marginBottom: "8px",
-                                    }}
-                                >
-                                    {userData?.username || "Username"}
-                                </Typography>
+                        {editingUsername ? (
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={3}
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                variant="outlined"
+                                sx={{
+                                    backgroundColor: "#444",
+                                    color: "#fff",
+                                    borderRadius: "8px",
+                                    "& .MuiOutlinedInput-root": {
+                                        "& fieldset": {
+                                            borderColor: "#1db954",
+                                        },
+                                        "&:hover fieldset": {
+                                            borderColor: "#1db954",
+                                        },
+                                    },
+                                }}
+                            />
+                        ) : (
+                            <Typography style={{ color: "#b3b3b3" }}>
+                                {username}
+                            </Typography>
+                        )}
+
+                        <Button
+                            onClick={handleEditUsername}
+                            variant="contained"
+                            style={{
+                                backgroundColor: "#1db954",
+                                color: "#fff",
+                                marginTop: "16px",
+                                textTransform: "none",
+                                width: "10%",
+                                padding: "16px",
+                            }}
+                        >
+                            {editingUsername ? "Save Username" : "Edit Username"}
+                        </Button>
                             </ProfileDetails>
 
                             {/* Stats aligned to the right */}
