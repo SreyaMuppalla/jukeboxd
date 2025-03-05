@@ -112,8 +112,8 @@ export const searchUsers = async (username) => {
             throw new Error("User not found");
         }
 
-        const userFollowing = userDoc.data().following;
-        const friendFollowers = friendDoc.data().followers;
+        const userFollowing = userDoc.data().following || [];
+        const friendFollowers = friendDoc.data().followers || [];
 
         if (userFollowing.includes(friend_id) || friendFollowers.includes(user_id)) {
             throw new Error("User is already following this friend");
