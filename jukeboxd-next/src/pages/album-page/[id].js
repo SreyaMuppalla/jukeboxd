@@ -8,7 +8,7 @@ import {
   SongsListContainer,
   ReviewsSection,
 } from '../../styles/StyledComponents'; // Ensure these styled components are created
-import { fetchAlbumData } from '../../utils/fetchContentData'; // Import your API controller
+import { fetchAlbumData } from '../../utils/apiCalls'; // Import your API controller
 import Review from '../../bigcomponents/Review';
 import Link from 'next/link';
 import { useRouter } from 'next/router'; // Import Next.js useRouter

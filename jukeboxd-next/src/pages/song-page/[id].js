@@ -9,7 +9,7 @@ import {
 } from '../../styles/StyledComponents';
 import Review from '../../bigcomponents/Review';
 import Link from 'next/link';
-import { fetchSongData } from '../../utils/fetchContentData'; // Import your API controller
+import { fetchSongData } from '../../utils/apiCalls'; // Import your API controller
 import { useRouter } from 'next/router'; // Import Next.js useRouter
 import { useAtom } from 'jotai';
 import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spotifyTokenManager'; // Updated import

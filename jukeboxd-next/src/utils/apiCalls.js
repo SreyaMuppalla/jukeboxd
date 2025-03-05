@@ -1,6 +1,7 @@
-import { getSongById } from '@/backend/songs'; // Firebase functions
-import { getAlbumById } from '@/backend/albums'; // Firebase functions
-import { getArtistById } from '@/backend/artists';
+import { getSongById, addSongById } from '@/backend/songs'; // Firebase functions
+import { getAlbumById, addAlbumById } from '@/backend/albums'; // Firebase functions
+import { getArtistById, addArtistById } from '@/backend/artists';
+import { createReview } from '@/backend/reviews';
 import { SpotifyAPIController } from './SpotifyAPIController'; // Spotify function
 
 export const fetchSongData = async (songId, spotifyToken) => {
@@ -90,3 +91,44 @@ export const fetchAlbumData = async (albumId, spotifyToken) => {
         throw error; // Handle any unexpected errors
       }
   }
+
+  export const addReview = async (reviewInfo) => {
+    try {
+      const { song_id, artist_id, album_id } = reviewInfo;
+  
+      // Step 1: Check if the song exists in Firebase, if not, add it
+      if (song_id) {
+        const songData = await getSongById(song_id);
+        if (!songData) {
+          console.log("Song not found in Firebase, adding song...");
+          await addSongById(song_id, reviewInfo);  // Assuming reviewInfo has all required song details
+        }
+      }
+  
+      // Step 2: Check if the artist exists in Firebase, if not, add the artist
+      if (artist_id) {
+        const artistData = await getArtistById(artist_id);
+        if (!artistData) {
+          console.log("Artist not found in Firebase, adding artist...");
+          await addArtistById(artist_id, reviewInfo);  // Assuming reviewInfo has all required artist details
+        }
+      }
+  
+      // Step 3: Check if the album exists in Firebase, if not, add the album
+      if (album_id) {
+        const albumData = await getAlbumById(album_id);
+        if (!albumData) {
+          console.log("Album not found in Firebase, adding album...");
+          await addAlbumById(album_id, reviewInfo);  // Assuming reviewInfo has all required album details
+        }
+      }
+  
+      // Step 4: Finally, create the review
+      await createReview(reviewInfo);
+      console.log("Review added successfully.");
+  
+    } catch (error) {
+      console.error("Error adding review:", error);
+      throw error; // Handle any unexpected errors
+    }
+  };

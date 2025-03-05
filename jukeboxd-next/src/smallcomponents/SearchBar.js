@@ -14,7 +14,7 @@ import { useRouter } from 'next/router';
 import { SpotifyAPIController } from '@/utils/SpotifyAPIController';
 import { useAtom } from 'jotai';
 import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '@/states/spotifyTokenManager';
-import { currSong } from '@/states/currSong';
+import { currItem } from '@/states/currItem';
 import { searchUsers } from '@/backend/users';
 
 const SearchBar = ({ type: searchBarType }) => {
@@ -23,7 +23,7 @@ const SearchBar = ({ type: searchBarType }) => {
   const [queryType, setQueryType] = useState('song');
 
   const router = useRouter();
-  const [selectedSong, setSelectedSong] = useAtom(currSong);
+  const [selectedItem, setSelectedItem] = useAtom(currItem);
 
   // Token-related states
   const [token] = useAtom(tokenAtom);
@@ -116,10 +116,34 @@ useEffect(() => {
       setRecommendations([]);
     };
     const handleReviewSelection = () => {
-      const selectedImage =
-        item.album?.images?.[0]?.url || item.images?.[0]?.url || ''; // Handle song, artist, or album image
+      const selectedImage = item.album?.images?.[0]?.url || item.images?.[0]?.url || ''; // Handle song, artist, or album image
 
-      setSelectedSong({ name: item.name, image: selectedImage });
+      
+      let itemInfo = {
+        album_id: item.id,
+        album_name: item.name,
+        artists: item.artists.map(artist => ({
+          id: artist.id,
+          name: artist.name
+        })),  // Array of artist ids and names
+        song_id: null,
+        song_name: null,
+        image: selectedImage,
+        review_type: queryType,  // Either 'album' or 'song'
+      };
+      
+    
+      if (queryType === 'song') {
+        itemInfo = {
+          ...itemInfo,
+          album_id: item.album.id,
+          album_name: item.album.name,
+          song_id: item.id,
+          song_name: item.name,
+        };
+      }
+    
+      setSelectedItem(itemInfo);
       setQuery(''); // Clear input after selection
       setRecommendations([]);
     };
