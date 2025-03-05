@@ -6,11 +6,10 @@ import {
   AlbumInfoContainer,
   AlbumDetails,
   ReviewsSection,
-  LargeAlbumCover,
 } from '../../styles/StyledComponents';
 import Review from '../../bigcomponents/Review';
 import Link from 'next/link';
-import { SpotifyAPIController } from '../../utils/SpotifyAPIController'; // Import your API controller
+import { fetchSongData } from '../../utils/fetchContentData'; // Import your API controller
 import { useRouter } from 'next/router'; // Import Next.js useRouter
 import { useAtom } from 'jotai';
 import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spotifyTokenManager'; // Updated import
@@ -56,20 +55,8 @@ const SongPage = () => {
 
 
   useEffect(() => {
-    const fetchTokenOnMount = async () => {
-      try {
-        await fetchToken(); // Ensure token is fetched on load
-      } catch (error) {
-        console.error('Error fetching token:', error);
-      }
-    };
-  
-    fetchTokenOnMount(); // Call the function
-  }, [fetchToken]); // fetchToken as dependency
-
-  useEffect(() => {
     if (songId && token) { // Ensure songId and token are present before making API calls
-      const fetchSongData = async () => {
+      const getSongData = async () => {
         if (!token || Date.now() >= tokenExpiration) {
           console.log('Token expired, fetching a new one...');
           await fetchToken(); // Refresh the token if expired
@@ -78,7 +65,7 @@ const SongPage = () => {
           setError(null); // Reset any previous errors
 
           // Fetch song details
-          const details = await SpotifyAPIController.getSongDetails(token, songId);
+          const details = await fetchSongData(songId, token);
 
           // Update state with the fetched data
           setSongDetails(details);
@@ -89,7 +76,7 @@ const SongPage = () => {
         }
       };
 
-      fetchSongData();
+      getSongData();
     }
   }, [songId, token]); // Trigger useEffect whenever songId or token changes
 
