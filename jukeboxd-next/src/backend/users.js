@@ -1,5 +1,5 @@
 import {db} from "./firebaseConfig";
-import {doc, setDoc, getDoc, updateDoc} from "firebase/firestore";
+import {doc, setDoc, getDoc, updateDoc, query, where, orderBy, startAt, endAt, getDocs, collection} from "firebase/firestore";
 
 export const getUser = async (user_id) => {
     try{
@@ -77,3 +77,22 @@ export const updateUserBio = async (user_id, new_bio) => {
         throw error;
     }
 };
+
+export const searchUsers = async (username) => {
+    const usersRef = collection(db, "users");
+    const q = query(
+      usersRef,
+      orderBy("username"),
+      startAt(username),
+      endAt(username + "\uf8ff")
+    );
+  
+    try {
+      const querySnapshot = await getDocs(q);
+      const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return users;
+    } catch (error) {
+      console.error("Error searching for users:", error);
+      return [];
+    }
+  };
