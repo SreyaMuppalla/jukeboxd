@@ -19,6 +19,24 @@ export const getUser = async (user_id) => {
     }
 };
 
+export const checkUser = async (user_id) => {
+  try {
+    if (!user_id) {
+      throw new Error('Missing user_id parameter');
+    }
+
+    const userDoc = await getDoc(doc(db, 'users', user_id));
+    if (!userDoc.exists()) {
+    //   throw new Error('User not found');
+        return false
+    }
+
+    return true
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const createUser = async (user_id, username, email, profilePicture, user_bio) => {
     try{
         if(!user_id || !email){
