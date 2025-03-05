@@ -16,7 +16,8 @@ import SearchBar from './SearchBar';
 import Image from 'next/image';
 import { useAtom } from 'jotai';
 import { currSong } from '@/states/currSong';
-import { addReview } from '@/backend/firebase_api';
+import { createReview } from '@/backend/reviews';
+import { useAuth } from '@/backend/auth';
 
 export default function ReviewForm() {
   const [open, setOpen] = useState(false);
@@ -26,6 +27,8 @@ export default function ReviewForm() {
   const [successMessage, setSuccessMessage] = useState(false);
   const [selectedSong, setSelectedSong] = useAtom(currSong);
   console.log(selectedSong);
+
+  const {user} = useAuth();
 
   const toggleDrawer = (open) => {
     setOpen(open);
@@ -41,7 +44,7 @@ export default function ReviewForm() {
 
   const handleSubmit = async () => {
     setLoading(true);
-
+// user_id, album_id, song_id, rating, review_text
     let reviewObj = {
       review_id: 'review3',
       user_id: 'test',
@@ -53,7 +56,7 @@ export default function ReviewForm() {
       created_at: new Date(),
     };
 
-    addReview(reviewObj).then(() => {
+    createReview(user.uid, null, selectedSong.name, rating, review).then(() => {
       setReview(''); // Clear review after submitting
       setRating(5); // Reset rating after submission
       setLoading(false);

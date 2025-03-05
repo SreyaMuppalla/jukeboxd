@@ -1,5 +1,5 @@
 import {db} from "./firebaseConfig";
-import {doc, setDoc, getDoc, addDoc, getDocs, query, collection, where} from "firebase/firestore";
+import {doc, getDoc, addDoc, getDocs, query, collection, where, updateDoc} from "firebase/firestore";
 
 
 export const getReviewById = async (review_id) => {
@@ -51,11 +51,13 @@ export const createReview = async (user_id, album_id, song_id, rating, review_te
             created_at: new Date()
         };
 
-        await addDoc(collection(db, "reviews"), review);
+        const reviewDocRef = await addDoc(collection(db, "reviews"), review);
+        const reviewDocId = reviewDocRef.id;
+        await updateDoc(userRef, {
+            reviews: [...(userDoc.data().reviews || []), reviewDocId]
+        });
 
-        const userReviews = userDoc.data().reviews || [];
-        userReviews.push(review);
-        await setDoc(userRef, { reviews: userReviews }, { merge: true });
+        return reviewDocId;
 
     } catch (error) {
         throw error;
