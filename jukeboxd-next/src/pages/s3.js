@@ -3,7 +3,6 @@ const aws = require('aws-sdk');
 const { promisify } = require("util");
 const crypto = require("crypto");  
 const randomBytes = promisify(crypto.randomBytes);
-dotenv.config();
 
 const region = "us-east-1"
 const bucketName = "profile-pictures-jukeboxd"
