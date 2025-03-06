@@ -19,18 +19,20 @@ import unknownArtwork from '@/images/unknown_artwork.jpg';
 import ProtectedRoute from '@/smallcomponents/ProtectedRoute';
 import { useAuth } from '@/backend/auth';
 import { getUser, BookmarkAlbum, removeAlbumBookmark } from '@/backend/users';
+import { getReviews } from '@/backend/reviews';
 
 const AlbumPage = () => {
   const router = useRouter();
   const { id: albumId } = router.query; // Correctly get the albumId from the dynamic route
   const { user } = useAuth();
-
+  const [loading, setLoading] = useState(true);
   const [albumDetails, setAlbumDetails] = useState({
     name: '',
     artists: [{ id: '', name: '' }],
     images: [{}, { url: unknownArtwork }],
     songs: []
   });
+  const [reviews, setReviews] = useState([]);
   const [error, setError] = useState(null);
   const [token, _] = useAtom(currItem); // Access token state
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -57,11 +59,15 @@ const AlbumPage = () => {
           setError(null); // Reset any previous errors
           // Fetch album details and tracks
           const details = await fetchAlbumData(albumId);
-          // Update state with the fetched data
+          const reviews_data = await getReviews(albumId, 'album');
           setAlbumDetails(details);
+          setReviews(reviews_data);
         } catch (error) {
           console.error('Error fetching album data:', error);
           setError('Failed to fetch album details.');
+        }
+        finally {
+          setLoading(false);
         }
       };
     if(albumId){
@@ -254,9 +260,20 @@ const AlbumPage = () => {
               >
                 Reviews:
               </Typography>
-              <Review />
-              <Review />
-              <Review />
+              {reviews.length > 0 ? (
+                  reviews.map((review) => (
+                  <Review review={review}/>
+                  ))
+              ) : (
+                  <>
+                  <Typography 
+                      variant="body1" 
+                      style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
+                  >
+                      No reviews yet.
+                  </Typography>
+                  </>
+              )}
             </ReviewsSection>
           </Box>
         </AlbumContainer>
