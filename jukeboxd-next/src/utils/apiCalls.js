@@ -237,3 +237,22 @@ export const fetchAlbumData = async (albumId) => {
       throw error;
     }
   };
+
+export const fetchTrendingSongs = async () => {
+  const spotifyToken = await spotifyTokenService.getToken();
+    try {
+      const spotifyTrending = await SpotifyAPIController.getTrendingSongs(spotifyToken)
+
+      if (spotifyTrending) {
+        // Step 3: Return the raw album data from Spotify
+        return spotifyTrending;
+      }
+
+      // If Spotify does not return any data, return null or handle accordingly
+      return null;
+
+    } catch (error) {
+      console.error("Error fetching trending songs data:", error);
+      throw error; // Handle any unexpected errors
+    }
+}

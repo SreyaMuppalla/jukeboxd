@@ -1,14 +1,34 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { Box, Typography, Rating } from "@mui/material"; // Import Material UI components
 import { CarouselContainer, SongItem, AlbumCover, SongName, StarsContainer } from "../styles/StyledComponents"; // Adjust based on your folder structure
 import albumpic from "../images/albumpic.jpg";
 import Link from "next/link";
 import Image from "next/image";
+import spotifyTokenService from '@/states/spotifyTokenManager'; // Import the singleton
+import { fetchTrendingSongs } from "@/utils/apiCalls";
 
 const SongsCarousel = () => {
+  const [songs, setSongs] = React.useState([]);
 
-  // Placeholder data for songs
-  const songs = new Array(10).fill({ albumCover: albumpic, songName: "Song Name", stars: 5 });
+  useEffect(() => {
+    // Fetch trending songs from Spotify API
+    const getTrendingSongs = async () => {
+      const spotifyToken = await spotifyTokenService.getToken();
+      try {
+        const spotifyTrending = await fetchTrendingSongs(spotifyToken);
+        if (spotifyTrending) {
+          // Step 3: Return the raw album data from Spotify
+          setSongs(spotifyTrending);
+        }
+      } catch (error) {
+        console.error("Error fetching song details:", error);
+        return null;
+      }
+    };
+
+    getTrendingSongs();
+  }
+  , []);
 
   return (
     <CarouselContainer>
@@ -18,11 +38,12 @@ const SongsCarousel = () => {
           <AlbumCover
             style={{ cursor: 'pointer' }} // Change cursor to indicate it's clickable
           >
-            <Link href="/album-page">
+            <Link href={`/album-page/${song.id}`}>
               <Image
-                src={song.albumCover} // Use the imported album picture
-                alt={`Album cover for ${song.songName}`}
-                width="100%" // Ensures the image takes the full width of the container
+                src={song.images[0].url} // Use the imported album picture
+                alt={`Album cover for ${song.name}`}
+                width="300"
+                height="300"
               />
             </Link>
           </AlbumCover>
@@ -31,13 +52,8 @@ const SongsCarousel = () => {
           <SongName
             style={{ cursor: 'pointer' }} // Change cursor to indicate it's clickable
           >
-            <Link href="/song-page">{song.songName}</Link>
+            <Link href={`/album-page/${song.id}`}>{song.name}</Link>
           </SongName>
-
-          {/* Star rating */}
-          <StarsContainer>
-            <Rating name="read-only" value={song.stars} readOnly />
-          </StarsContainer>
         </SongItem>
       ))}
     </CarouselContainer>
