@@ -221,6 +221,41 @@ export const SpotifyAPIController = (function() {
             return null;
         }
     }
+    const _getArtistTopSongs = async (token, id) => {
+        const apiUrl = `https://api.spotify.com/v1/artists/${id}/top-tracks?market=US`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            // Return the top tracks
+            return data.tracks.map(track => ({
+                id: track.id,
+                name: track.name,
+                album: { id: track.album.id, name: track.album.name },
+                artists: track.artists.map(artist => ({
+                    id: artist.id,
+                    name: artist.name
+                })),
+                images: track.album.images
+            }));
+        } catch (error) {
+            console.error('Error fetching artist top tracks:', error);
+            return null;
+        }
+    };
+
 
     return {
         getToken() {
@@ -239,6 +274,10 @@ export const SpotifyAPIController = (function() {
         {
             return _getAlbumDetails(token, id);
         },
+        getAlbumSongs(token, id)
+        {
+            return _getAlbumSongs(token, id);
+        },
         getSongDetails(token, id)
         {
             return _getSongDetails(token, id);
@@ -247,9 +286,9 @@ export const SpotifyAPIController = (function() {
         {
             return _getArtistDetails(token, id);
         },
-        getAlbumSongs(token, id)
+        getArtistTopSongs(token, id)
         {
-            return _getAlbumSongs(token, id);
+            return _getArtistTopSongs(token, id);
         }
     }
 })();
