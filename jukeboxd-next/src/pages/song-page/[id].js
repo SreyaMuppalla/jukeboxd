@@ -12,14 +12,14 @@ import Link from 'next/link';
 import { fetchSongData } from '../../utils/apiCalls'; // Import your API controller
 import { useRouter } from 'next/router'; // Import Next.js useRouter
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
-import { getSongReviews } from '@/backend/reviews';
+import { getReviews } from '@/backend/reviews';
 import unknownArtwork from '@/images/unknown_artwork.jpg'
 import Image from 'next/image';
 
 const SongPage = () => {
   const router = useRouter();
   const { id: songId } = router.query; // Correctly get the albumId from the dynamic route
-
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [songDetails, setSongDetails] = useState({
     name: "",
@@ -27,39 +27,24 @@ const SongPage = () => {
     album: { id: "", name: "" },
     images: [{}, { url: unknownArtwork }],
   });
-  const [song_reviews, setReviews] = useState([]);
-
-  // Fetch reviews on component mount
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const songId = 'song1'; // Replace with dynamic songId
-        const reviews_data = await getSongReviews(songId);
-        setReviews(reviews_data);
-      } catch (err) {
-        console.error("Error fetching reviews:", err);
-        setError(err.message);
-      }
-    };
-
-    fetchReviews();
-  }, []);
+  const [reviews, setReviews] = useState([]);
 
   // Fetch song data when songId is available
   useEffect(() => {
     const getSongData = async () => {
       try {
-        if (songId) {
-          setError(null); // Reset any previous e          
-
+        if (songId) {         
           const details = await fetchSongData(songId);
-          
-          // Update state with the fetched data
+          const reviews_data = await getReviews(songId, 'song');
+          setReviews(reviews_data);
           setSongDetails(details);
         }
       } catch (error) {
         console.error('Error fetching song data:', error);
         setError('Failed to fetch song details.');
+      }
+      finally {
+        setLoading(false);
       }
     };
 
@@ -71,6 +56,8 @@ const SongPage = () => {
   if (error) {
     return <Typography variant="h5" style={{ color: '#ff4d4d' }}>{error}</Typography>; // Display error if any
   }
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <ProtectedRoute>
@@ -183,9 +170,20 @@ const SongPage = () => {
               >
                 Reviews:
               </Typography>
-              <Review />
-              <Review />
-              <Review />
+              {reviews.length > 0 ? (
+                  reviews.map((review) => (
+                  <Review userName={review.username} userProfilePic={review.user_pfp} rating= {review.rating} review_text={review.review_text} songName={review.song_name} albumName={review.album_name} albumCover={review.images} ArtistName={review.artists}/>
+                  ))
+              ) : (
+                  <>
+                  <Typography 
+                      variant="body1" 
+                      style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
+                  >
+                      No reviews yet.
+                  </Typography>
+                  </>
+              )}
             </ReviewsSection>
           </Box>
         </AlbumContainer>

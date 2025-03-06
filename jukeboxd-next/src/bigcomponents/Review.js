@@ -25,8 +25,7 @@ import Image from 'next/image';
 
 //AlbumCover, song_id and ArtistName need to be updated to render correctly. 
 // Currently default and null. 
-const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rating, review_text}) => {
-  console.log(userName, rating, review_text)
+const Review = ({albumCover, songName, ArtistName, userProfilePic, userName, rating, review_text }) => {
   return (
     <ReviewContainer>
       {/* Album Cover */}
@@ -35,8 +34,10 @@ const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rati
       >
         <Link href="/album-page">
           <Image
-            src={albumCover || albumpic}
+            src={albumCover[0].url || albumpic}
             alt="Album Cover"
+            width={100}
+            height={100}
             style={{ width: '100%', height: '100%', borderRadius: '8px' }}
           />
         </Link>
@@ -48,13 +49,13 @@ const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rati
           variant="h6"
           style={{ color: '#fff', marginBottom: '4px', cursor: 'pointer' }} // Pointer cursor
         >
-          <Link href="/song-page">{song_id || "Song Name"}</Link>
+          <Link href="/song-page">{songName || "Song Name"}</Link>
         </Typography>
         <Typography
           variant="subtitle2"
           style={{ color: '#d3d3d3', cursor: 'pointer' }} // Pointer cursor
         >
-          <Link href="artist-page">{ArtistName || "Artist Name"}</Link>
+          <Link href="artist-page">{ArtistName[0].name || "Artist Name"}</Link>
         </Typography>
       </SongInfo>
 

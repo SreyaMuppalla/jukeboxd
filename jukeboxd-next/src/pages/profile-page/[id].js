@@ -236,14 +236,7 @@ const ProfilePage = () => {
                         {/* Individual Reviews */}
                         {reviews.length > 0 ? (
                             reviews.map((review, index) => (
-                                <Review 
-                                    key={index}
-                                    userName={userData.username} 
-                                    userProfilePic={userData.profilePicture} 
-                                    rating={review.rating} 
-                                    review_text={review.review_text} 
-                                    songName={review.song_id} 
-                                />
+                                <Review userName={review.username} userProfilePic={review.user_pfp} rating= {review.rating} review_text={review.review_text} songName={review.song_name} albumName={review.album_name} albumCover={review.images} ArtistName={review.artists}/>
                             ))
                         ) : (
                             <Typography 

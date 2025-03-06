@@ -14,17 +14,19 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import unknownArtwork from '@/images/unknown_artwork.jpg';
 import ProtectedRoute from '@/smallcomponents/ProtectedRoute';
+import { getReviews } from '@/backend/reviews';
 
 const AlbumPage = () => {
   const router = useRouter();
   const { id: albumId } = router.query;
-
+  const [loading, setLoading] = useState(true);
   const [albumDetails, setAlbumDetails] = useState({
     name: '',
     artists: [{ id: '', name: '' }],
     images: [{}, { url: unknownArtwork }],
     songs: []
   });
+  const [reviews, setReviews] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -35,10 +37,15 @@ const AlbumPage = () => {
 
           // Fetch album details and tracks
           const details = await fetchAlbumData(albumId);
+          const reviews_data = await getReviews(albumId, 'album');
           setAlbumDetails(details);
+          setReviews(reviews_data);
         } catch (error) {
           console.error('Error fetching album data:', error);
           setError('Failed to fetch album details.');
+        }
+        finally {
+          setLoading(false);
         }
       };
 
@@ -53,6 +60,8 @@ const AlbumPage = () => {
       </Typography>
     );
   }
+
+  if (loading) return <div>Loading...</div>;
 
   const formatDuration = (ms) => {
     const minutes = Math.floor(ms / 60000);
@@ -172,9 +181,20 @@ const AlbumPage = () => {
               >
                 Reviews:
               </Typography>
-              <Review />
-              <Review />
-              <Review />
+              {reviews.length > 0 ? (
+                  reviews.map((review) => (
+                  <Review userName={review.username} userProfilePic={review.user_pfp} rating= {review.rating} review_text={review.review_text} songName={review.song_name} albumName={review.album_name} albumCover={review.images} ArtistName={review.artists}/>
+                  ))
+              ) : (
+                  <>
+                  <Typography 
+                      variant="body1" 
+                      style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
+                  >
+                      No reviews yet.
+                  </Typography>
+                  </>
+              )}
             </ReviewsSection>
           </Box>
         </AlbumContainer>

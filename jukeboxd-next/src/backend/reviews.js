@@ -57,7 +57,7 @@ export const createReview = async (reviewData) => {
             user_id: reviewData.user_id,
             username: reviewData.username || null,
             user_pfp: reviewData.user_pfp || null,
-            image: reviewData.image || null,
+            images: reviewData.images || null,
             rating: reviewData.rating,
             review_text: reviewData.review_text || null,
             likes: reviewData.likes || 0,
@@ -110,14 +110,23 @@ export const getFriendReviews = async (user_id) => {
     }
 }
 
-export const getSongReviews = async (song_id) => {
+export const getReviews = async (item_id, song_or_album) => {
     try{
-        if(!song_id){
-            throw new Error("Missing song_id");
+        if(!song_or_album){
+            throw new Error("Missing song_or_album parameter");
+        }
+        if(!item_id){
+            throw new Error("Missing item_id parameter");
         }
 
         const reviews = [];
-        const querySnapshot = await getDocs(query(collection(db, "reviews"), where("is_song", "==", true), where("song_id", "==", song_id)));
+        let querySnapshot;
+        if(song_or_album === "song"){
+        querySnapshot = await getDocs(query(collection(db, "reviews"), where("type", "==", "song"), where("song_id", "==", item_id)));
+        }
+        else{
+        querySnapshot = await getDocs(query(collection(db, "reviews"), where("type", "==", "album"), where("album_id", "==", item_id)));
+        }
         querySnapshot.forEach((doc) => {
             reviews.push(doc.data());
         });

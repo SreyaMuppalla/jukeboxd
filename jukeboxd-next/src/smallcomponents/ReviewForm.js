@@ -17,33 +17,14 @@ import Image from 'next/image';
 import { useAtom } from 'jotai';
 import { currItem } from '@/states/currItem';
 import { addReview } from '@/utils/apiCalls';
-import { useAuth } from '@/backend/auth';
-import { getUser } from '@/backend/users';
 
-export default function ReviewForm() {
+export default function ReviewForm({ userData }) {
   const [open, setOpen] = useState(false);
   const [review, setReview] = useState('');
   const [rating, setRating] = useState(5);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
-  const [selectedSong, setSelectedSong] = useAtom(currSong);
-  const [userData, setUserData] = useState(null);
   const [selectedItem, setSelectedItem] = useAtom(currItem);
-
-  const {user} = useAuth();
-
-  useEffect(() => {
-    if (!user) return;
-    const fetchUserData = async () => {
-      try {
-        const userData = await getUser(user.uid);
-        setUserData(userData);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-    fetchUserData();
-  }, [user]);
 
   const toggleDrawer = (open) => {
     setOpen(open);
@@ -63,17 +44,15 @@ export default function ReviewForm() {
     console.log(selectedItem.artists)
 
     let reviewObj = {
-      user_id: user.uid,
+      user_id: userData.uid,
       song_name: selectedItem.song_name,
       song_id: selectedItem.song_id,
       album_name: selectedItem.album_name,
       album_id: selectedItem.album_id,
       artists: selectedItem.artists,
       images: selectedItem.images,
-      rating: Number(rating),
       username: userData.username,
       user_pfp: userData.profilePic,
-      song_id: selectedSong.name,
       rating: Number(rating),
       review_text: review,
       likes: 0,
