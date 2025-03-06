@@ -61,6 +61,7 @@ export const createReview = async (reviewData) => {
             likes: reviewData.likes || 0,
             dislikes: reviewData.dislikes || 0,
             date: reviewData.date || new Date(),
+            type: reviewData.type,
             created_at: new Date()
         };
 
