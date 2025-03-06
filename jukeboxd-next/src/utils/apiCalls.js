@@ -220,7 +220,9 @@ export const fetchAlbumData = async (albumId) => {
         likes: reviewInfo.likes || 0,
         dislikes: reviewInfo.dislikes || 0,
         date: reviewInfo.date || new Date(),
-        type: reviewInfo.type
+        type: reviewInfo.type, 
+        username: reviewInfo.username || null,
+        user_pfp: reviewInfo.user_pfp || null
       }
 
       await createReview(review);
