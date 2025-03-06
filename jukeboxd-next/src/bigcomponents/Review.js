@@ -126,11 +126,11 @@ const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rati
       </ReviewText>
       {/* Likes & Dislikes */}
       <Box display="flex" alignItems="center" mt={1}>
-        <IconButton onClick={handleLike} color="primary">
+        <IconButton onClick={handleLike} sx = {{color: "#1DB954"}}>
           <ThumbUpIcon />
         </IconButton>
         <Typography variant="body2" color="white" mx={1}>{likes}</Typography>
-        <IconButton onClick={handleDislike} color="secondary">
+        <IconButton onClick={handleDislike} sx = {{color: "#D9534F"}}>
           <ThumbDownIcon />
         </IconButton>
         <Typography variant="body2" color="white" mx={1}>{dislikes}</Typography>
