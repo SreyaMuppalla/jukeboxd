@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
+import { useRouter } from "next/router";
 import { Box, Button, Typography } from "@mui/material"; // Import the Material UI Button
 import { HeaderBackground, ButtonContainer } from "../styles/StyledComponents"; // Keep your styled header background
 import SearchBar from "../smallcomponents/SearchBar";
@@ -8,13 +9,8 @@ import Image from "next/image";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 
 const Header = () => {
-    const [pathname, setPathname] = useState("");
-
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            setPathname(window.location.pathname);
-        }
-    }, [window.location.pathname]);
+    const router = useRouter(); // Get current pathname
+    const pathname = router.pathname;
 
     // Determine if we are on the feed or profile page
     const isFeedPage = pathname === "/feed";
