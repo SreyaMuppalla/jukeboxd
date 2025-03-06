@@ -74,6 +74,16 @@ export const fetchAlbumData = async (albumId) => {
     const spotifyToken = await spotifyTokenService.getToken();
 
     try {
+      // Step 1: Try to get the album from Firebase
+      const artistData = await getArtistById(albumId);
+      
+      if (artistData) {
+        console.log("Artist found in Firebase");
+        return artistData; // Return the album data from Firebase
+      }
+  
+      // Step 2: If not found in Firebase, fetch from Spotify API
+      console.log("Artist not found in Firebase, fetching from Spotify...");
         const spotifyArtistData = await SpotifyAPIController.getArtistDetails(spotifyToken, artistId);
     
         if (spotifyArtistData) {
