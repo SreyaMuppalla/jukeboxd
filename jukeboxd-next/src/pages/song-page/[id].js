@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Rating, Typography } from '@mui/material';
+import { Box, Rating, Typography, Button } from '@mui/material';
+import { Bookmark } from '@mui/icons-material';
 import {
   Background,
   AlbumContainer,
@@ -12,14 +13,20 @@ import Link from 'next/link';
 import { fetchSongData } from '../../utils/apiCalls'; // Import your API controller
 import { useRouter } from 'next/router'; // Import Next.js useRouter
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
-import { getReviews } from '@/backend/reviews';
+import { getSongReviews } from '@/backend/reviews';
+import {getUser, BookmarkSong, removeSongBookmark} from '@/backend/users';
 import unknownArtwork from '@/images/unknown_artwork.jpg'
 import Image from 'next/image';
+import { useAuth } from '@/backend/auth';
+import { useAtom } from 'jotai';
+import { currItem } from '@/states/currItem';
 
 const SongPage = () => {
   const router = useRouter();
   const { id: songId } = router.query; // Correctly get the albumId from the dynamic route
-  const [loading, setLoading] = useState(true);
+  const {user} = useAuth();
+  const [loading, setLoading] = useState(true);  const { user } = useAuth();
+
   const [error, setError] = useState(null);
   const [songDetails, setSongDetails] = useState({
     name: "",
@@ -28,6 +35,25 @@ const SongPage = () => {
     images: [{}, { url: unknownArtwork }],
   });
   const [reviews, setReviews] = useState([]);
+  const [token, _] = useAtom(currItem); // Access token state
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);  // Fetch reviews on component mount
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        if (!user) return;
+        const data = await getUser(user.uid);
+        const reviews_data = await getSongReviews(songId);
+        setReviews(reviews_data);
+        setIsBookmarked(data.bookmarkedSongs?.includes(songId) || false);
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+        setError(err.message);
+      }
+    };
+
+    fetchReviews();
+  }, [songId, user]);
 
   // Fetch song data when songId is available
   useEffect(() => {
@@ -51,7 +77,39 @@ const SongPage = () => {
     if (songId) {
       getSongData();
     }
-  }, [songId]); // Trigger useEffect whenever songId changes
+  }, [songId, token]); // Trigger useEffect whenever songId changes
+
+  const handleBookmark = async () => {
+    if (!songId) return;
+    if (!user) return;
+    
+    setBookmarkLoading(true);
+
+    if (isBookmarked) {
+      try{
+        await removeSongBookmark(user.uid, songId);
+        setIsBookmarked(false);
+      }
+      catch(error){
+        console.error('Error removing bookmark:', error);
+        setError('Failed to remove bookmark.');
+      }
+      finally{
+        setBookmarkLoading(false);
+      }
+    }
+    else{
+      try {
+        await BookmarkSong(user.uid, songId);
+        setIsBookmarked(true);
+      } catch (error) {
+        console.error('Error bookmarking song:', error);
+        setError('Failed to bookmark song.');
+      } finally {
+        setBookmarkLoading(false);
+      }
+    }
+  };
 
   if (error) {
     return <Typography variant="h5" style={{ color: '#ff4d4d' }}>{error}</Typography>; // Display error if any
@@ -73,13 +131,42 @@ const SongPage = () => {
               height={250}
             />
             <AlbumDetails>
-              {/* Song Title */}
-              <Typography
-                variant="h3"
-                style={{ color: '#fff', marginBottom: '8px' }}
-              >
-                {songDetails.name}
-              </Typography>
+              {/* Song Title and Bookmark Button Container */}
+              <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
+                {/* Song Title */}
+                <Typography
+                  variant="h3"
+                  style={{ color: '#fff', marginBottom: '8px' }}
+                >
+                  {songDetails.name}
+                </Typography>
+                
+                {/* Bookmark Button */}
+                <Button
+                  onClick={handleBookmark}
+                  disabled={bookmarkLoading}
+                  variant="contained"
+                  sx={{
+                    backgroundColor: isBookmarked ? '#1DB954' : '#333',
+                    color: '#fff',
+                    '&:hover': {
+                      backgroundColor: isBookmarked ? '#1ed760' : '#444',
+                    },
+                    minWidth: '120px',
+                    height: '40px',
+                    borderRadius: '20px',
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <Bookmark />
+                  {isBookmarked ? 'Bookmarked' : 'Bookmark'}
+                </Button>
+              </Box>
+              
               {/* Album Name */}
               <Typography
                 variant="h5"
