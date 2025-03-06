@@ -1,24 +1,14 @@
-import { mockFirebase } from 'firestore-jest-mock';
-import mockDatabase from './__mocks__/mockFirestore';
 
-// Mock Firebase before importing your functions
-mockFirebase({ database: mockDatabase });
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
-describe('Internal Firebase API Tests', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+describe("Firebase API Tests", () => {
+  beforeAll(async () => {
+    // Wait 1 second to make sure Firebase Emulator is ready
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 
-  // placeholder test 1
-  test("should return true", () => {
-    expect(true).toBe(true);
+  test("Should create a new user", async () => {
+    const userCredential = await createUserWithEmailAndPassword(global.firebaseAuth, "test@example.com", "password123");
+    expect(userCredential.user.email).toBe("test@example.com");
   });
-
-  // placeholder test 2
-  test("should sum two numbers correctly", () => {
-    const sum = (a, b) => a + b;
-    expect(sum(2, 2)).toBe(4);
-  });
-
 });
-

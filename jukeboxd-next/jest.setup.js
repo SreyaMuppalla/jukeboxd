@@ -1,33 +1,38 @@
-// jest.setup.js
+import { initializeApp, getApps, getApp, deleteApp } from "firebase/app";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import dotenv from "dotenv";
 
-import { mockFirebase } from 'firestore-jest-mock';
-import mockDatabase from './tests/__mocks__/mockFirestore';
+// Load environment variables
+dotenv.config();
 
-// Mock Firebase
-jest.mock('firebase/app', () => ({
-  initializeApp: jest.fn(),
-  firestore: jest.fn()
-}));
+// Firebase Test Config
+const firebaseConfig = {
+  apiKey: "test",
+  authDomain: "test",
+  projectId: "test",
+  storageBucket: "test",
+  messagingSenderId: "test",
+  appId: "test",
+};
 
-jest.mock('firebase/firestore', () => ({
-  getFirestore: jest.fn(),
-  collection: jest.fn(),
-  doc: jest.fn(),
-  addDoc: jest.fn(),
-  setDoc: jest.fn(),
-  getDoc: jest.fn(),
-  getDocs: jest.fn(),
-  updateDoc: jest.fn(),
-  deleteDoc: jest.fn(),
-  query: jest.fn(),
-  where: jest.fn(),
-  orderBy: jest.fn(),
-  limit: jest.fn(),
-  serverTimestamp: jest.fn(() => 'mocked-timestamp'),
-  FieldValue: {
-    serverTimestamp: jest.fn(() => 'mocked-timestamp')
-  }
-}));
+// Ensure Firebase is initialized only once and not deleted before tests
+let app;
+if (!getApps().length) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApp();
+}
 
-// Setup mock database
-mockFirebase({ database: mockDatabase });
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Ensure Firebase Emulators are properly connected
+if (process.env.NODE_ENV === "test") {
+  connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
+  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+}
+
+// Expose Firebase globally for tests
+global.firebaseAuth = auth;
+global.firebaseDb = db;

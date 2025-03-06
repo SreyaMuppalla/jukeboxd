@@ -1,5 +1,5 @@
-const nextJest = require("next/jest");
-const dotenv = require("dotenv");
+import nextJest from "next/jest.js";
+import dotenv from "dotenv";
 
 const createJestConfig = nextJest({
   dir: "./",
@@ -9,15 +9,14 @@ const createJestConfig = nextJest({
 dotenv.config();
 
 // Get ROOT_DIR from environment variable or fallback to current directory
-const ROOT_DIR = process.env.ROOT_DIR || __dirname;
+const ROOT_DIR = process.env.ROOT_DIR || process.cwd();
 
-const customJestConfig = {
-  moduleDirectories: ["node_modules", `${ROOT_DIR}/`],
-  testEnvironment: "jest-environment-jsdom",
-  setupFilesAfterEnv: [`${ROOT_DIR}/jest.setup.js`], // Ensure Jest setup runs before tests
-  moduleNameMapper: {
-    "^mockFirestore$": `${ROOT_DIR}/tests/__mocks__/mockFirestore.js`, // Map firebaseConfig to the mock
-  },
+const jestConfig = {
+  testEnvironment: "node",
+  testEnvironmentOptions: {}, 
+  setupFilesAfterEnv: [`${ROOT_DIR}/jest.setup.js`],
+  watchPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/build/"],
+  globalTeardown: `${ROOT_DIR}/jest.globalTeardown.js`,
 };
 
-module.exports = createJestConfig(customJestConfig);
+export default createJestConfig(jestConfig);
