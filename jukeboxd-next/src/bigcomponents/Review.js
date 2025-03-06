@@ -23,6 +23,8 @@ import pfp from '../images/pfp.jpg'; // Add a placeholder profile pic
 import Link from 'next/link';
 import Image from 'next/image';
 
+//AlbumCover, song_id and ArtistName need to be updated to render correctly. 
+// Currently default and null. 
 const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rating, review_text}) => {
   console.log(userName, rating, review_text)
   return (

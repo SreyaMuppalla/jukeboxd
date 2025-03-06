@@ -1,5 +1,5 @@
 import {db} from "./firebaseConfig";
-import {doc, setDoc, getDoc, addDoc, getDocs, query, collection, where} from "firebase/firestore";
+import {doc, getDoc, addDoc, getDocs, query, collection, where, updateDoc} from "firebase/firestore";
 
 
 export const getReviewById = async (review_id) => {
@@ -20,44 +20,64 @@ export const getReviewById = async (review_id) => {
     }
 };
 
-export const createReview = async (user_id, album_id, song_id, rating, review_text) => {
-    try{
-        if(!user_id || typeof rating !== 'number' || (!album_id && !song_id)){
-            if (!user_id) {
-            throw new Error("Missing user_id parameter");
-            }
-            if (typeof rating !== 'number') {
-            throw new Error("Invalid rating parameter");
-            }
-            if (!album_id && !song_id) {
-            throw new Error("Need to provide either album_id or song_id");
-            }
+export const createReview = async (reviewData) => {
+    try {
+        // Validate required fields
+        const requiredFields = ['user_id', 'rating'];
+        const missingFields = requiredFields.filter(field => !reviewData[field]);
+        
+        if (missingFields.length > 0) {
+            throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
         }
-        const userRef = doc(db, "users", user_id);
+
+        // Validate rating is a number
+        if (typeof reviewData.rating !== 'number') {
+            throw new Error("Invalid rating parameter");
+        }
+
+        // Ensure at least one of album_id or song_id is provided
+        if (!reviewData.album_id && !reviewData.song_id) {
+            throw new Error("Need to provide either album_id or song_id");
+        }
+
+        // Check if user exists
+        const userRef = doc(db, "users", reviewData.user_id);
         const userDoc = await getDoc(userRef);
         if (!userDoc.exists()) {
             throw new Error("User does not exist");
         }
 
+        // Prepare review object with default values and provided data
         const review = {
-            user_id,
-            album_id,
-            song_id,
-            rating,
-            review_text,
-            likes: 0,
-            dislikes: 0,
-            comments: [], 
+            song_id: reviewData.song_id || null,
+            song_name: reviewData.song_name || null,
+            album_id: reviewData.album_id || null,
+            album_name: reviewData.album_name || null,
+            artists: reviewData.artists || [],
+            user_id: reviewData.user_id,
+            images: reviewData.images || null,
+            rating: reviewData.rating,
+            review_text: reviewData.review_text || null,
+            likes: reviewData.likes || 0,
+            dislikes: reviewData.dislikes || 0,
+            date: reviewData.date || new Date(),
+            type: reviewData.type,
             created_at: new Date()
         };
 
-        await addDoc(collection(db, "reviews"), review);
+        // Add review to Firestore
+        const reviewDocRef = await addDoc(collection(db, "reviews"), review);
+        const reviewDocId = reviewDocRef.id;
 
-        const userReviews = userDoc.data().reviews || [];
-        userReviews.push(review);
-        await setDoc(userRef, { reviews: userReviews }, { merge: true });
+        // Update user's reviews array
+        await updateDoc(userRef, {
+            reviews: [...(userDoc.data().reviews || []), reviewDocId]
+        });
+
+        return reviewDocId;
 
     } catch (error) {
+        console.error("Error creating review:", error);
         throw error;
     }
 }
