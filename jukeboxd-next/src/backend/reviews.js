@@ -55,13 +55,13 @@ export const createReview = async (reviewData) => {
             album_name: reviewData.album_name || null,
             artists: reviewData.artists || [],
             user_id: reviewData.user_id,
-            user_pfp: reviewData.user_pfp || null,
-            image: reviewData.image || null,
+            images: reviewData.images || null,
             rating: reviewData.rating,
             review_text: reviewData.review_text || null,
             likes: reviewData.likes || 0,
             dislikes: reviewData.dislikes || 0,
             date: reviewData.date || new Date(),
+            type: reviewData.type,
             created_at: new Date()
         };
 
