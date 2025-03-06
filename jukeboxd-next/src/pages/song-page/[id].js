@@ -20,12 +20,14 @@ import Image from 'next/image';
 import { useAuth } from '@/backend/auth';
 import { useAtom } from 'jotai';
 import { currItem } from '@/states/currItem';
+import ReviewForm from '@/smallcomponents/ReviewForm';
 
 const SongPage = () => {
   const router = useRouter();
   const { id: songId } = router.query; // Correctly get the albumId from the dynamic route
   const {user} = useAuth();
   const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState(null);
 
   const [error, setError] = useState(null);
   const [songDetails, setSongDetails] = useState({
@@ -46,6 +48,7 @@ const SongPage = () => {
         const reviews_data = await getReviews(songId, 'song');
         setReviews(reviews_data);
         setIsBookmarked(data.bookmarkedSongs?.includes(songId) || false);
+        setUserData({ ...data, uid: user.uid });
       } catch (err) {
         console.error("Error fetching reviews:", err);
         setError(err.message);
@@ -274,6 +277,7 @@ const SongPage = () => {
             </ReviewsSection>
           </Box>
         </AlbumContainer>
+      <ReviewForm userData={userData}></ReviewForm>
       </Background>
     </ProtectedRoute>
   );
