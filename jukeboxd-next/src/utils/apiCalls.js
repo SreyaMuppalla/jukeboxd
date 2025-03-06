@@ -75,7 +75,7 @@ export const fetchAlbumData = async (albumId) => {
 
     try {
       // Step 1: Try to get the album from Firebase
-      const artistData = await getArtistById(albumId);
+      const artistData = await getArtistById(artistId);
       
       if (artistData) {
         console.log("Artist found in Firebase");
