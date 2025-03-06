@@ -114,3 +114,26 @@ export const searchUsers = async (username) => {
       return [];
     }
   };
+
+export const BookmarkSong = async (user_id, song_id) => {
+    try {
+        if (!user_id || !song_id) {
+            throw new Error("Missing user_id or song_id parameter");
+        }
+
+        const userRef = doc(db, "users", user_id);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+            throw new Error("User not found");
+        }
+
+        await updateDoc(userRef, {
+            bookmarkedSongs: [...(userDoc.data().bookmarkedSongs || []), song_id]
+        });
+
+        return { message: "Song bookmarked successfully" };
+    } catch (error) {
+        throw error;
+    }
+};
