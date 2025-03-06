@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Button, TextField } from "@mui/material";
+import { Box, Typography, Button, TextField, Tab, Tabs } from "@mui/material";
 import {
     Background,
     ProfileContainer,
@@ -11,10 +11,12 @@ import {
     StatsContainer,
     StatItem,
     ReviewsSection,
+    SongCard,
 } from "../../styles/StyledComponents";
 import Review from "../../bigcomponents/Review";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
 import Image from "next/image";
+import albumpic from '../../images/albumpic.jpg'; // Import the album image
 import { getUser } from "../../backend/users";
 import { useRouter } from "next/router";
 import { useAuth } from "../../backend/auth.js";
@@ -30,6 +32,8 @@ const PersonalProfilePage = () => {
   const [reviews, setReviews] = useState([]);
     const [editingBio, setEditingBio] = useState(false);
     const [bio, setBio] = useState("");
+    const [selectedTab, setSelectedTab] = useState(0);
+
 
     const router = useRouter(); // Initialize navigation using Next.js router
     const { user, logOut } = useAuth();
@@ -251,33 +255,51 @@ const PersonalProfilePage = () => {
                             margin: "32px auto",
                         }}
                     >
-                        {/* Reviews Section Header */}
-                        <Typography
-                            variant="h5"
-                            style={{
-                                color: "#fff",
-                                marginBottom: "16px",
-                                textAlign: "center",
-                            }}
+                        <Tabs
+                            value={selectedTab}
+                            onChange={(event, newValue) => setSelectedTab(newValue)}
+                            centered
+                            textColor="inherit"
+                            TabIndicatorProps={{ style: { backgroundColor: "#1db954" } }}
                         >
-                            Recent Reviews
-                        </Typography>
+                            <Tab label="Recent Reviews" sx={{
+                                color: "white",
+                                fontFamily: "Inter",
+                                textTransform: "none", // Optional: Prevent uppercase transformation
+                                fontSize: "16px",
+                            }}/>
+                            <Tab label="Like to Listen To" sx={{
+                                color: "white",
+                                fontFamily: "Inter",
+                                textTransform: "none", // Optional: Prevent uppercase transformation
+                                fontSize: "16px",
+                            }} />
+                        </Tabs>
+                        {selectedTab === 0 && (
+                            <Box style={{marginTop: "12px"}}>
 
-                        {/* Individual Reviews */}
-                                {reviews.length > 0 ? (
-                        reviews.map((review) => (
+                            {/* Individual Reviews */}
+                                    {reviews.length > 0 ? (
+                            reviews.map((review) => (
                             <Review review={review}/>
-                        ))
-                    ) : (
-                        <>
-                        <Typography 
-                            variant="body1" 
-                            style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
-                        >
-                            No reviews yet.
-                        </Typography>
-                        </>
-                    )}
+                            ))
+                        ) : (
+                            <>
+                            <Typography 
+                                variant="body1" 
+                                style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
+                            >
+                                No reviews yet.
+                            </Typography>
+                            </>
+                        )}
+                        </Box>
+                        )}
+                        {selectedTab === 1 && (
+                            <Box style={{marginTop: "12px"}}>
+                                <SongCard albumCover={albumpic} songName="Song 1" artistName="Artist A" />
+                            </Box>
+                        )}
                     </Box>
                 </ProfileContainer>
                 {/* Logout Button */}
