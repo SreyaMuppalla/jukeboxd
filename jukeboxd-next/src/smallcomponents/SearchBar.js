@@ -174,42 +174,32 @@ const SearchBar = ({ type: searchBarType }) => {
         style={{fontFamily: "Inter"}}
       />
 
-        {recommendations.length > 0 && (
-          <RecommendationList>
-            {recommendations.map((item) => (
-              <RecommendationItem key={item.id} onClick={() => handleItemClick(item)}>
-                {/* Conditionally render images for song, artist, or album */}
-                {
-                (queryType === 'profile' && item.profilePicture) ||
-                (queryType === 'song' && item.album?.images?.[0]?.url) ||
-                (queryType === 'artist' && item.images?.[0]?.url) ||
-                (queryType === 'album' && item.images?.[0]?.url) ? (
-                  <img src={item.album?.images?.[0]?.url || item.images?.[0]?.url} alt={item.name} />
-                ) : null}
+      {recommendations.length > 0 && (
+        <RecommendationList>
+          {recommendations.map((item) => (
+            <RecommendationItem key={item.id} onClick={() => handleItemClick(item)}>
+              {/* Conditionally render images for song, artist, or album */}
+              {(queryType === 'song' && item.album?.images?.[0]?.url) ||
+              (queryType === 'artist' && item.images?.[0]?.url) ||
+              (queryType === 'album' && item.images?.[0]?.url) ? (
+                <img src={item.album?.images?.[0]?.url || item.images?.[0]?.url} alt={item.name} />
+              ) : null}
 
-                <RecommendationDetails>
-                  {queryType === 'profile' ? (
-                    <>
-                      <span className="user-name">{item.username || 'Unknown User'}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="song-title">{item.name}</span>
-                      {(queryType === 'song' || queryType === 'album') && (
-                        <span className="artist-name">
-                          {item.artists && item.artists.length > 0 
-                            ? item.artists.map((artist) => artist.name).join(', ') 
-                            : 'Unknown Artist'}
-                        </span>
-                      )}
-                    </>
-                  )}
-                </RecommendationDetails>
-              </RecommendationItem>
-            ))}
-          </RecommendationList>
-        )}
-      </SearchInputContainer>
+              <RecommendationDetails>
+              <span className="song-title">{item.name}</span>
+            {(queryType === 'song' || queryType === 'album') && (
+              <>
+                <span className="artist-name">
+                  {item.artists && item.artists.length > 0 ? item.artists.map((artist) => artist.name).join(', ') : 'Unknown Artist'}
+                </span>
+              </>
+          )}
+              </RecommendationDetails>
+            </RecommendationItem>
+          ))}
+        </RecommendationList>
+      )}
+    </SearchInputContainer>
     </SearchBarContainer>
   );
 };
