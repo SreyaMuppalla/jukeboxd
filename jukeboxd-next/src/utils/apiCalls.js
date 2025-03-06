@@ -1,5 +1,5 @@
 import { getSongById, addSongById, addSongReviewScore  } from '@/backend/songs'; // Firebase functions
-import { getAlbumById, addAlbumById } from '@/backend/albums'; // Firebase functions
+import { getAlbumById, addAlbumById, addAlbumReviewScore } from '@/backend/albums'; // Firebase functions
 import { getArtistById, addArtistById } from '@/backend/artists';
 import { createReview } from '@/backend/reviews';
 import { SpotifyAPIController } from './SpotifyAPIController'; // Spotify function
@@ -226,7 +226,6 @@ export const fetchAlbumData = async (albumId) => {
       if (artists && artists.length > 0) {
         await addArtistsIfNeeded(artists);
       }
-      console.log(typeof reviewInfo.rating)
       const review = 
       {
         song_id: reviewInfo.song_id ,
@@ -241,7 +240,9 @@ export const fetchAlbumData = async (albumId) => {
         likes: reviewInfo.likes || 0,
         dislikes: reviewInfo.dislikes || 0,
         date: reviewInfo.date || new Date(),
-        type: reviewInfo.type
+        type: reviewInfo.type, 
+        username: reviewInfo.username || null,
+        user_pfp: reviewInfo.user_pfp || null
       }
 
       await createReview(review);
@@ -251,7 +252,7 @@ export const fetchAlbumData = async (albumId) => {
       if (review.type === "song") {
         await addSongReviewScore(review.song_id, review.rating)
       } else if (review.type === "album") {
-        await addAlbumReviewScore(review.album_id_id, review.rating)
+        await addAlbumReviewScore(review.album_id, review.rating)
       }
     } catch (error) {
       console.error("Error adding review:", error);

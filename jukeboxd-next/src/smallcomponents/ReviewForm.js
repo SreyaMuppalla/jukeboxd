@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Drawer,
@@ -17,17 +17,14 @@ import Image from 'next/image';
 import { useAtom } from 'jotai';
 import { currItem } from '@/states/currItem';
 import { addReview } from '@/utils/apiCalls';
-import { useAuth } from '@/backend/auth';
 
-export default function ReviewForm() {
+export default function ReviewForm({ userData }) {
   const [open, setOpen] = useState(false);
   const [review, setReview] = useState('');
   const [rating, setRating] = useState(5);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
   const [selectedItem, setSelectedItem] = useAtom(currItem);
-
-  const {user} = useAuth();
 
   const toggleDrawer = (open) => {
     setOpen(open);
@@ -47,13 +44,15 @@ export default function ReviewForm() {
     console.log(selectedItem.artists)
 
     let reviewObj = {
-      user_id: user.uid,
+      user_id: userData.uid,
       song_name: selectedItem.song_name,
       song_id: selectedItem.song_id,
       album_name: selectedItem.album_name,
       album_id: selectedItem.album_id,
       artists: selectedItem.artists,
       images: selectedItem.images,
+      username: userData.username,
+      user_pfp: userData.profilePic,
       rating: Number(rating),
       review_text: review,
       likes: 0,

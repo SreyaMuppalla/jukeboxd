@@ -7,8 +7,11 @@
 // review
 // upvotes/downvotes
 // extension to comments
-import React from 'react';
-import { Box, Typography, Rating } from '@mui/material'; // Material UI components
+import React, { useState } from 'react';
+import { Box, Typography, Rating, IconButton } from '@mui/material'; // Material UI components
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+
 import {
   ReviewContainer,
   AlbumCover,
@@ -25,18 +28,58 @@ import Image from 'next/image';
 
 //AlbumCover, song_id and ArtistName need to be updated to render correctly. 
 // Currently default and null. 
-const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rating, review_text}) => {
-  console.log(userName, rating, review_text)
+const Review = ({review}) => {
+  const album_ref = "/album-page/" + review.album_id;
+  const song_ref = "/song-page/" + review.song_id;
+  const artist_ref = "/artist-page/" + review.artists[0].id;
+  const profile_ref = "/profile-page/" + review.user_id;
+  //TODO: pull in backend for initial setting of likes and dislikes (replace useState(0))
+  const [likes, setLikes] = useState(0);
+  const [dislikes, setDislikes] = useState(0);
+
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
+
+  const handleLike = () => {
+    if (liked) {
+      setLikes(likes - 1);
+      setLiked(false);
+    } else {
+      setLikes(likes + 1);
+      if (disliked) {
+        setDislikes(dislikes - 1);
+        setDisliked(false);
+      }
+      setLiked(true);
+    }
+  };
+
+  const handleDislike = () => {
+    if (disliked) {
+      setDislikes(dislikes - 1);
+      setDisliked(false);
+    } else {
+      setDislikes(dislikes + 1);
+      if (liked) {
+        setLikes(likes - 1);
+        setLiked(false);
+      }
+      setDisliked(true);
+    }
+  };
+
   return (
     <ReviewContainer>
       {/* Album Cover */}
       <AlbumCover
         style={{ cursor: 'pointer' }} // Pointer cursor for clickable elements
       >
-        <Link href="/album-page">
+        <Link href={album_ref}>
           <Image
-            src={albumCover || albumpic}
+            src={review.images[0].url || albumpic}
             alt="Album Cover"
+            width={100}
+            height={100}
             style={{ width: '100%', height: '100%', borderRadius: '8px' }}
           />
         </Link>
@@ -48,13 +91,13 @@ const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rati
           variant="h6"
           style={{ color: '#fff', marginBottom: '4px', cursor: 'pointer' }} // Pointer cursor
         >
-          <Link href="/song-page">{song_id || "Song Name"}</Link>
+          <Link href={review.type === "song" ? song_ref : album_ref}>{review.type === "song" ? review.song_name : review.album_name || "Song/Album Name"}</Link>
         </Typography>
         <Typography
           variant="subtitle2"
           style={{ color: '#d3d3d3', cursor: 'pointer' }} // Pointer cursor
         >
-          <Link href="artist-page">{ArtistName || "Artist Name"}</Link>
+          <Link href={artist_ref}>{review.artists[0].name || "Artist Name"}</Link>
         </Typography>
       </SongInfo>
 
@@ -63,9 +106,9 @@ const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rati
         <ProfilePic
           style={{ cursor: 'pointer' }} // Pointer cursor
         >
-          <Link href="/profile-page">
+          <Link href={profile_ref}>
             <Image
-              src={userProfilePic || pfp}
+              src={review.user_pfp || pfp}
               alt="User Profile"
               style={{ width: '100%', height: '100%', borderRadius: '50%' }}
             />
@@ -75,18 +118,32 @@ const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rati
           variant="subtitle2"
           style={{ color: '#fff', marginLeft: '8px', cursor: 'pointer' }} // Pointer cursor
         >
-          <Link href="/profile-page">{userName || "Username"}</Link>
+          <Link href={profile_ref}>{review.username || "Username"}</Link>
         </Typography>
         <RatingContainer>
-          <Rating name="read-only" value={rating} readOnly />
+          <Rating name="read-only" value={review.rating} readOnly />
         </RatingContainer>
       </UserInfo>
 
       {/* Review Text */}
       <ReviewText>
-        {review_text || "Review Text"}
+        {review.review_text || "Review Text"}
       </ReviewText>
+      {/* Likes & Dislikes */}
+      <Box display="flex" alignItems="center" mt={1}>
+        <IconButton onClick={handleLike} sx = {{color: "#1DB954"}}>
+          <ThumbUpIcon />
+        </IconButton>
+        <Typography variant="body2" color="white" mx={1}>{likes}</Typography>
+        <IconButton onClick={handleDislike} sx = {{color: "#D9534F"}}>
+          <ThumbDownIcon />
+        </IconButton>
+        <Typography variant="body2" color="white" mx={1}>{dislikes}</Typography>
+      </Box>
+
     </ReviewContainer>
+
+    
   );
 };
 
