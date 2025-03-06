@@ -1,5 +1,6 @@
 import styled from "styled-components";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
+import Image from "next/image";
 
 export const Background = styled.div`
     background-color: #212121;
@@ -319,6 +320,43 @@ export const SearchInput = styled.input`
         border: 2px solid #1db954;
     }
 `;
+
+
+export const SongCard = ({ albumCover, songName, artistName }) => {
+    return (
+        <Box
+            sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                backgroundColor: "#222",
+                padding: "12px",
+                borderRadius: "8px",
+                width: "100%",
+            }}
+        >
+            <Image
+                src={albumCover}
+                alt={songName}
+                width={60}
+                height={60}
+                style={{ borderRadius: "8px" }}
+            />
+            <Box>
+                <Typography
+                    sx={{
+                        color: "white",
+                        fontFamily: "Inter",
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                    }}
+                >
+                    {songName} by {artistName}
+                </Typography>
+            </Box>
+        </Box>
+    );
+};
 
 // Dropdown select input
 export const SearchDropdown = styled.select`
