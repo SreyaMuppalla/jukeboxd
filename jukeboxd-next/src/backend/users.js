@@ -54,6 +54,7 @@ export const createUser = async (user_id, username, email, profilePicture, user_
             profilePicture,
             user_bio,
             bookmarkedSongs: [],
+            bookmarkedAlbums: [],
             created_at: new Date().toISOString(),
             followers: [],
             following: [],
