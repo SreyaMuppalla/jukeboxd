@@ -27,7 +27,7 @@ Music is a core part of Gen Z’s culture, yet there is no centralized platform 
    ```bash
    npm install
    ```
-3. Configure Firebase:
+3. Configure Firebase & S3:
    - Create a `.env.local` file in the `jukeboxd-next` directory and add the Firebase configurations:
      ```sh
      NEXT_PUBLIC_FIREBASE_API_KEY=<your_api_key>
@@ -40,12 +40,16 @@ Music is a core part of Gen Z’s culture, yet there is no centralized platform 
      NEXT_PUBLIC_MEASUREMENT_ID=<your_measurement_id>
      ROOT_DIR=<your_root_dir>
      ```
+   - Create a `.env` file in the `jukeboxd-next` directory and add the S3 configurations:
+     ```sh
+     S3_ACCESS_KEY_ID=<s3_access_key>
+     S3_SECRET_ACCESS_KEY=<s3_secret_access_key>
+     ```
 4. Run the app locally:
     ```bash
     npm run dev
     ```
 The app should now be running on `http://localhost:3000/`.
-
 5. To have upload profile picture feature working, also must start server:
    ```bash
     node /path/to/server.js 
