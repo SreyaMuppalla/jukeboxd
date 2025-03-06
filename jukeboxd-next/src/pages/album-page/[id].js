@@ -20,6 +20,7 @@ import ProtectedRoute from '@/smallcomponents/ProtectedRoute';
 import { useAuth } from '@/backend/auth';
 import { getUser, BookmarkAlbum, removeAlbumBookmark } from '@/backend/users';
 import { getReviews } from '@/backend/reviews';
+import ReviewForm from '@/smallcomponents/ReviewForm';
 
 const AlbumPage = () => {
   const router = useRouter();
@@ -37,6 +38,7 @@ const AlbumPage = () => {
   const [token, _] = useAtom(currItem); // Access token state
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -44,6 +46,7 @@ const AlbumPage = () => {
         if (!user) return;
         const data = await getUser(user.uid);
         setIsBookmarked(data.bookmarkedAlbums?.includes(albumId) || false);
+        setUserData({ ...data, uid: user.uid });
       } catch (err) {
         console.error('Error fetching reviews:', err);
         setError(err.message);
@@ -277,6 +280,7 @@ const AlbumPage = () => {
             </ReviewsSection>
           </Box>
         </AlbumContainer>
+        <ReviewForm userData={userData}></ReviewForm>
       </Background>
     </ProtectedRoute>
   );

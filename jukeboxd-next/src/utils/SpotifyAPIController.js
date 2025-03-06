@@ -1,3 +1,6 @@
+// Remove this import - it's causing the Node.js module errors
+// import { getTraceEvents } from "next/dist/trace";
+
 export const SpotifyAPIController = (function() {
     
     const clientId = '741e4ac323a24168ba7bc4463f9f47c3';
@@ -221,6 +224,32 @@ export const SpotifyAPIController = (function() {
             return null;
         }
     }
+
+    const _getTrendingSongs = async (token) => {
+        const apiUrl = `https://api.spotify.com/v1/browse/new-releases`;
+
+        try {
+            const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+            });
+
+            if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Return the new releases
+            return data.albums.items;
+        } catch (error) {
+            console.error('Error fetching trending songs:', error);
+            return null;
+        }
+    }
     const _getArtistTopSongs = async (token, id) => {
         const apiUrl = `https://api.spotify.com/v1/artists/${id}/top-tracks?market=US`;
 
@@ -270,8 +299,7 @@ export const SpotifyAPIController = (function() {
         searchAlbums(token, query) {
             return _searchAlbums(token, query);
         },
-        getAlbumDetails(token, id)
-        {
+        getAlbumDetails(token, id) {
             return _getAlbumDetails(token, id);
         },
         getAlbumSongs(token, id)
@@ -282,13 +310,14 @@ export const SpotifyAPIController = (function() {
         {
             return _getSongDetails(token, id);
         },
-        getArtistDetails(token, id)
-        {
+        getArtistDetails(token, id) {
             return _getArtistDetails(token, id);
         },
-        getArtistTopSongs(token, id)
-        {
+        getArtistTopSongs(token, id) {
             return _getArtistTopSongs(token, id);
+        },
+        getTrendingSongs(token) {
+            return _getTrendingSongs(token);
         }
     }
 })();
