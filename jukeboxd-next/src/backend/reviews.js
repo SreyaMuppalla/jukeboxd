@@ -1,7 +1,13 @@
 import {db} from "./firebaseConfig";
 import {doc, getDoc, addDoc, getDocs, query, collection, where, updateDoc} from "firebase/firestore";
 
-
+/**
+ * Retrieves a review document from the database by its ID.
+ * 
+ * @param {string} review_id - The ID of the review to retrieve.
+ * @returns {Promise<Object>} The data of the review if found.
+ * @throws {Error} Throws an error if the review ID is missing or the review does not exist.
+ */
 export const getReviewById = async (review_id) => {
     try{
         if(!review_id){
@@ -20,6 +26,28 @@ export const getReviewById = async (review_id) => {
     }
 };
 
+/**
+ * Creates a new review in the database after validating the provided review data.
+ * 
+ * @param {Object} reviewData - The data of the review to create.
+    * @param {string} reviewData.user_id - The ID of the user who is creating the review.
+    * @param {number} reviewData.rating - The rating for the review.
+    * @param {string} reviewData.song_id - The ID of the song being reviewed.
+    * @param {string} reviewData.song_name - The name of the song being reviewed.
+    * @param {string} reviewData.album_id - The ID of the album being reviewed.
+    * @param {string} reviewData.album_name - The name of the album being reviewed.
+    * @param {Array}  reviewData.artists - The list of artists involved with the album/song.
+    * @param {string} reviewData.username - The username of the user creating the review.
+    * @param {string} reviewData.user_pfp - The profile picture of the user creating the review.
+    * @param {Array}  reviewData.images - Array of image URLs related to the review.
+    * @param {string} reviewData.review_text - The review text written by the user.
+    * @param {number} reviewData.likes - The number of likes for the review.
+    * @param {number} reviewData.dislikes - The number of dislikes for the review.
+    * @param {Date}   reviewData.date - The date the review was created.
+    * @param {string} reviewData.type - The type of review (e.g., "song", "album").
+ * @returns {Promise<string>} The ID of the newly created review document.
+ * @throws {Error} Throws an error if any validation fails or if the user does not exist.
+ */
 export const createReview = async (reviewData) => {
     try {
         // Validate required fields
@@ -83,7 +111,13 @@ export const createReview = async (reviewData) => {
         throw error;
     }
 }
-
+/**
+ * Retrieves reviews created by the user's friends (people they are following).
+ * 
+ * @param {string} user_id - The ID of the user whose friends' reviews are to be retrieved.
+ * @returns {Promise<Array>} A list of reviews created by the user's friends.
+ * @throws {Error} Throws an error if the `user_id` parameter is missing or any other error occurs while retrieving data.
+ */
 export const getFriendReviews = async (user_id) => {
     try{
         if(!user_id){
@@ -110,6 +144,14 @@ export const getFriendReviews = async (user_id) => {
     }
 }
 
+/**
+ * Retrieves reviews for a specific item (either a song or an album) based on the provided item ID and type.
+ * 
+ * @param {string} item_id - The ID of the item (song or album) for which to retrieve reviews.
+ * @param {string} song_or_album - The type of item being reviewed, either "song" or "album".
+ * @returns {Promise<Array>} A list of review objects for the specified item.
+ * @throws {Error} Throws an error if either the `song_or_album` or `item_id` parameter is missing.
+ */
 export const getReviews = async (item_id, song_or_album) => {
     try{
         if(!song_or_album){
