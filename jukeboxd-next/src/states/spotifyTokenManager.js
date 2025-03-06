@@ -1,30 +1,37 @@
-import { atom } from 'jotai';
 import { SpotifyAPIController } from '../utils/SpotifyAPIController';
 
-// Atom to hold the current token
-export const tokenAtom = atom(null);
+class spotifyTokenManager {
+  constructor() {
+    this.token = null;
+    this.tokenExpiration = null;
+  }
 
-// Atom to hold the token expiration time
-export const tokenExpirationAtom = atom(null);
+  // A method to get the current token, checking expiration and refreshing if necessary
+  async getToken() {
+    if (!this.token || (this.tokenExpiration && Date.now() >= this.tokenExpiration)) {
+      await this.fetchToken();
+    }
+    return this.token;
+  }
 
-// Fetch token function, which will be used to update token and expiration atoms
-export const fetchTokenAtom = atom(
-  (get) => get(tokenAtom), // Getter for token state
-  async (get, set) => {
-    const token = get(tokenAtom);
-    const tokenExpiration = get(tokenExpirationAtom);
-
+  // Method to actually fetch a new token
+  async fetchToken() {
     try {
-      // Check if the token is expired or missing
-      if (!token || (tokenExpiration && Date.now() >= tokenExpiration)) {
-        const tokenData = await SpotifyAPIController.getToken();
-        if (tokenData) {
-          set(tokenAtom, tokenData.access_token); // Set new token
-          set(tokenExpirationAtom, tokenData.expires_at); // Set expiration time
-        }
+      const tokenData = await SpotifyAPIController.getToken(); // Make the API call to fetch the token
+
+      if (tokenData) {
+        this.token = tokenData.access_token;
+        this.tokenExpiration = tokenData.expires_at;
+      } else {
+        throw new Error('Failed to fetch Spotify token');
       }
     } catch (error) {
       console.error('Error fetching Spotify token:', error);
     }
   }
-);
+}
+
+// Singleton instance of the TokenService
+const spotifyTokenService = new spotifyTokenManager();
+
+export default spotifyTokenService;

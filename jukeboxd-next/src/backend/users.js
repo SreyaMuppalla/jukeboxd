@@ -54,6 +54,7 @@ export const createUser = async (user_id, username, email, profilePicture, user_
             profilePicture,
             user_bio,
             bookmarkedSongs: [],
+            bookmarkedAlbums: [],
             created_at: new Date().toISOString(),
             followers: [],
             following: [],
@@ -188,6 +189,98 @@ export const UnfollowUser = async (user_id, friend_id) => {
         });
 
         return { message: "User unfollowed successfully" };
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const BookmarkSong = async (user_id, song_id) => {
+    try {
+        if (!user_id || !song_id) {
+            throw new Error("Missing user_id or song_id parameter");
+        }
+
+        const userRef = doc(db, "users", user_id);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+            throw new Error("User not found");
+        }
+
+        await updateDoc(userRef, {
+            bookmarkedSongs: [...(userDoc.data().bookmarkedSongs || []), song_id]
+        });
+
+        return { message: "Song bookmarked successfully" };
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const removeSongBookmark = async (user_id, song_id) => {
+    try {
+        if (!user_id || !song_id) {
+            throw new Error("Missing user_id or song_id parameter");
+        }
+
+        const userRef = doc(db, "users", user_id);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+            throw new Error("User not found");
+        }
+
+        await updateDoc(userRef, {
+            bookmarkedSongs: userDoc.data().bookmarkedSongs.filter(id => id !== song_id)
+        });
+
+        return { message: "Song removed from bookmarks successfully" };
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const BookmarkAlbum = async (user_id, album_id) => {
+    try {
+        if (!user_id || !album_id) {
+            throw new Error("Missing user_id or album_id parameter");
+        }
+
+        const userRef = doc(db, "users", user_id);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+            throw new Error("User not found");
+        }
+
+        await updateDoc(userRef, {
+            bookmarkedAlbums: [...(userDoc.data().bookmarkedAlbums || []), album_id]
+        });
+
+        return { message: "Album bookmarked successfully" };
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const removeAlbumBookmark = async (user_id, album_id) => {
+    try {
+        if (!user_id || !album_id) {
+            throw new Error("Missing user_id or album_id parameter");
+        }
+
+        const userRef = doc(db, "users", user_id);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+            throw new Error("User not found");
+        }
+
+        await updateDoc(userRef, {
+            bookmarkedAlbums: userDoc.data().bookmarkedAlbums.filter(id => id !== album_id)
+        });
+
+        return { message: "Album removed from bookmarks successfully" };
     } catch (error) {
         throw error;
     }

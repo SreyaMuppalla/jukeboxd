@@ -1,7 +1,14 @@
 import {db} from "./firebaseConfig";
 import {doc, setDoc, getDoc} from "firebase/firestore";
 
-// Add artist by ID to Firestore
+/**
+ * Adds an artist document to Firestore with the provided artist data.
+ * @param {string} artistId - The unique identifier of the artist.
+ * @param {Object} artistData - The data for the artist to be added.
+    * @param {string} artistData.id - The unique identifier of the artist.
+    * @param {string} artistData.name - The name of the artist.
+ * @throws {Error} Throws an error if there is an issue fetching the album data (e.g., network error).
+ */
 export const addArtistById = async (artistId, artistData) => {
   try {
     // Create a reference to the 'artists' collection with artistId as the document ID
@@ -16,7 +23,14 @@ export const addArtistById = async (artistId, artistData) => {
   }
 };
 
-// Get artist by ID from Firestore
+/**
+ * Retrieves an artist document from Firestore using the provided artist ID.
+ * @param {string} artistId - The unique identifier of the artist.
+ * @returns {Promise<Object|null>} - The artist data if found, or null if the artist is not found.
+    * @returns {string} artistData.id - The unique identifier of the artist.
+    * @returns {string} artistData.name - The name of the artist.
+ * @throws {Error} Throws an error if there is an issue fetching the album data (e.g., network error).
+ */
 export const getArtistById = async (artistId) => {
   try {
     // Create a reference to the artist document with the given artistId
