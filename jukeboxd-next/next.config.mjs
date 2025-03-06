@@ -5,8 +5,8 @@ const nextConfig = {
     styledComponents: true,
   },
   images: {
-    domains: ['i.scdn.co'], // Add 'i.scdn.co' here to allow loading images from spotify
-  }
+    domains: ['i.scdn.co', 'lh3.googleusercontent.com'], // Add 'i.scdn.co' here to allow loading images from spotify
+  },
 };
 
 export default nextConfig;

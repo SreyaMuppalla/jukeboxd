@@ -6,16 +6,13 @@ import {
   AlbumInfoContainer,
   AlbumDetails,
   ReviewsSection,
-  LargeAlbumCover,
 } from '../../styles/StyledComponents';
 import Review from '../../bigcomponents/Review';
 import Link from 'next/link';
-import { SpotifyAPIController } from '../../utils/SpotifyAPIController'; // Import your API controller
+import { fetchSongData } from '../../utils/apiCalls'; // Import your API controller
 import { useRouter } from 'next/router'; // Import Next.js useRouter
-import { useAtom } from 'jotai';
-import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spotifyTokenManager'; // Updated import
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
-import {getSongReviews} from '@/backend/reviews';
+import { getSongReviews } from '@/backend/reviews';
 import unknownArtwork from '@/images/unknown_artwork.jpg'
 import Image from 'next/image';
 
@@ -26,22 +23,17 @@ const SongPage = () => {
   const [error, setError] = useState(null);
   const [songDetails, setSongDetails] = useState({
     name: "",
-    artists: [{id: "", name: ""}],
-    album: {id: "", name: ""},
-    images: [{},{url: unknownArtwork}],
+    artists: [{ id: "", name: "" }],
+    album: { id: "", name: "" },
+    images: [{}, { url: unknownArtwork }],
   });
-  const [token, _] = useAtom(tokenAtom); // Access token state
-  const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
-  const [, fetchToken] = useAtom(fetchTokenAtom); // Trigger token fetch
   const [song_reviews, setReviews] = useState([]);
 
-
-
+  // Fetch reviews on component mount
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        // Replace 'user1' with the actual user ID
-        const songId = 'song1';
+        const songId = 'song1'; // Replace with dynamic songId
         const reviews_data = await getSongReviews(songId);
         setReviews(reviews_data);
       } catch (err) {
@@ -53,45 +45,28 @@ const SongPage = () => {
     fetchReviews();
   }, []);
 
-
-
+  // Fetch song data when songId is available
   useEffect(() => {
-    const fetchTokenOnMount = async () => {
+    const getSongData = async () => {
       try {
-        await fetchToken(); // Ensure token is fetched on load
-      } catch (error) {
-        console.error('Error fetching token:', error);
-      }
-    };
-  
-    fetchTokenOnMount(); // Call the function
-  }, [fetchToken]); // fetchToken as dependency
+        if (songId) {
+          setError(null); // Reset any previous e          
 
-  useEffect(() => {
-    if (songId && token) { // Ensure songId and token are present before making API calls
-      const fetchSongData = async () => {
-        if (!token || Date.now() >= tokenExpiration) {
-          console.log('Token expired, fetching a new one...');
-          await fetchToken(); // Refresh the token if expired
-        }
-        try {
-          setError(null); // Reset any previous errors
-
-          // Fetch song details
-          const details = await SpotifyAPIController.getSongDetails(token, songId);
-
+          const details = await fetchSongData(songId);
+          
           // Update state with the fetched data
           setSongDetails(details);
-
-        } catch (error) {
-          console.error('Error fetching song data:', error);
-          setError('Failed to fetch song details.');
         }
-      };
+      } catch (error) {
+        console.error('Error fetching song data:', error);
+        setError('Failed to fetch song details.');
+      }
+    };
 
-      fetchSongData();
+    if (songId) {
+      getSongData();
     }
-  }, [songId, token]); // Trigger useEffect whenever songId or token changes
+  }, [songId]); // Trigger useEffect whenever songId changes
 
   if (error) {
     return <Typography variant="h5" style={{ color: '#ff4d4d' }}>{error}</Typography>; // Display error if any
@@ -104,12 +79,12 @@ const SongPage = () => {
           {/* Song Info Section */}
           <AlbumInfoContainer>
             {/* Album Cover */}
-              <Image
-                src={songDetails.images[1]?.url} // First image from the images array
-                alt={songDetails.name + ' Album Cover'}
-                width={250}
-                height={250}
-              />
+            <Image
+              src={songDetails.images[1]?.url} // First image from the images array
+              alt={songDetails.name + ' Album Cover'}
+              width={250}
+              height={250}
+            />
             <AlbumDetails>
               {/* Song Title */}
               <Typography
@@ -145,7 +120,6 @@ const SongPage = () => {
                   }}
                 >
                   {songDetails.album.name}{' '}
-                  {/* Display the song or album name */}
                 </Link>
               </Typography>
               {/* Artist Names */}
@@ -177,7 +151,6 @@ const SongPage = () => {
                     >
                       {artist.name}
                     </Link>
-                    {/* Add a comma between artist names, but not after the last one */}
                     {index < songDetails.artists.length - 1 && ', '}
                   </span>
                 ))}
@@ -219,5 +192,6 @@ const SongPage = () => {
       </Background>
     </ProtectedRoute>
   );
-}
+};
+
 export default SongPage;

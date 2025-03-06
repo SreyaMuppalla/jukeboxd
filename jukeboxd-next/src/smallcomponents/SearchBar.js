@@ -12,9 +12,10 @@ import {
 } from '@/styles/StyledComponents'; // Assuming these styled components exist
 import { useRouter } from 'next/router';
 import { SpotifyAPIController } from '@/utils/SpotifyAPIController';
+import { currItem } from '@/states/currItem';
+import { searchUsers } from '@/backend/users';
 import { useAtom } from 'jotai';
-import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '@/states/spotifyTokenManager';
-import { currSong } from '@/states/currSong';
+import spotifyTokenService from '../states/spotifyTokenManager'; // Import the singleton
 
 const SearchBar = ({ type: searchBarType }) => {
   const [query, setQuery] = useState('');
@@ -22,79 +23,82 @@ const SearchBar = ({ type: searchBarType }) => {
   const [queryType, setQueryType] = useState('song');
 
   const router = useRouter();
-  const [selectedSong, setSelectedSong] = useAtom(currSong);
-
-  // Token-related states
-  const [token] = useAtom(tokenAtom);
-  const [tokenExpiration] = useAtom(tokenExpirationAtom);
-  const [, fetchToken] = useAtom(fetchTokenAtom);
+  const [selectedItem, setSelectedItem] = useAtom(currItem);
 
   // Fetch token on mount
   useEffect(() => {
     const initializeToken = async () => {
       try {
-        await fetchToken();
+        await spotifyTokenService.getToken(); // Fetch token from the singleton
       } catch (error) {
         console.error('Error fetching token:', error);
       }
     };
     initializeToken();
-  }, [fetchToken]);
+  }, []);
 
   // Debounced fetch recommendations
-const debouncedFetchRecommendations = useCallback(
-  debounce(async (inputQuery, queryType) => {
-    if (inputQuery.length > 2) {
-      if (!token || Date.now() >= tokenExpiration) {
-        await fetchToken();
-      }
+  const debouncedFetchRecommendations = useCallback(
+    debounce(async (inputQuery, queryType) => {
+      if (inputQuery.length > 2) {
+        const token = await spotifyTokenService.getToken(); // Get the current token
 
-      try {
-        let results = [];
-        if (queryType === 'song') {
-          results = await SpotifyAPIController.searchSongs(token, inputQuery);
-        } else if (queryType === 'artist') {
-          results = await SpotifyAPIController.searchArtists(token, inputQuery);
-        } else if (queryType === 'album') {
-          results = await SpotifyAPIController.searchAlbums(token, inputQuery);
-        }
-
-        const uniqueResults = results.filter((item, index, self) => {
-          if (queryType === 'album') {
-            return index === self.findIndex((t) =>
-              t.name === item.name &&
-              t.release_date === item.release_date &&
-              t.total_tracks === item.total_tracks &&
-              t.artists.map((artist) => artist.name).join(', ') === item.artists.map((artist) => artist.name).join(', ')
-            );
-          } else if (queryType === 'song') {
-            return index === self.findIndex((t) =>
-              t.name === item.name &&
-              t.album?.name === item.album?.name &&
-              t.album?.release_date === item.album?.release_date &&
-              t.artists.map((artist) => artist.name).join(', ') === item.artists.map((artist) => artist.name).join(', ')
-            );
-          } else {
-            return index === self.findIndex((t) => t.id === item.id);
+        try {
+          let results = [];
+          if (queryType === 'song') {
+            results = await SpotifyAPIController.searchSongs(token, inputQuery);
+          } else if (queryType === 'artist') {
+            results = await SpotifyAPIController.searchArtists(token, inputQuery);
+          } else if (queryType === 'album') {
+            results = await SpotifyAPIController.searchAlbums(token, inputQuery);
+          } else if (queryType === 'profile') {
+            results = await searchUsers(inputQuery);
+            if (results) {
+              if (Array.isArray(results) === false) {
+                results = [results];
+              }
+            } else {
+              results = [];
+            }
           }
-        });
 
-        setRecommendations(uniqueResults.slice(0, 5));
-      } catch (error) {
-        console.error('Error fetching recommendations:', error);
+          const uniqueResults = results.filter((item, index, self) => {
+            if (queryType === 'album') {
+              return index === self.findIndex((t) =>
+                t.name === item.name &&
+                t.release_date === item.release_date &&
+                t.total_tracks === item.total_tracks &&
+                t.artists.map((artist) => artist.name).join(', ') === item.artists.map((artist) => artist.name).join(', ')
+              );
+            } else if (queryType === 'song') {
+              return index === self.findIndex((t) =>
+                t.name === item.name &&
+                t.album?.name === item.album?.name &&
+                t.album?.release_date === item.album?.release_date &&
+                t.artists.map((artist) => artist.name).join(', ') === item.artists.map((artist) => artist.name).join(', ')
+              );
+            }
+            else {
+              return index === self.findIndex((t) => t.id === item.id);
+            }
+          });
+
+          setRecommendations(uniqueResults.slice(0, 5));
+        } catch (error) {
+          console.error('Error fetching recommendations:', error);
+        }
+      } else {
+        setRecommendations([]);
       }
-    } else {
-      setRecommendations([]);
-    }
-  }, 300), // 300ms debounce delay
-  [token, tokenExpiration, fetchToken]
-);
+    }, 300), // 300ms debounce delay
+    []
+  );
 
-// Handle query type change
-useEffect(() => {
-  setRecommendations([]); // Clear recommendations immediately on query type change
-  debouncedFetchRecommendations(query, queryType); // Fetch new recommendations based on the new query type
-}, [queryType, query]); // Trigger when queryType or query changes
+  // Handle query type change
+  useEffect(() => {
+    setRecommendations([]); // Clear recommendations immediately on query type change
+    debouncedFetchRecommendations(query, queryType); // Fetch new recommendations based on the new query type
+  }, [queryType, query]); // Trigger when queryType or query changes
 
   // Handle clicks based on the search bar type
   const handleItemClick = (item) => {
@@ -103,12 +107,35 @@ useEffect(() => {
       setQuery(''); // Clear input after navigation
       setRecommendations([]);
     };
-
     const handleReviewSelection = () => {
-      const selectedImage =
-        item.album?.images?.[0]?.url || item.images?.[0]?.url || ''; // Handle song, artist, or album image
+      const selectedImages = item.album?.images || item.images || ''; // Handle song, artist, or album image
 
-      setSelectedSong({ name: item.name, image: selectedImage });
+      console.log(item)
+
+      let itemInfo = {
+        album_id: item.id,
+        album_name: item.name,
+        artists: item.artists.map(artist => ({
+          id: artist.id,
+          name: artist.name
+        })),  // Array of artist ids and names
+        song_id: null,
+        song_name: null,
+        images: selectedImages,
+        review_type: queryType,  // Either 'album' or 'song'
+      };
+    
+      if (queryType === 'song') {
+        itemInfo = {
+          ...itemInfo,
+          album_id: item.album.id,
+          album_name: item.album.name,
+          song_id: item.id,
+          song_name: item.name,
+        };
+      }
+    
+      setSelectedItem(itemInfo);
       setQuery(''); // Clear input after selection
       setRecommendations([]);
     };
@@ -123,6 +150,7 @@ useEffect(() => {
           {/* Dynamic dropdown options based on searchBarType */}
           {searchBarType === 'header' && (
             <>
+              <option value="profile">User</option>
               <option value="song">Song</option>
               <option value="artist">Artist</option>
               <option value="album">Album</option>

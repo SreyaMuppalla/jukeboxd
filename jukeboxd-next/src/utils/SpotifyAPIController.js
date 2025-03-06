@@ -68,68 +68,63 @@ export const SpotifyAPIController = (function() {
         return data.albums.items;
     }
 
-    const _getAlbumSongs = async (token, id) => {
-        const apiUrl = `https://api.spotify.com/v1/albums/${id}/tracks`;
-        
-        try {
-            const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-            });
-
-            if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            // Return an object with all the tracks from the album, including the track id
-            return data.items;
-        } catch (error) {
-            console.error('Error fetching album tracks:', error);
-            return null;
-        }
-    }
-
     const _getAlbumDetails = async (token, id) => {
 
-        const apiUrl = `https://api.spotify.com/v1/albums/${id}`;
-
         try {
-            const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
+            // Step 1: Fetch album details
+            const albumDetailsUrl = `https://api.spotify.com/v1/albums/${id}`;
+            const albumResponse = await fetch(albumDetailsUrl, {
+              method: 'GET',
+              headers: {
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
+                'Content-Type': 'application/json',
+              },
             });
-
-            if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+        
+            if (!albumResponse.ok) {
+              throw new Error(`HTTP error! Status: ${albumResponse.status}`);
             }
-
-            const data = await response.json();
-
-            // Return the album details including artist names and IDs
+        
+            const albumData = await albumResponse.json();
+        
+            // Step 2: Fetch album tracks
+            const albumTracksUrl = `https://api.spotify.com/v1/albums/${id}/tracks`;
+            const tracksResponse = await fetch(albumTracksUrl, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            });
+        
+            if (!tracksResponse.ok) {
+              throw new Error(`HTTP error! Status: ${tracksResponse.status}`);
+            }
+        
+            const tracksData = await tracksResponse.json();
+        
+        
+            // Step 4: Return the combined album and tracks data
             return {
-            id: data.id,
-            name: data.name,
-            artists: data.artists.map(artist => ({
-                id: artist.id,
-                name: artist.name
-            })),
-            release_date: data.release_date,
-            total_tracks: data.total_tracks,
-            external_urls: data.external_urls.spotify,
-            images: data.images // Array of image objects (useful for displaying album art)
-            };
-        } catch (error) {
-            console.error('Error fetching album details:', error);
+                id: albumData.id,
+                name: albumData.name,
+                artists: albumData.artists.map(artist => ({
+                  id: artist.id,
+                  name: artist.name,
+                })),
+                images: albumData.images, // Album art
+                songs: tracksData.items.map(track => ({
+                  id: track.id,
+                  name: track.name,
+                })), // List of track IDs and names
+                review_score: 0,
+                num_reviews: 0
+              };
+        
+          } catch (error) {
+            console.error('Error fetching album details and tracks:', error);
             return null;
-        }
+          }
     }
 
     const _getSongDetails = async (token, id) => {
@@ -159,8 +154,9 @@ export const SpotifyAPIController = (function() {
                 id: artist.id,
                 name: artist.name
             })),
-            release_date: data.release_date,
-            images: data.album.images // Array of image objects (useful for displaying album art)
+            images: data.album.images, // Array of image objects (useful for displaying album art)
+            review_score: 0,
+            num_reviews: 0
             };
         } catch (error) {
             console.error('Error fetching song details:', error);
@@ -168,7 +164,7 @@ export const SpotifyAPIController = (function() {
         }
 
     }
-    const _getTopArtistDetails = async (token, id) => 
+    const _getArtistDetails = async (token, id) => 
     {
         const apiUrl = `https://api.spotify.com/v1/artists/${id}`;
 
@@ -200,6 +196,32 @@ export const SpotifyAPIController = (function() {
         }
     }
 
+    const _getAlbumSongs = async (token, id) => {
+        const apiUrl = `https://api.spotify.com/v1/albums/${id}/tracks`;
+        
+        try {
+            const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+            });
+
+            if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Return an object with all the tracks from the album, including the track id
+            return data.items;
+        } catch (error) {
+            console.error('Error fetching album tracks:', error);
+            return null;
+        }
+    }
+
     return {
         getToken() {
             return _getToken();
@@ -213,10 +235,6 @@ export const SpotifyAPIController = (function() {
         searchAlbums(token, query) {
             return _searchAlbums(token, query);
         },
-        getAlbumSongs(token, id)
-        {
-            return _getAlbumSongs(token, id);
-        },
         getAlbumDetails(token, id)
         {
             return _getAlbumDetails(token, id);
@@ -225,9 +243,13 @@ export const SpotifyAPIController = (function() {
         {
             return _getSongDetails(token, id);
         },
-        getArtistsDetails(token, id)
+        getArtistDetails(token, id)
         {
-            return _getTopArtistDetails(token, id);
+            return _getArtistDetails(token, id);
+        },
+        getAlbumSongs(token, id)
+        {
+            return _getAlbumSongs(token, id);
         }
     }
 })();

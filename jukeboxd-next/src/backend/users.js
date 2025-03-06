@@ -1,5 +1,5 @@
 import {db} from "./firebaseConfig";
-import {doc, setDoc, getDoc, updateDoc} from "firebase/firestore";
+import {doc, setDoc, getDoc, updateDoc, query, where, orderBy, startAt, endAt, getDocs, collection} from "firebase/firestore";
 
 export const getUser = async (user_id) => {
     try{
@@ -19,7 +19,25 @@ export const getUser = async (user_id) => {
     }
 };
 
-export const createUser = async (user_id, email, profilePicture, user_bio) => {
+export const checkUser = async (user_id) => {
+  try {
+    if (!user_id) {
+      throw new Error('Missing user_id parameter');
+    }
+
+    const userDoc = await getDoc(doc(db, 'users', user_id));
+    if (!userDoc.exists()) {
+    //   throw new Error('User not found');
+        return false
+    }
+
+    return true
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createUser = async (user_id, username, email, profilePicture, user_bio) => {
     try{
         if(!user_id || !email){
             if(!user_id){
@@ -31,7 +49,7 @@ export const createUser = async (user_id, email, profilePicture, user_bio) => {
         }
 
         const user = {
-            username: user_id,
+            username: username,
             email,
             profilePicture,
             user_bio,
@@ -77,3 +95,61 @@ export const updateUserBio = async (user_id, new_bio) => {
         throw error;
     }
 };
+
+export const searchUsers = async (username) => {
+    const usersRef = collection(db, "users");
+    const q = query(
+      usersRef,
+      orderBy("username"),
+      startAt(username),
+      endAt(username + "\uf8ff")
+    );
+  
+    try {
+      const querySnapshot = await getDocs(q);
+      const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return users;
+    } catch (error) {
+      console.error("Error searching for users:", error);
+      return [];
+    }
+  };
+
+  export const followUser = async (user_id, friend_id) => {
+    try {
+        if (!user_id || !friend_id) {
+            throw new Error("Missing user_id or friend_id parameter");
+        }
+
+        const userRef = doc(db, "users", user_id);
+        const friendRef = doc(db, "users", friend_id);
+        const userDoc = await getDoc(userRef);
+        const friendDoc = await getDoc(friendRef);
+
+        if (!userDoc.exists() || !friendDoc.exists()) {
+            throw new Error("User not found");
+        }
+
+        const userFollowing = userDoc.data().following || [];
+        const friendFollowers = friendDoc.data().followers || [];
+
+        if (userFollowing.includes(friend_id) || friendFollowers.includes(user_id)) {
+            throw new Error("User is already following this friend");
+        }
+
+        userFollowing.push(friend_id);
+        friendFollowers.push(user_id);
+
+        await updateDoc(userRef, {
+            following: userFollowing
+        });
+
+        await updateDoc(friendRef, {
+            followers: friendFollowers
+        });
+
+        return { message: "User followed successfully" };
+    } catch (error) {
+        throw error;
+    } 
+}

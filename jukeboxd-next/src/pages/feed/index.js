@@ -6,18 +6,21 @@ import Review from "../../bigcomponents/Review";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 import { getFriendReviews } from '@/backend/reviews';
 import ReviewForm from '@/smallcomponents/ReviewForm'
+import { useAuth } from "../../backend/auth.js";
 
 const FeedPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const {user} = useAuth()
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        // Replace 'user1' with the actual user ID
-        const userId = 'user1';
-        const reviews_data = await getFriendReviews(userId);
+        if (!user) {
+            return;
+        }
+        const reviews_data = await getFriendReviews(user.uid);
         setReviews(reviews_data);
       } catch (err) {
         console.error("Error fetching reviews:", err);
@@ -28,7 +31,7 @@ const FeedPage = () => {
     };
 
     fetchReviews();
-  }, []);
+  }, [user]);
 
   if (loading) return <div>Loading profile...</div>;
   if (error) return <div>Error loading reviews: {error}</div>;
