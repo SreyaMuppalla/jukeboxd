@@ -7,8 +7,11 @@
 // review
 // upvotes/downvotes
 // extension to comments
-import React from 'react';
-import { Box, Typography, Rating } from '@mui/material'; // Material UI components
+import React, { useState } from 'react';
+import { Box, Typography, Rating, IconButton } from '@mui/material'; // Material UI components
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+
 import {
   ReviewContainer,
   AlbumCover,
@@ -27,6 +30,41 @@ import Image from 'next/image';
 // Currently default and null. 
 const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rating, review_text}) => {
   console.log(userName, rating, review_text)
+  //TODO: pull in backend for initial setting of likes and dislikes (replace useState(0))
+  const [likes, setLikes] = useState(0);
+  const [dislikes, setDislikes] = useState(0);
+
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
+
+  const handleLike = () => {
+    if (liked) {
+      setLikes(likes - 1);
+      setLiked(false);
+    } else {
+      setLikes(likes + 1);
+      if (disliked) {
+        setDislikes(dislikes - 1);
+        setDisliked(false);
+      }
+      setLiked(true);
+    }
+  };
+
+  const handleDislike = () => {
+    if (disliked) {
+      setDislikes(dislikes - 1);
+      setDisliked(false);
+    } else {
+      setDislikes(dislikes + 1);
+      if (liked) {
+        setLikes(likes - 1);
+        setLiked(false);
+      }
+      setDisliked(true);
+    }
+  };
+
   return (
     <ReviewContainer>
       {/* Album Cover */}
@@ -88,7 +126,21 @@ const Review = ({albumCover, song_id, ArtistName, userProfilePic, userName, rati
       <ReviewText>
         {review_text || "Review Text"}
       </ReviewText>
+      {/* Likes & Dislikes */}
+      <Box display="flex" alignItems="center" mt={1}>
+        <IconButton onClick={handleLike} sx = {{color: "#1DB954"}}>
+          <ThumbUpIcon />
+        </IconButton>
+        <Typography variant="body2" color="white" mx={1}>{likes}</Typography>
+        <IconButton onClick={handleDislike} sx = {{color: "#D9534F"}}>
+          <ThumbDownIcon />
+        </IconButton>
+        <Typography variant="body2" color="white" mx={1}>{dislikes}</Typography>
+      </Box>
+
     </ReviewContainer>
+
+    
   );
 };
 
