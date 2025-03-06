@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import unknownArtwork from '@/images/unknown_artwork.jpg';
 import ProtectedRoute from '@/smallcomponents/ProtectedRoute';
+import ReviewForm from '@/smallcomponents/ReviewForm';
 
 const AlbumPage = () => {
   const router = useRouter();
@@ -178,6 +179,7 @@ const AlbumPage = () => {
             </ReviewsSection>
           </Box>
         </AlbumContainer>
+        <ReviewForm></ReviewForm>
       </Background>
     </ProtectedRoute>
   );

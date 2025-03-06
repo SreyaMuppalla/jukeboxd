@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { fetchSongData } from '../../utils/apiCalls'; // Import your API controller
 import { useRouter } from 'next/router'; // Import Next.js useRouter
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
+import ReviewForm from '@/smallcomponents/ReviewForm';
 import { getSongReviews } from '@/backend/reviews';
 import unknownArtwork from '@/images/unknown_artwork.jpg'
 import Image from 'next/image';
@@ -189,6 +190,7 @@ const SongPage = () => {
             </ReviewsSection>
           </Box>
         </AlbumContainer>
+      <ReviewForm></ReviewForm>
       </Background>
     </ProtectedRoute>
   );
