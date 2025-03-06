@@ -13,9 +13,8 @@ const SongsCarousel = () => {
   useEffect(() => {
     // Fetch trending songs from Spotify API
     const getTrendingSongs = async () => {
-      const spotifyToken = await spotifyTokenService.getToken();
       try {
-        const spotifyTrending = await fetchTrendingSongs(spotifyToken);
+        const spotifyTrending = await fetchTrendingSongs();
         if (spotifyTrending) {
           // Step 3: Return the raw album data from Spotify
           setSongs(spotifyTrending);
