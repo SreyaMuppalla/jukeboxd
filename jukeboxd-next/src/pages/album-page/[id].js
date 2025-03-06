@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Rating, Typography, Button } from '@mui/material';
+import { Bookmark } from '@mui/icons-material';
 import {
   Background,
   AlbumContainer,
@@ -152,6 +153,7 @@ const AlbumPage = () => {
                     fontWeight: 'bold',
                   }}
                 >
+                  <Bookmark />
                   {isBookmarked ? 'Bookmarked' : 'Bookmark'}
                 </Button>
               {/* Artist Name */}
