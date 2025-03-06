@@ -120,3 +120,4 @@ This starts the emulators and executes all relevant test cases.
 ```bash
    npx jest --clearCache
 ```
+**Note:** Firebase emulators require a system-wide Java installation. Please install Java if you encounter related errors.
