@@ -47,7 +47,7 @@ Music is a core part of Gen Z’s culture, yet there is no centralized platform 
 The app should now be running on `http://localhost:3000/`.
 
 ## Directory Structure
-The project follows a structures directory layour to keep components, pages and styles organized. The src/ directory contains reusable components such as `bigcomponents/` and `smallcomponents/`, page specific files (`pages/`), global styles (`styles/`) and backend interaction files (`backend/`). A `tests/` directory is included at the root for Jest-based testing, with mock implementations of the database stored in `tests/__mocks__/`. Configuration files like `jest.config.js` and `jest.setup.js` ensure smooth testing setup, whereas `package-lock.json` and `package.json` ensure npm package dependencies are included across development environments. Lastly, `firebase.json`, `firestore.rules` and `firebase.indexes.json` include the standard firebase configurations.
+The project follows a structures directory layour to keep components, pages and styles organized. The src/ directory contains reusable components such as `bigcomponents/` and `smallcomponents/`, page specific files (`pages/`), global styles (`styles/`) and backend interaction files (`backend/`). A `tests/` directory is included at the root for Jest-based testing containing several test suites verifying API functionality. Configuration files like `jest.config.js`, `jest.setup.js`, and `jest.globalTeardown.js` ensure smooth testing setup and teardown, whereas `package-lock.json` and `package.json` ensure npm package dependencies are included across development environments. Lastly, `firebase.json`, `firestore.rules` and `firebase.indexes.json` include the standard firebase configurations.
 
 ```
 jukeboxd-next/
@@ -104,15 +104,19 @@ jukeboxd-next/
 ├── tailwind.config.mjs
 ├── tests
 │   ├── [several test files, ex: "WriteAReview.test.js"/"internalAPIs.test.js"]
-│   ├── __mocks__ (store mock implementations of modules like external dependencies)
-│   │   ├── mockFirestore.js
 ├── jest.config.js
 ├── jest.setup.js
+├── jest.globalTeardown.js
 └── README.md
 ```
 
 ## Running Local Tests
-We are using jest testing and so all you need to do is run:
+We use Jest for testing with Firebase emulators, which we've configured to start automatically. Simply run:
 ```bash
    npm test
+```
+This starts the emulators and executes all relevant test cases.
+**Tip:** clear Jest cache if any issues arise.
+```bash
+   npx jest --clearCache
 ```
