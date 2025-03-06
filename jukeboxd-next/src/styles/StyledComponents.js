@@ -353,6 +353,7 @@ export const SongCard = ({ albumCover, songName, artistName }) => {
                 >
                     {songName} by {artistName}
                 </Typography>
+
             </Box>
         </Box>
     );
@@ -361,6 +362,7 @@ export const SongCard = ({ albumCover, songName, artistName }) => {
 // Dropdown select input
 export const SearchDropdown = styled.select`
     padding: 10px;
+    padding-right: 30px; /* Give space for the arrow */
     font-size: 16px;
     border-radius: 20px;
     border: none;
@@ -368,12 +370,22 @@ export const SearchDropdown = styled.select`
     background-color: #333;
     color: #fff;
     text-align: center;
+    text-align-last: center; /* Keeps the selected text centered */
     cursor: pointer;
+    appearance: none; /* Hide default arrow */
+    position: relative;
+
+    /* Custom arrow */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='12px' height='12px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center; /* Keep arrow aligned */
+    background-size: 20px; /* Adjust size of the arrow */
 
     &:focus {
         border: 2px solid #1db954;
     }
 `;
+
 
 export const SearchInputContainer = styled.div`
     display: flex;
