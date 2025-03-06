@@ -1,4 +1,4 @@
-require('dotenv').config({ path: 'jukeboxd-next/.env' });
+require('dotenv').config({ path: ".env" });
 const aws = require('aws-sdk');
 const { promisify } = require("util");
 const crypto = require("crypto");  
