@@ -89,7 +89,7 @@ export const getFriendReviews = async (user_id) => {
         }
         const userRef = doc(db, "users", user_id);
         const userDoc = await getDoc(userRef);
-        const user_friends = userDoc.data().following || [];
+        const user_friends = userDoc.data()?.following || [];
         if(user_friends.length === 0){
             return [];
         }

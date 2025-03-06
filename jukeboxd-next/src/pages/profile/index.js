@@ -111,9 +111,9 @@ const PersonalProfilePage = () => {
                             <Image
                                 src={userData?.profilePicture || pfp}
                                 alt="Profile"
+                                width={150}
+                                height={150}
                                 style={{
-                                    width: "150px",
-                                    height: "150px",
                                     borderRadius: "50%",
                                     marginRight: "16px",
                                 }}
