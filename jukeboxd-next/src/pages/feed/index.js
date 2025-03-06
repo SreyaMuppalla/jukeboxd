@@ -7,11 +7,13 @@ import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 import { getFriendReviews } from '@/backend/reviews';
 import ReviewForm from '@/smallcomponents/ReviewForm'
 import { useAuth } from "../../backend/auth.js";
+import { getUser } from "@/backend/users";
 
 const FeedPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [userData, setUserData] = useState({});
   const {user} = useAuth()
 
   useEffect(() => {
@@ -20,8 +22,10 @@ const FeedPage = () => {
         if (!user) {
             return;
         }
+        const userData = await getUser(user.uid);
         const reviews_data = await getFriendReviews(user.uid);
         setReviews(reviews_data);
+        setUserData({ ...userData, uid: user.uid });
       } catch (err) {
         console.error("Error fetching reviews:", err);
         setError(err.message);
@@ -32,6 +36,7 @@ const FeedPage = () => {
 
     fetchReviews();
   }, [user]);
+
 
   if (loading) return <div>Loading profile...</div>;
   if (error) return <div>Error loading reviews: {error}</div>;
@@ -66,13 +71,7 @@ const FeedPage = () => {
           {/* Individual Reviews */}
           {reviews.length > 0 ? (
             reviews.map((review) => (
-              <Review
-                key={review.user_id} // Added key prop for list rendering
-                userName={review.user_id}
-                rating={review.rating}
-                review_text={review.review_text}
-                songName={review.song_id}
-              />
+              <Review review={review}/>
             ))
           ) : (
             <Typography
@@ -83,7 +82,7 @@ const FeedPage = () => {
             </Typography>
           )}
         </Box>
-        <ReviewForm></ReviewForm>
+        <ReviewForm userData={userData}></ReviewForm>
       </Background>
     </ProtectedRoute>
   );

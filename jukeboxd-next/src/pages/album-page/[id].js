@@ -7,68 +7,61 @@ import {
   AlbumDetails,
   SongsListContainer,
   ReviewsSection,
-} from '../../styles/StyledComponents'; // Ensure these styled components are created
-import { fetchAlbumData } from '../../utils/fetchContentData'; // Import your API controller
+} from '../../styles/StyledComponents';
+import { fetchAlbumData } from '../../utils/apiCalls';
 import Review from '../../bigcomponents/Review';
 import Link from 'next/link';
-import { useRouter } from 'next/router'; // Import Next.js useRouter
-import { useAtom } from 'jotai';
-import {
-  fetchTokenAtom,
-  tokenAtom,
-  tokenExpirationAtom,
-} from '../../states/spotifyTokenManager'; // Updated import
+import { useRouter } from 'next/router';
 import unknownArtwork from '@/images/unknown_artwork.jpg';
 import ProtectedRoute from '@/smallcomponents/ProtectedRoute';
+import { getReviews } from '@/backend/reviews';
 
 const AlbumPage = () => {
   const router = useRouter();
-  const { id: albumId } = router.query; // Correctly get the albumId from the dynamic route
-
+  const { id: albumId } = router.query;
+  const [loading, setLoading] = useState(true);
   const [albumDetails, setAlbumDetails] = useState({
     name: '',
     artists: [{ id: '', name: '' }],
     images: [{}, { url: unknownArtwork }],
     songs: []
   });
+  const [reviews, setReviews] = useState([]);
   const [error, setError] = useState(null);
-  const [token, _] = useAtom(tokenAtom); // Access token state
-  const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
-  const [, fetchToken] = useAtom(fetchTokenAtom); // Trigger token fetch
-
 
   useEffect(() => {
-    if (albumId && token) {
-      // Ensure albumId and token are present before making API calls
+    if (albumId) {
       const getAlbumData = async () => {
-        if (!token || Date.now() >= tokenExpiration) {
-          console.log('Token expired, fetching a new one...');
-          await fetchToken(); // Refresh the token if expired
-        }
         try {
           setError(null); // Reset any previous errors
 
           // Fetch album details and tracks
-          const details = await fetchAlbumData(albumId, token);
-          // Update state with the fetched data
+          const details = await fetchAlbumData(albumId);
+          const reviews_data = await getReviews(albumId, 'album');
           setAlbumDetails(details);
+          setReviews(reviews_data);
         } catch (error) {
           console.error('Error fetching album data:', error);
           setError('Failed to fetch album details.');
+        }
+        finally {
+          setLoading(false);
         }
       };
 
       getAlbumData();
     }
-  }, [albumId, token]); // Trigger useEffect whenever albumId or token changes
+  }, [albumId]);
 
   if (error) {
     return (
       <Typography variant="h5" style={{ color: '#ff4d4d' }}>
-        {tokenError || error}
+        {error}
       </Typography>
-    ); // Display any error
+    );
   }
+
+  if (loading) return <div>Loading...</div>;
 
   const formatDuration = (ms) => {
     const minutes = Math.floor(ms / 60000);
@@ -80,24 +73,20 @@ const AlbumPage = () => {
     <ProtectedRoute>
       <Background>
         <AlbumContainer>
-          {/* Album Info Section */}
           <AlbumInfoContainer>
-            {/* Album Cover */}
             <img
-              src={albumDetails.images[1]?.url || unknownArtwork} // Fallback to a default image if unavailable
+              src={albumDetails.images[1]?.url || unknownArtwork}
               alt="Album Cover"
               width={250}
               height={250}
             />
             <AlbumDetails>
-              {/* Album Name */}
               <Typography
                 variant="h3"
                 style={{ color: '#fff', marginBottom: '8px' }}
               >
                 {albumDetails.name}
               </Typography>
-              {/* Artist Name */}
               <Typography
                 variant="h6"
                 style={{ color: '#d3d3d3', cursor: 'pointer' }}
@@ -123,12 +112,10 @@ const AlbumPage = () => {
                     >
                       {artist.name}
                     </Link>
-                    {/* Add a comma between artist names, but not after the last one */}
                     {index < albumDetails.artists.length - 1 && ', '}
                   </span>
                 ))}
               </Typography>
-              {/* Rating (Stars Placeholder) */}
               <Rating
                 size="medium"
                 value={5}
@@ -147,9 +134,7 @@ const AlbumPage = () => {
             </AlbumDetails>
           </AlbumInfoContainer>
 
-          {/* Content Section (Songs and Reviews) */}
           <Box display="flex" width="95%" marginTop="32px">
-            {/* Songs List */}
             <SongsListContainer>
               <Typography
                 variant="h5"
@@ -189,7 +174,6 @@ const AlbumPage = () => {
               </ol>
             </SongsListContainer>
 
-            {/* Reviews Section */}
             <ReviewsSection>
               <Typography
                 variant="h5"
@@ -197,9 +181,20 @@ const AlbumPage = () => {
               >
                 Reviews:
               </Typography>
-              <Review />
-              <Review />
-              <Review />
+              {reviews.length > 0 ? (
+                  reviews.map((review) => (
+                  <Review review={review}/>
+                  ))
+              ) : (
+                  <>
+                  <Typography 
+                      variant="body1" 
+                      style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
+                  >
+                      No reviews yet.
+                  </Typography>
+                  </>
+              )}
             </ReviewsSection>
           </Box>
         </AlbumContainer>

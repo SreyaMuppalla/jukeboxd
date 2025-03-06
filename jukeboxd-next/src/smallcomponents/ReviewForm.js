@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Drawer,
@@ -15,20 +15,16 @@ import {
 import SearchBar from './SearchBar';
 import Image from 'next/image';
 import { useAtom } from 'jotai';
-import { currSong } from '@/states/currSong';
-import { createReview } from '@/backend/reviews';
-import { useAuth } from '@/backend/auth';
+import { currItem } from '@/states/currItem';
+import { addReview } from '@/utils/apiCalls';
 
-export default function ReviewForm() {
+export default function ReviewForm({ userData }) {
   const [open, setOpen] = useState(false);
   const [review, setReview] = useState('');
   const [rating, setRating] = useState(5);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
-  const [selectedSong, setSelectedSong] = useAtom(currSong);
-  console.log(selectedSong);
-
-  const {user} = useAuth();
+  const [selectedItem, setSelectedItem] = useAtom(currItem);
 
   const toggleDrawer = (open) => {
     setOpen(open);
@@ -44,31 +40,42 @@ export default function ReviewForm() {
 
   const handleSubmit = async () => {
     setLoading(true);
+
+    console.log(selectedItem.artists)
+
     let reviewObj = {
-      user_id: user.uid,
-      song_id: selectedSong.name,
-      rating: rating,
+      user_id: userData.uid,
+      song_name: selectedItem.song_name,
+      song_id: selectedItem.song_id,
+      album_name: selectedItem.album_name,
+      album_id: selectedItem.album_id,
+      artists: selectedItem.artists,
+      images: selectedItem.images,
+      username: userData.username,
+      user_pfp: userData.profilePic,
+      rating: Number(rating),
       review_text: review,
       likes: 0,
       dislikes: 0,
-      created_at: new Date(),
+      date: new Date(),
+      type: selectedItem.review_type
     };
 
-    createReview(reviewObj).then(() => {
+    addReview(reviewObj).then(() => {
       setReview(''); // Clear review after submitting
       setRating(5); // Reset rating after submission
       setLoading(false);
       setOpen(false);
       setSuccessMessage(true); // Show success message
-      setSelectedSong(null); // Invalidate selected song after submission
+      setSelectedItem(null); // Invalidate selected song after submission
     });
   };
 
   const handleRemoveSong = () => {
-    setSelectedSong(null);
+    setSelectedItem(null);
   };
 
-  const isFormValid = selectedSong && review.trim() !== '' && rating !== null;
+  const isFormValid = selectedItem && review.trim() !== '' && rating !== null;
 
   return (
     <div>
@@ -140,7 +147,7 @@ export default function ReviewForm() {
           className="mx-5"
         >
           {/* Selected Song */}
-          {selectedSong && (
+          {selectedItem && (
             <Box
               display="flex"
               alignItems="center"
@@ -152,13 +159,17 @@ export default function ReviewForm() {
               }}
             >
               <Image
-                src={selectedSong.image}
-                alt={selectedSong.name}
+                src={selectedItem.images[0].url}
+                alt={selectedItem.review_type === 'album' 
+                  ? selectedItem.album_name 
+                  : selectedItem.song_name}
                 width={50}
                 height={50}
               />
               <Typography sx={{ color: 'white', flexGrow: 1, padding: 0 }}>
-                {selectedSong.name}
+              {selectedItem.review_type === 'album' 
+                ? selectedItem.album_name 
+                : selectedItem.song_name}
               </Typography>
               <IconButton onClick={handleRemoveSong} sx={{ color: 'white' }}>
                 x
@@ -180,7 +191,7 @@ export default function ReviewForm() {
                 fontSize: 'inherit',
               },
             }}
-            disabled={!selectedSong} // Disable if no song is selected
+            disabled={!selectedItem} // Disable if no song is selected
           />
 
           {/* Review TextField */}
@@ -211,7 +222,7 @@ export default function ReviewForm() {
                 },
               },
             }}
-            disabled={!selectedSong} // Disable if no song is selected
+            disabled={!selectedItem} // Disable if no song is selected
           />
         </Box>
         {/* Post Button */}
