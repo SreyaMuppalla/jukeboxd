@@ -230,7 +230,7 @@ export const fetchAlbumData = async (albumId) => {
       if (review.type === "song") {
         await addSongReviewScore(review.song_id, review.rating)
       } else if (review.type === "album") {
-        await addAlbumReviewScore(review.album_id_id, review.rating)
+        await addAlbumReviewScore(review.album_id, review.rating)
       }
     } catch (error) {
       console.error("Error adding review:", error);
