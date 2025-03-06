@@ -115,6 +115,45 @@ export const searchUsers = async (username) => {
     }
   };
 
+  export const followUser = async (user_id, friend_id) => {
+    try {
+        if (!user_id || !friend_id) {
+            throw new Error("Missing user_id or friend_id parameter");
+        }
+
+        const userRef = doc(db, "users", user_id);
+        const friendRef = doc(db, "users", friend_id);
+        const userDoc = await getDoc(userRef);
+        const friendDoc = await getDoc(friendRef);
+
+        if (!userDoc.exists() || !friendDoc.exists()) {
+            throw new Error("User not found");
+        }
+
+        const userFollowing = userDoc.data().following || [];
+        const friendFollowers = friendDoc.data().followers || [];
+
+        if (userFollowing.includes(friend_id) || friendFollowers.includes(user_id)) {
+            throw new Error("User is already following this friend");
+        }
+
+        userFollowing.push(friend_id);
+        friendFollowers.push(user_id);
+
+        await updateDoc(userRef, {
+            following: userFollowing
+        });
+
+        await updateDoc(friendRef, {
+            followers: friendFollowers
+        });
+
+        return { message: "User followed successfully" };
+    } catch (error) {
+        throw error;
+    } 
+}
+
   export const BookmarkSong = async (user_id, song_id) => {
     try {
         if (!user_id || !song_id) {

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import {
     Background,
     ProfileContainer,
@@ -20,6 +20,7 @@ import { useRouter } from "next/router";
 import { useAuth } from "../../backend/auth.js";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 import { getReviewById } from '@/backend/reviews';
+import {followUser} from '@/backend/users';
 
 const ProfilePage = () => {
     const { user } = useAuth();
@@ -27,6 +28,7 @@ const ProfilePage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [reviews, setReviews] = useState([]);
+    const [isFollowing, setIsFollowing] = useState(false);
 
     const router = useRouter();
     const { id } = router.query;
@@ -46,6 +48,9 @@ const ProfilePage = () => {
                     }
                 }
 
+                // Check if the current user is already following this profile
+                setIsFollowing(data.followers?.includes(user?.uid) || false);
+
                 setReviews(userReviews);
                 setUserData(data);
             } catch (err) {
@@ -57,11 +62,35 @@ const ProfilePage = () => {
         };
 
         fetchUserData();
-    }, [id]); // Re-run the effect when the id changes
+    }, [id, user]); // Re-run the effect when the id changes
+
+    const handleFollow = async () => {
+        if (!user || !userData) return;
+
+        try {
+            await followUser(user.uid, id);
+
+            // Update the local state
+            setIsFollowing(!isFollowing);
+
+            //update follower count
+            setUserData(prevData => ({
+                ...prevData,
+                followers: isFollowing 
+                    ? prevData.followers.filter(followerId => followerId !== user.uid)
+                    : [...(prevData.followers || []), user.uid]
+            }));
+        } catch (err) {
+            console.error("Error following/unfollowing user:", err);
+        }
+    };
 
     if (!id) return <div>Loading...</div>;
     if (loading) return <div>Loading profile...</div>;
     if (error) return <div>Error loading profile: {error}</div>;
+
+    // Don't show follow button if viewing own profile
+    const showFollowButton = user?.uid !== id;
 
     return (
         <ProtectedRoute>
@@ -74,9 +103,9 @@ const ProfilePage = () => {
                             <Image
                                 src={userData?.profilePicture || pfp}
                                 alt="Profile"
+                                width={150}
+                                height={150}
                                 style={{
-                                    width: "150px",
-                                    height: "150px",
                                     borderRadius: "50%",
                                     marginRight: "16px",
                                 }}
@@ -85,15 +114,31 @@ const ProfilePage = () => {
                         {/* Username and Stats */}
                         <ProfileDetailsContainer>
                             <ProfileDetails>
-                                <Typography
-                                    variant="h4"
-                                    style={{
-                                        color: "#fff",
-                                        marginBottom: "8px",
-                                    }}
-                                >
-                                    {userData?.username || "Username"}
-                                </Typography>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                    <Typography
+                                        variant="h4"
+                                        style={{
+                                            color: "#fff",
+                                            marginBottom: "8px",
+                                        }}
+                                    >
+                                        {userData?.username || "Username"}
+                                    </Typography>
+                                    {showFollowButton && (
+                                        <Button
+                                            variant="contained"
+                                            color={isFollowing ? "secondary" : "primary"}
+                                            onClick={handleFollow}
+                                            style={{
+                                                backgroundColor: isFollowing ? "#555" : "#1db954",
+                                                color: "white",
+                                                textTransform: "none"
+                                            }}
+                                        >
+                                            {isFollowing ? "Unfollow" : "Follow"}
+                                        </Button>
+                                    )}
+                                </div>
                             </ProfileDetails>
 
                             {/* Stats aligned to the right */}
