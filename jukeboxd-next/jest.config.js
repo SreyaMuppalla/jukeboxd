@@ -15,7 +15,7 @@ const jestConfig = {
   testEnvironment: "node",
   testEnvironmentOptions: {}, 
   setupFilesAfterEnv: [`${ROOT_DIR}/jest.setup.js`],
-  watchPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/build/"],
+  watchPathIgnorePatterns: [`${ROOT_DIR}/node_modules/`, `${ROOT_DIR}/build/`],
   globalTeardown: `${ROOT_DIR}/jest.globalTeardown.js`,
 };
 
