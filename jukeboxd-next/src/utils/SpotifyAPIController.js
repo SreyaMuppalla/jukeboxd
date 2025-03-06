@@ -196,6 +196,32 @@ export const SpotifyAPIController = (function() {
         }
     }
 
+    const _getAlbumSongs = async (token, id) => {
+        const apiUrl = `https://api.spotify.com/v1/albums/${id}/tracks`;
+        
+        try {
+            const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+            });
+
+            if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Return an object with all the tracks from the album, including the track id
+            return data.items;
+        } catch (error) {
+            console.error('Error fetching album tracks:', error);
+            return null;
+        }
+    }
+
     return {
         getToken() {
             return _getToken();
@@ -220,6 +246,10 @@ export const SpotifyAPIController = (function() {
         getArtistDetails(token, id)
         {
             return _getArtistDetails(token, id);
+        },
+        getAlbumSongs(token, id)
+        {
+            return _getAlbumSongs(token, id);
         }
     }
 })();
