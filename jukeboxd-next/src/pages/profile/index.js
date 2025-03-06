@@ -278,21 +278,28 @@ const PersonalProfilePage = () => {
                         {selectedTab === 0 && (
                             <Box style={{marginTop: "12px"}}>
 
-                        {/* Individual Reviews */}
-                                {reviews.length > 0 ? (
-                        reviews.map((review) => (
+                            {/* Individual Reviews */}
+                                    {reviews.length > 0 ? (
+                            reviews.map((review) => (
                             <Review review={review}/>
-                        ))
-                    ) : (
-                        <>
-                        <Typography 
-                            variant="body1" 
-                            style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
-                        >
-                            No reviews yet.
-                        </Typography>
-                        </>
-                    )}
+                            ))
+                        ) : (
+                            <>
+                            <Typography 
+                                variant="body1" 
+                                style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
+                            >
+                                No reviews yet.
+                            </Typography>
+                            </>
+                        )}
+                        </Box>
+                        )}
+                        {selectedTab === 1 && (
+                            <Box style={{marginTop: "12px"}}>
+                                <SongCard albumCover={albumpic} songName="Song 1" artistName="Artist A" />
+                            </Box>
+                        )}
                     </Box>
                 </ProfileContainer>
                 {/* Logout Button */}

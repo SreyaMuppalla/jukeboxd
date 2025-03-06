@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { fetchSongData } from '../../utils/apiCalls'; // Import your API controller
 import { useRouter } from 'next/router'; // Import Next.js useRouter
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
-import { getSongReviews } from '@/backend/reviews';
+import { getReviews } from '@/backend/reviews';
 import {getUser, BookmarkSong, removeSongBookmark} from '@/backend/users';
 import unknownArtwork from '@/images/unknown_artwork.jpg'
 import Image from 'next/image';
@@ -25,7 +25,7 @@ const SongPage = () => {
   const router = useRouter();
   const { id: songId } = router.query; // Correctly get the albumId from the dynamic route
   const {user} = useAuth();
-  const [loading, setLoading] = useState(true);  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState(null);
   const [songDetails, setSongDetails] = useState({
@@ -43,7 +43,7 @@ const SongPage = () => {
       try {
         if (!user) return;
         const data = await getUser(user.uid);
-        const reviews_data = await getSongReviews(songId);
+        const reviews_data = await getReviews(songId, 'song');
         setReviews(reviews_data);
         setIsBookmarked(data.bookmarkedSongs?.includes(songId) || false);
       } catch (err) {
