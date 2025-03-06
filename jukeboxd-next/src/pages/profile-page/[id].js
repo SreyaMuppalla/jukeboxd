@@ -20,7 +20,7 @@ import { useRouter } from "next/router";
 import { useAuth } from "../../backend/auth.js";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 import { getReviewById } from '@/backend/reviews';
-import {followUser} from '@/backend/users';
+import {followUser, UnfollowUser} from '@/backend/users';
 
 const ProfilePage = () => {
     const { user } = useAuth();
@@ -67,21 +67,21 @@ const ProfilePage = () => {
     const handleFollow = async () => {
         if (!user || !userData) return;
 
-        try {
-            await followUser(user.uid, id);
-
-            // Update the local state
-            setIsFollowing(!isFollowing);
-
-            //update follower count
-            setUserData(prevData => ({
-                ...prevData,
-                followers: isFollowing 
-                    ? prevData.followers.filter(followerId => followerId !== user.uid)
-                    : [...(prevData.followers || []), user.uid]
-            }));
-        } catch (err) {
-            console.error("Error following/unfollowing user:", err);
+        if (isFollowing) {
+            try{
+            await UnfollowUser(user.uid, id);
+            setIsFollowing(false);
+            } catch (err) {
+                console.error("Error unfollowing user:", err);
+            }
+        } else {
+            try{
+                await followUser(user.uid, id);
+                setIsFollowing(true);
+            }
+            catch (err) {
+                console.error("Error following user:", err);
+            }
         }
     };
 
