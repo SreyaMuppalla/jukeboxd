@@ -17,10 +17,10 @@ import { searchUsers } from '@/backend/users';
 import { useAtom } from 'jotai';
 import spotifyTokenService from '../states/spotifyTokenManager'; // Import the singleton
 
-const SearchBar = ({ type: searchBarType }) => {
+const SearchBar = ({ type: searchBarType, query: defaultQuery='song' }) => {
   const [query, setQuery] = useState('');
   const [recommendations, setRecommendations] = useState([]);
-  const [queryType, setQueryType] = useState('song');
+  const [queryType, setQueryType] = useState(defaultQuery);
 
   const router = useRouter();
   const [selectedItem, setSelectedItem] = useAtom(currItem);
