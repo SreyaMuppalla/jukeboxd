@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Rating, Typography } from '@mui/material';
+import { Box, Rating, Typography, Button } from '@mui/material';
 import {
   Background,
   AlbumContainer,
@@ -20,10 +20,13 @@ import {
 } from '../../states/spotifyTokenManager'; // Updated import
 import unknownArtwork from '@/images/unknown_artwork.jpg';
 import ProtectedRoute from '@/smallcomponents/ProtectedRoute';
+import { useAuth } from '@/backend/auth';
+import { getUser, BookmarkAlbum, removeAlbumBookmark } from '@/backend/users';
 
 const AlbumPage = () => {
   const router = useRouter();
   const { id: albumId } = router.query; // Correctly get the albumId from the dynamic route
+  const { user } = useAuth();
 
   const [albumDetails, setAlbumDetails] = useState({
     name: '',
@@ -35,7 +38,22 @@ const AlbumPage = () => {
   const [token, _] = useAtom(tokenAtom); // Access token state
   const [tokenExpiration, __] = useAtom(tokenExpirationAtom); // Access token expiration time
   const [, fetchToken] = useAtom(fetchTokenAtom); // Trigger token fetch
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
 
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        if (!user) return;
+        const data = await getUser(user.uid);
+        setIsBookmarked(data.bookmarkedAlbums?.includes(albumId) || false);
+      } catch (err) {
+        console.error('Error fetching reviews:', err);
+        setError(err.message);
+      }
+    };
+    fetchReviews();
+  }, [albumId, user]);
 
   useEffect(() => {
     if (albumId && token) {
@@ -76,6 +94,38 @@ const AlbumPage = () => {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
+  const handleBookmark = async () => {
+    if (!albumId) return;
+    if (!user) return;
+    
+    setBookmarkLoading(true);
+
+    if (isBookmarked) {
+      try{
+        await removeAlbumBookmark(user.uid, albumId);
+        setIsBookmarked(false);
+      }
+      catch(error){
+        console.error('Error removing bookmark:', error);
+        setError('Failed to remove bookmark.');
+      }
+      finally{
+        setBookmarkLoading(false);
+      }
+    }
+    else{
+      try {
+        await BookmarkAlbum(user.uid, albumId);
+        setIsBookmarked(true);
+      } catch (error) {
+        console.error('Error bookmarking album:', error);
+        setError('Failed to bookmark album.');
+      } finally {
+        setBookmarkLoading(false);
+      }
+    }
+  };
+
   return (
     <ProtectedRoute>
       <Background>
@@ -97,6 +147,26 @@ const AlbumPage = () => {
               >
                 {albumDetails.name}
               </Typography>
+              {/* Bookmark Button */}
+              <Button
+                  onClick={handleBookmark}
+                  disabled={bookmarkLoading}
+                  variant="contained"
+                  sx={{
+                    backgroundColor: isBookmarked ? '#1DB954' : '#333',
+                    color: '#fff',
+                    '&:hover': {
+                      backgroundColor: isBookmarked ? '#1ed760' : '#444',
+                    },
+                    minWidth: '120px',
+                    height: '40px',
+                    borderRadius: '20px',
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {isBookmarked ? 'Bookmarked' : 'Bookmark'}
+                </Button>
               {/* Artist Name */}
               <Typography
                 variant="h6"

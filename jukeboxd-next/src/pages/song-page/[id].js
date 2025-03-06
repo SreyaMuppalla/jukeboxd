@@ -15,7 +15,7 @@ import { useAtom } from 'jotai';
 import { fetchTokenAtom, tokenAtom, tokenExpirationAtom } from '../../states/spotifyTokenManager'; // Updated import
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 import {getSongReviews} from '@/backend/reviews';
-import {getUser, BookmarkSong, removeBoomark} from '@/backend/users';
+import {getUser, BookmarkSong, removeSongBookmark} from '@/backend/users';
 import unknownArtwork from '@/images/unknown_artwork.jpg'
 import Image from 'next/image';
 import { useAuth } from '@/backend/auth';
@@ -91,7 +91,7 @@ const SongPage = () => {
 
     if (isBookmarked) {
       try{
-        await removeBoomark(user.uid, songId);
+        await removeSongBookmark(user.uid, songId);
         setIsBookmarked(false);
       }
       catch(error){

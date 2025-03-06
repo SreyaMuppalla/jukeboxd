@@ -54,6 +54,7 @@ export const createUser = async (user_id, username, email, profilePicture, user_
             profilePicture,
             user_bio,
             bookmarkedSongs: [],
+            bookmarkedAlbums: [],
             created_at: new Date().toISOString(),
             followers: [],
             following: [],
@@ -177,7 +178,7 @@ export const searchUsers = async (username) => {
     }
 };
 
-export const removeBoomark = async (user_id, song_id) => {
+export const removeSongBookmark = async (user_id, song_id) => {
     try {
         if (!user_id || !song_id) {
             throw new Error("Missing user_id or song_id parameter");
@@ -195,6 +196,52 @@ export const removeBoomark = async (user_id, song_id) => {
         });
 
         return { message: "Song removed from bookmarks successfully" };
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const BookmarkAlbum = async (user_id, album_id) => {
+    try {
+        if (!user_id || !album_id) {
+            throw new Error("Missing user_id or album_id parameter");
+        }
+
+        const userRef = doc(db, "users", user_id);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+            throw new Error("User not found");
+        }
+
+        await updateDoc(userRef, {
+            bookmarkedAlbums: [...(userDoc.data().bookmarkedAlbums || []), album_id]
+        });
+
+        return { message: "Album bookmarked successfully" };
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const removeAlbumBookmark = async (user_id, album_id) => {
+    try {
+        if (!user_id || !album_id) {
+            throw new Error("Missing user_id or album_id parameter");
+        }
+
+        const userRef = doc(db, "users", user_id);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+            throw new Error("User not found");
+        }
+
+        await updateDoc(userRef, {
+            bookmarkedAlbums: userDoc.data().bookmarkedAlbums.filter(id => id !== album_id)
+        });
+
+        return { message: "Album removed from bookmarks successfully" };
     } catch (error) {
         throw error;
     }
