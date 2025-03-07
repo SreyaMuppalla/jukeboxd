@@ -10,7 +10,6 @@ export const Background = styled.div`
 `;
 export const HeaderBackground = styled.header`
     background-color: #121212;
-    height: 108px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -27,10 +26,27 @@ export const ButtonContainer = styled.div`
 
 // Carousel container
 export const CarouselContainer = styled.div`
+    position: relative;
     display: flex;
-    overflow-x: scroll; // Makes it horizontally scrollable
-    padding: 20px;
-    gap: 20px; // Adds space between each item in the carousel
+    overflow-x: auto;
+    margin: 20px 70px;
+    padding-top: 20px;
+    gap: 20px;
+    
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    
+    white-space: nowrap;
+    
+    &::-webkit-scrollbar {
+        display: none;
+    }
+    
+    scrollbar-width: none;
+    
+    min-width: 0;
+    flex-shrink: 0;
+
 `;
 
 // Individual song item
@@ -40,6 +56,7 @@ export const SongItem = styled.div`
     align-items: center;
     min-width: 180px; // Minimum width for each carousel item
     text-align: center;
+    
 `;
 
 // Placeholder for the album cover
@@ -65,9 +82,29 @@ export const LargeAlbumCover = styled.div`
 
 // Song name styling
 export const SongName = styled(Typography)`
-    font-size: 14px;
-    color: white;
-    margin-bottom: 5px;
+    cursor: pointer;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: text-decoration 0.3s ease;
+
+    &:hover {
+        text-decoration: underline;
+    }
+`;
+
+export const ArrowButton = styled.button`
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  &:hover {
+    background-color: #333;
+  }
 `;
 
 // Container for stars (Rating component)
