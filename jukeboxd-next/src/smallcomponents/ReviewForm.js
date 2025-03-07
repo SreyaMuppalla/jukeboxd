@@ -41,8 +41,6 @@ export default function ReviewForm({ userData }) {
   const handleSubmit = async () => {
     setLoading(true);
 
-    console.log(selectedItem.artists)
-
     let reviewObj = {
       user_id: userData.uid,
       song_name: selectedItem.song_name,
@@ -80,19 +78,43 @@ export default function ReviewForm({ userData }) {
   return (
     <div>
       {/* Floating Action Button */}
-      <Fab
-        onClick={() => toggleDrawer(!open)}
-        sx={{
-          position: 'fixed',
-          bottom: 20,
-          right: 20,
-          zIndex: 1000,
-          backgroundColor: 'primary.main',
-          color: 'white',
-        }}
-      >
-        +
-      </Fab>
+      {!open ? (
+        <Fab
+          onClick={() => toggleDrawer(true)}
+          sx={{
+            position: 'fixed',
+            bottom: 20,
+            right: 20,
+            zIndex: 1000,
+            backgroundColor: 'primary.main',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: 'primary.dark', // Darker shade on hover
+            },
+            transition: 'background-color 0.3s ease-in-out', // Smooth hover transition
+          }}
+        >
+          +
+        </Fab>
+      ) : (
+        <Fab
+          onClick={() => toggleDrawer(false)}
+          sx={{
+            position: 'fixed',
+            bottom: 20,
+            right: 20,
+            zIndex: 1000,
+            backgroundColor: 'red',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: '#b71c1c', // Darker red on hover
+            },
+            transition: 'background-color 0.3s ease-in-out',
+          }}
+        >
+          ✕
+        </Fab>
+      )}
 
       {/* Drawer for Review */}
       <Drawer
@@ -104,10 +126,11 @@ export default function ReviewForm({ userData }) {
           width: '600px',
           flexShrink: 0,
           '& .MuiDrawer-paper': {
-            width: '500px',
+            width: '30vw',
+            maxWidth: '400px',
             padding: '0 20px 20px',
             boxSizing: 'border-box',
-            height: '50vh',
+            height: '70vh',
             bottom: '100px',
             right: '20px',
             top: 'unset',
@@ -132,19 +155,18 @@ export default function ReviewForm({ userData }) {
             paddingTop: '20px',
           }}
         >
-          <Typography variant="h3" gutterBottom sx={{ color: 'white' }}>
+          <Typography variant="h4" gutterBottom sx={{ color: 'white' }}>
             Write a Review
           </Typography>
         </Box>
 
-        <SearchBar type="review" />
+        <SearchBar type="review" query={selectedItem?.review_type}/>
 
         <Box
           display="flex"
           flexDirection="column"
           alignItems="flex-start"
-          gap={2}
-          className="mx-5"
+          gap={1}
         >
           {/* Selected Song */}
           {selectedItem && (
@@ -154,25 +176,33 @@ export default function ReviewForm({ userData }) {
               gap={2}
               sx={{
                 backgroundColor: '#444',
-                padding: '10px',
+                padding: '5px',
                 borderRadius: '8px',
               }}
             >
               <Image
                 src={selectedItem.images[0].url}
-                alt={selectedItem.review_type === 'album' 
-                  ? selectedItem.album_name 
-                  : selectedItem.song_name}
-                width={50}
-                height={50}
+                alt={
+                  selectedItem.review_type === 'album'
+                    ? selectedItem.album_name
+                    : selectedItem.song_name
+                }
+                width={30}
+                height={30}
               />
-              <Typography sx={{ color: 'white', flexGrow: 1, padding: 0 }}>
-              {selectedItem.review_type === 'album' 
-                ? selectedItem.album_name 
-                : selectedItem.song_name}
+              <Typography
+                variant="subtitle2"
+                sx={{ color: 'white', flexGrow: 1, padding: 0 }}
+              >
+                {selectedItem.review_type === 'album'
+                  ? selectedItem.album_name
+                  : selectedItem.song_name}
               </Typography>
-              <IconButton onClick={handleRemoveSong} sx={{ color: 'white' }}>
-                x
+              <IconButton
+                onClick={handleRemoveSong}
+                sx={{ color: 'white', height: 10 }}
+              >
+                <Typography variant="subtitle2">x</Typography>
               </IconButton>
             </Box>
           )}
@@ -183,7 +213,7 @@ export default function ReviewForm({ userData }) {
             onChange={handleRatingChange}
             sx={{
               alignSelf: 'flex-start',
-              fontSize: '3rem',
+              fontSize: '2rem',
               '& .MuiRating-iconEmpty': {
                 color: 'white',
               },
@@ -197,14 +227,13 @@ export default function ReviewForm({ userData }) {
           {/* Review TextField */}
           <TextField
             multiline
-            rows={9}
+            rows={8}
             fullWidth
             value={review}
             variant="filled"
             onChange={handleReviewChange}
             sx={{
               marginBottom: 2,
-              marginTop: 2,
               backgroundColor: '#b3b3b3',
               '& .MuiInputBase-input': {
                 color: 'white',

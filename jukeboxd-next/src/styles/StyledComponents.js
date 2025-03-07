@@ -11,13 +11,16 @@ export const Background = styled.div`
 `;
 export const HeaderBackground = styled.header`
     background-color: #121212;
-    height: 108px;
+    height: 80px;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between; /* Ensures that logo, search bar, and buttons are spaced apart */
     padding: 0px 20px;
     gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 `;
 export const ButtonContainer = styled.div`
     display: flex;

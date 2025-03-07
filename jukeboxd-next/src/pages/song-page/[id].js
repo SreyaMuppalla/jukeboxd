@@ -22,6 +22,7 @@ import { useAuth } from "@/backend/auth";
 import { useAtom } from "jotai";
 import { currItem } from "@/states/currItem";
 import ReviewForm from "@/smallcomponents/ReviewForm";
+import spotifyTokenService from "@/states/spotifyTokenManager";
 
 const SongPage = () => {
     const router = useRouter();
@@ -29,6 +30,7 @@ const SongPage = () => {
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
     const [userData, setUserData] = useState(null);
+    const [selectedItem, setSelectedItem] = useAtom(currItem); // auto change currently selected song on load
 
     const [error, setError] = useState(null);
     const [songDetails, setSongDetails] = useState({
@@ -38,11 +40,11 @@ const SongPage = () => {
         images: [{}, { url: unknownArtwork }],
     });
     const [reviews, setReviews] = useState([]);
-    const [token, _] = useAtom(currItem); // Access token state
+    const token = spotifyTokenService; // Access token state
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [bookmarkLoading, setBookmarkLoading] = useState(false); // Fetch reviews on component mount
-
     const [selectedTab, setSelectedTab] = useState(0);
+
     useEffect(() => {
         const fetchReviews = async () => {
             try {
@@ -85,6 +87,25 @@ const SongPage = () => {
             getSongData();
         }
     }, [songId, token]); // Trigger useEffect whenever songId changes
+
+    useEffect(() => {
+        // Prefill review form
+        const newSelectedItem = {
+            ...songDetails,
+            album_id: songDetails.album.id,
+            album_name: songDetails.album.name,
+            song_id: songDetails.id,
+            song_name: songDetails.name,
+            review_type: "song",
+        };
+
+        // Only update Jotai atom if the value has changed
+        setSelectedItem((prevItem) =>
+            JSON.stringify(prevItem) !== JSON.stringify(newSelectedItem)
+                ? newSelectedItem
+                : prevItem
+        );
+    }, [songId, songDetails]);
 
     const handleBookmark = async () => {
         if (!songId) return;
