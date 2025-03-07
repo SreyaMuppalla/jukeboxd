@@ -1,206 +1,220 @@
-import React from "react";
-import { Box, Typography, Rating } from "@mui/material";
-import { styled } from "@mui/system";
-import albumpic from "../images/albumpic.jpg";
-import pfp from "../images/pfp.jpg";
-import { useRouter } from "next/router";
+// album cover
+// text box for song name
+// text box for artist name
+// username and pfp
+// stars
+// date reviewed
+// review
+// upvotes/downvotes
+// extension to comments
+import React, { useState } from "react";
+import { Box, Typography, Rating, IconButton } from "@mui/material"; // Material UI components
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 
-const ReviewContainer = styled(Box)(({ theme }) => ({
-    display: "flex",
-    borderRadius: "8px",
-    padding: "16px",
-    gap: theme.spacing(2),
-    width: "100%",
-    alignItems: "center", // Vertically align items
-    backgroundColor: "#333",
-}));
+import {
+    ReviewContainer,
+    AlbumCover,
+    SongInfo,
+    UserInfo,
+    ProfilePic,
+    RatingContainer,
+    ReviewText,
+    ReviewSubContainer,
+} from "../styles/StyledComponents";
+import albumpic from "../images/albumpic.jpg"; // Import the album image
+import pfp from "../images/pfp.jpg"; // Add a placeholder profile pic
+import Link from "next/link";
+import Image from "next/image";
 
-const AlbumCover = styled("div")({
-    width: "120px",
-    height: "120px",
-    borderRadius: "4px",
-    overflow: "hidden",
-    flexShrink: 0, // Prevent shrinking
-    "& img": {
-        width: "100%",
-        height: "100%",
-        objectFit: "cover",
-    },
-    cursor: "pointer",
-});
+//AlbumCover, song_id and ArtistName need to be updated to render correctly.
+// Currently default and null.
+const Review = ({ review }) => {
+    const album_ref = "/album-page/" + review.album_id;
+    const song_ref = "/song-page/" + review.song_id;
+    const artist_ref = "/artist-page/" + review.artists[0].id;
+    const profile_ref = "/profile-page/" + review.user_id;
+    //TODO: pull in backend for initial setting of likes and dislikes (replace useState(0))
+    const [likes, setLikes] = useState(0);
+    const [dislikes, setDislikes] = useState(0);
+    const [liked, setLiked] = useState(false);
+    const [disliked, setDisliked] = useState(false);
+    const handleLike = () => {
+        if (liked) {
+            setLikes(likes - 1);
+            setLiked(false);
+        } else {
+            setLikes(likes + 1);
+            if (disliked) {
+                setDislikes(dislikes - 1);
+                setDisliked(false);
+            }
+            setLiked(true);
+        }
+    };
 
-const InfoContainer = styled(Box)({
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    height: "100%",
-});
-
-const SongInfo = styled(Box)({
-    display: "flex",
-    flexDirection: "column",
-    gap: "4px",
-});
-
-const UserInfo = styled(Box)({
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-});
-
-const ProfilePic = styled("div")({
-    width: "24px",
-    height: "24px",
-    borderRadius: "50%",
-    overflow: "hidden",
-    flexShrink: 0,
-    "& img": {
-        width: "100%",
-        height: "100%",
-        objectFit: "cover",
-    },
-    cursor: "pointer",
-});
-const CommentBubble = styled(Box)({
-    display: "flex",
-    alignItems: "center",
-    gap: "4px",
-    cursor: "pointer",
-    "& img": {
-        width: "16px",
-        height: "16px",
-    },
-});
-const RatingContainer = styled(Box)({
-    display: "flex",
-    alignItems: "center",
-});
-
-const ReviewText = styled(Typography)({
-    color: "#fff",
-    fontSize: "16px",
-    fontFamily: "Inter",
-    width: "700px",
-});
-
-const AdditionalInfo = styled(Box)({
-    display: "flex",
-    alignItems: "center",
-    marginTop: "0px",
-    marginBottom: "0px",
-    alignSelf: "stretch",
-    marginLeft: "auto", // Push to the right
-    color: "#fff",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    padding: "4px 16px",
-});
-
-const Review = () => {
-    const router = useRouter();
+    const handleDislike = () => {
+        if (disliked) {
+            setDislikes(dislikes - 1);
+            setDisliked(false);
+        } else {
+            setDislikes(dislikes + 1);
+            if (liked) {
+                setLikes(likes - 1);
+                setLiked(false);
+            }
+            setDisliked(true);
+        }
+    };
 
     return (
         <ReviewContainer>
             {/* Album Cover */}
-            <AlbumCover onClick={() => navigate("/album-page")}>
-                <img src={albumpic} alt="Album Cover" />
+            <AlbumCover
+                style={{ cursor: "pointer" }} // Pointer cursor for clickable elements
+            >
+                <Link href={album_ref}>
+                    <Image
+                        src={review.images[0].url || albumpic}
+                        alt="Album Cover"
+                        width={100}
+                        height={100}
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            borderRadius: "8px",
+                            "&:hover": { textDecoration: "underline" },
+                        }}
+                    />
+                </Link>
             </AlbumCover>
 
-            {/* Info Container */}
-            <InfoContainer>
-                <SongInfo>
+            {/* Song and Artist Info */}
+            <SongInfo>
+                <Typography
+                    variant="h6"
+                    component="div"
+                    sx={{
+                        color: "#fff",
+                        cursor: "pointer",
+                        width: "100%",
+                        overflow: "hidden",
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        WebkitLineClamp: 3,
+                        textOverflow: "ellipsis",
+                        maxHeight: "4.5em",
+                        lineHeight: "1.5em",
+                        "& a": { textDecoration: "none", color: "inherit" }, // Ensures no default underline
+                        "& a:hover": { textDecoration: "underline" }, // Underline on hover
+                    }}
+                >
+                    <Link href={review.type === "song" ? song_ref : album_ref}>
+                        {review.type === "song"
+                            ? review.song_name
+                            : review.album_name || "Song/Album Name"}
+                    </Link>
+                </Typography>
+
+                <Typography
+                    variant="subtitle1"
+                    sx={{
+                        color: "#d3d3d3",
+                        cursor: "pointer",
+                        "& a": { textDecoration: "none", color: "inherit" },
+                        "& a:hover": { textDecoration: "underline" },
+                    }}
+                >
+                    <Link href={artist_ref}>
+                        {review.artists[0].name || "Artist Name"}
+                    </Link>
+                </Typography>
+            </SongInfo>
+
+            <ReviewSubContainer>
+                {/* User Info */}
+                <UserInfo>
+                    <ProfilePic
+                        style={{ cursor: "pointer" }} // Pointer cursor
+                    >
+                        <Link href={profile_ref}>
+                            <Image
+                                src={review.user_pfp || pfp}
+                                alt="User Profile"
+                                width={50}
+                                height={50}
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    borderRadius: "50%",
+                                    minWidth: 25,
+                                    minHeight: 25,
+                                }}
+                            />
+                        </Link>
+                    </ProfilePic>
                     <Typography
                         variant="subtitle1"
                         style={{
                             color: "#fff",
+                            marginLeft: "8px",
                             cursor: "pointer",
-                            fontFamily: "Inter",
-                            fontSize: "24px",
-                        }}
-                        onClick={() => navigate("/song-page")}
+                            "&:hover": { textDecoration: "underline" },
+                        }} // Pointer cursor
                     >
-                        Song Name
-                    </Typography>
-                    <Typography
-                        variant="body2"
-                        style={{
-                            color: "#d3d3d3",
-                            cursor: "pointer",
-                            fontFamily: "Inter",
-                            fontSize: "20px",
-                        }}
-                        onClick={() => navigate("/artist-page")}
-                    >
-                        Artist Name
-                    </Typography>
-                </SongInfo>
-            </InfoContainer>
-            <Box
-                style={{
-                    borderRadius: "16px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "8px",
-                }}
-            >
-                <UserInfo>
-                    <ProfilePic onClick={() => navigate("/profile-page")}>
-                        <img src={pfp} alt="User Profile" />
-                    </ProfilePic>
-                    <Typography
-                        variant="body2"
-                        style={{
-                            color: "#fff",
-                            cursor: "pointer",
-                            fontFamily: "Inter",
-                            fontSize: "16px",
-                        }}
-                        onClick={() => navigate("/profile-page")}
-                    >
-                        Username
+                        <Link href={profile_ref}>
+                            {review.username || "Username"}
+                        </Link>
                     </Typography>
                     <RatingContainer>
                         <Rating
                             name="read-only"
-                            value={5}
-                            size="small"
+                            value={review.rating}
                             readOnly
                         />
                     </RatingContainer>
+                    <Typography
+                        variant="subtitle2"
+                        style={{ color: "#fff", cursor: "pointer" }}
+                    >
+                        {review.created_at?.seconds
+                            ? new Date(
+                                  review.created_at.seconds * 1000
+                              ).toLocaleDateString("en-US", {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                              })
+                            : "Unknown Date"}
+                    </Typography>
                 </UserInfo>
-                {/* Review Text */}
-                <ReviewText>
-                    This is a placeholder review. The user loved this song and
-                    wrote a lot of amazing things about it! 🎵 This is a
-                    placeholder review. The user loved this song and wrote a lot
-                    of amazing things about it! 🎵
-                </ReviewText>
-            </Box>
 
-            {/* Additional Info (Date, Likes, etc.) */}
-            <AdditionalInfo>
-                <Typography
-                    variant="caption"
-                    style={{ fontFamily: "Inter", fontSize: "12px" }}
-                >
-                    Jan 27, 2025
-                </Typography>
+                {/* Review Text */}
+                <ReviewText>{review.review_text || "Review Text"}</ReviewText>
+                {/* Likes & Dislikes */}
                 <Box
-                    style={{
-                        borderRadius: "16px",
-                        display: "flex",
-                        flexDirection: "row",
-                        gap: "8px",
-                    }}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="end"
+                    mt={1}
                 >
-                    <CommentBubble onClick={() => navigate("/comments-page")}>
-                        <img src={pfp} alt="Comments" />
-                        <Typography variant="caption">15</Typography>
-                    </CommentBubble>
-                    <Typography variant="caption">👍10 </Typography>
-                    <Typography variant="caption">👎3k </Typography>
+                    <IconButton onClick={handleLike} sx={{ color: "#1DB954" }}>
+                        <ThumbUpIcon />
+                    </IconButton>
+                    <Typography variant="body2" color="white" mx={1}>
+                        {likes}
+                    </Typography>
+                    <IconButton
+                        onClick={handleDislike}
+                        sx={{ color: "#D9534F" }}
+                    >
+                        <ThumbDownIcon />
+                    </IconButton>
+                    <Typography variant="body2" color="white" mx={1}>
+                        {dislikes}
+                    </Typography>
                 </Box>
-            </AdditionalInfo>
+            </ReviewSubContainer>
         </ReviewContainer>
     );
 };
