@@ -135,7 +135,7 @@ export const RatingContainer = styled.div`
 export const ReviewText = styled.div`
     flex-grow: 2;
     color: #fff;
-    font-size: 14px;
+    font-size: 18px;
     margin-top: 8px;
 `;
 // Main container for the Profile Page

@@ -158,6 +158,8 @@ const Review = ({ review }) => {
                         style={{
                             color: "#fff",
                             marginLeft: "8px",
+                            fontWeight: "bold",
+                            fontSize: "18px",
                             cursor: "pointer",
                             "&:hover": { textDecoration: "underline" },
                         }} // Pointer cursor

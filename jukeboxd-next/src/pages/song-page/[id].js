@@ -311,7 +311,7 @@ const SongPage = () => {
                                 onChange={(event, newValue) =>
                                     setSelectedTab(newValue)
                                 }
-                                centered
+                                left
                                 textColor="inherit"
                                 TabIndicatorProps={{
                                     style: { backgroundColor: "#1db954" },
