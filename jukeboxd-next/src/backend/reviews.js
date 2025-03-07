@@ -73,7 +73,7 @@ export const createReview = async (reviewData) => {
 
         // Update user's reviews array
         await updateDoc(userRef, {
-            reviews: [...(userDoc.data().reviews || []), reviewDocId]
+            reviews: [reviewDocId, ...(userDoc.data().reviews || [])]
         });
 
         return reviewDocId;
