@@ -52,13 +52,13 @@ export default function ReviewForm({ userData }) {
       artists: selectedItem.artists,
       images: selectedItem.images,
       username: userData.username,
-      user_pfp: userData.profilePic,
+      user_pfp: userData.profilePicture,
       rating: Number(rating),
       review_text: review,
       likes: 0,
       dislikes: 0,
       date: new Date(),
-      type: selectedItem.review_type
+      type: selectedItem.review_type,
     };
 
     addReview(reviewObj).then(() => {
