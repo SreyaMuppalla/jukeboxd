@@ -4,8 +4,10 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
+  output: 'export',
   images: {
-    domains: ['i.scdn.co', 'lh3.googleusercontent.com'], // Add 'i.scdn.co' here to allow loading images from spotify
+    domains: ['i.scdn.co', 'lh3.googleusercontent.com'], // Allow loading images from spotify
+    unoptimized: true, // Required for static export
   },
 };
 
