@@ -18,19 +18,57 @@
         "*.local"
       ],
       "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run build"
+        "npm --prefix \"./\" run build"
       ]
     }
   ],
   "hosting": {
-    "public": "out",
+    "public": ".next", 
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ], 
     "cleanUrls": true,
-  "trailingSlash": false,
-  "appAssociation": "AUTO"
+    "trailingSlash": true,
+    "appAssociation": "AUTO",
+    "rewrites": [
+      {
+        "destination": "/profile-page/[id]/index.html",
+        "regex": "^/profile-page/([^/]+?)(?:/)?$"
+      }, 
+      {
+        "destination": "/song-page/[id]/index.html",
+        "regex": "^/song-page/([^/]+?)(?:/)?$"
+      }, 
+      {
+        "destination": "/artist-page/[id]/index.html",
+        "regex": "^/artist-page/([^/]+?)(?:/)?$"
+      }, 
+      {
+        "destination": "/album-page/[id]/index.html",
+        "regex": "^/album-page/([^/]+?)(?:/)?$"
+      }, 
+      {
+        "source": "/profile-page/{id}",
+        "function": "nextServer"
+      },
+      {
+        "source": "/_next/{*rest}",
+        "function": "nextServer"
+      }, 
+      {
+        "source": "/song-page/{id}",
+        "function": "nextServer"
+      },
+      {
+        "source": "/artist-page/{id}",
+        "function": "nextServer"
+      },
+      {
+        "source": "/album-page/{id}",
+        "function": "nextServer"
+      }
+    ]
   }
 }

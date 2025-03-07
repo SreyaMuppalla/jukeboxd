@@ -1,8 +1,7 @@
 {
   "name": "jukeboxd-next",
   "workspaces": [
-    ".",
-    "functions"
+    "."
   ],
   "version": "0.1.0",
   "private": true,
@@ -13,7 +12,7 @@
     "lint": "next lint",
     "test": "jest --watch",
     "export": "next export",
-    "deploy": "npm run build && firebase deploy --only hosting"
+    "deploy": "npm run build && firebase deploy"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -28,7 +27,7 @@
     "firebase-functions": "^6.3.2",
     "jotai": "^2.12.1",
     "lodash": "^4.17.21",
-    "next": "^15.1.7",
+    "next": "^15.2.1",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
