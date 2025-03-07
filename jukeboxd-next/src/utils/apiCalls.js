@@ -100,6 +100,26 @@ export const fetchAlbumData = async (albumId) => {
       }
   }
 
+  export const fetchArtistTopSongs = async (artistId) => 
+  {
+    const spotifyToken = await spotifyTokenService.getToken();
+    try {
+      const spotifyArtistTopSongs = await SpotifyAPIController.getArtistTopSongs(spotifyToken, artistId)
+  
+      if (spotifyArtistTopSongs) {
+        // Step 3: Return the raw album data from Spotify
+        return spotifyArtistTopSongs;
+      }
+  
+      // If Spotify does not return any data, return null or handle accordingly
+      return null;
+  
+    } catch (error) {
+      console.error("Error fetching artist top songs data:", error);
+      throw error; // Handle any unexpected errors
+    }
+  }
+
   /**
  * Adds a review object for a song or album.
  *
