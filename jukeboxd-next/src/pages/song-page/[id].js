@@ -131,133 +131,143 @@ const SongPage = () => {
                     <AlbumInfoContainer>
                         {/* Album Cover */}
                         <Image
-                            src={songDetails.images[1]?.url} // First image from the images array
+                            src={songDetails.images[1]?.url}
                             alt={songDetails.name + " Album Cover"}
-                            width={250}
-                            height={250}
+                            width={200}
+                            height={200}
+                            style={{ borderRadius: "8px" }}
                         />
-                        <AlbumDetails>
-                            {/* Song Title and Bookmark Button Container */}
-                            <Box
-                                display="flex"
-                                alignItems="center"
-                                justifyContent="space-between"
-                                width="100%"
-                            >
+
+                        {/* Right side with details and bookmark */}
+                        <Box
+                            display="flex"
+                            justifyContent="space-between"
+                            flex="1"
+                            alignItems="flex-start"
+                        >
+                            <AlbumDetails>
                                 {/* Song Title */}
                                 <Typography
                                     variant="h3"
                                     style={{
                                         color: "#fff",
                                         marginBottom: "8px",
+                                        wordBreak: "break-word",
                                     }}
                                 >
                                     {songDetails.name}
                                 </Typography>
 
-                                {/* Bookmark Button */}
-                                <Button
-                                    onClick={handleBookmark}
-                                    disabled={bookmarkLoading}
-                                    variant="contained"
-                                    sx={{
-                                        backgroundColor: isBookmarked
-                                            ? "#1DB954"
-                                            : "#333",
-                                        color: "#fff",
-                                        "&:hover": {
-                                            backgroundColor: isBookmarked
-                                                ? "#1ed760"
-                                                : "#444",
-                                        },
-                                        minWidth: "120px",
-                                        height: "40px",
-                                        borderRadius: "20px",
-                                        textTransform: "none",
-                                        fontWeight: "bold",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "8px",
-                                    }}
-                                >
-                                    <Bookmark />
-                                    {isBookmarked ? "Bookmarked" : "Bookmark"}
-                                </Button>
-                            </Box>
-                            {/* Album Name */}
-                            <Typography
-                                variant="h5"
-                                style={{
-                                    color: "#b3b3b3",
-                                    marginBottom: "8px",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                <Link
-                                    href={`/album-page/${songDetails.album.id}`}
-                                    passHref
+                                {/* Album Name */}
+                                <Typography
+                                    variant="h5"
                                     style={{
                                         color: "#b3b3b3",
-                                        textDecoration: "none",
-                                        transition: "color 0.3s",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.color = "#fff";
-                                        e.currentTarget.style.textDecoration =
-                                            "underline";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.color = "#b3b3b3";
-                                        e.currentTarget.style.textDecoration =
-                                            "none";
+                                        marginBottom: "8px",
+                                        cursor: "pointer",
                                     }}
                                 >
-                                    {songDetails.album.name}{" "}
-                                </Link>
-                            </Typography>
-                            {/* Artist Names */}
-                            <Typography
-                                variant="h6"
-                                style={{
-                                    color: "#b3b3b3",
-                                    marginBottom: "16px",
+                                    <Link
+                                        href={`/album-page/${songDetails.album.id}`}
+                                        passHref
+                                        style={{
+                                            color: "#b3b3b3",
+                                            textDecoration: "none",
+                                            transition: "color 0.3s",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.color =
+                                                "#fff";
+                                            e.currentTarget.style.textDecoration =
+                                                "underline";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.color =
+                                                "#b3b3b3";
+                                            e.currentTarget.style.textDecoration =
+                                                "none";
+                                        }}
+                                    >
+                                        {songDetails.album.name}
+                                    </Link>
+                                </Typography>
+
+                                {/* Artist Names */}
+                                <Typography
+                                    variant="h6"
+                                    style={{
+                                        color: "#b3b3b3",
+                                        marginBottom: "16px",
+                                    }}
+                                >
+                                    {songDetails.artists.map(
+                                        (artist, index) => (
+                                            <span key={artist.id}>
+                                                <Link
+                                                    href={`/artist-page/${artist.id}`}
+                                                    passHref
+                                                    style={{
+                                                        color: "#b3b3b3",
+                                                        textDecoration: "none",
+                                                        transition:
+                                                            "color 0.3s",
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.color =
+                                                            "#fff";
+                                                        e.currentTarget.style.textDecoration =
+                                                            "underline";
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.color =
+                                                            "#b3b3b3";
+                                                        e.currentTarget.style.textDecoration =
+                                                            "none";
+                                                    }}
+                                                >
+                                                    {artist.name}
+                                                </Link>
+                                                {index <
+                                                    songDetails.artists.length -
+                                                        1 && ", "}
+                                            </span>
+                                        )
+                                    )}
+                                </Typography>
+
+                                {/* Static Rating */}
+                                <StarRating rating={3.2} />
+                            </AlbumDetails>
+
+                            {/* Bookmark Button (to the far right) */}
+                            <Button
+                                onClick={handleBookmark}
+                                disabled={bookmarkLoading}
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: isBookmarked
+                                        ? "#1DB954"
+                                        : "#333",
+                                    color: "#fff",
+                                    "&:hover": {
+                                        backgroundColor: isBookmarked
+                                            ? "#1ed760"
+                                            : "#444",
+                                    },
+                                    minWidth: "120px",
+                                    height: "40px",
+                                    borderRadius: "20px",
+                                    textTransform: "none",
+                                    fontWeight: "bold",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
                                 }}
                             >
-                                {songDetails.artists.map((artist, index) => (
-                                    <span key={artist.id}>
-                                        <Link
-                                            href={`/artist-page/${artist.id}`}
-                                            passHref
-                                            style={{
-                                                color: "#b3b3b3",
-                                                textDecoration: "none",
-                                                transition: "color 0.3s",
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.color =
-                                                    "#fff";
-                                                e.currentTarget.style.textDecoration =
-                                                    "underline";
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.color =
-                                                    "#b3b3b3";
-                                                e.currentTarget.style.textDecoration =
-                                                    "none";
-                                            }}
-                                        >
-                                            {artist.name}
-                                        </Link>
-                                        {index <
-                                            songDetails.artists.length - 1 &&
-                                            ", "}
-                                    </span>
-                                ))}
-                            </Typography>
-                            {/* Rating (Stars Placeholder) */}
-                            {/* REPLACE -- STATIC SONG RATING */}
-                            <StarRating rating={3.2} />{" "}
-                        </AlbumDetails>
+                                <Bookmark />
+                                {isBookmarked ? "Bookmarked" : "Bookmark"}
+                            </Button>
+                        </Box>
                     </AlbumInfoContainer>
 
                     {/* Reviews Section */}
