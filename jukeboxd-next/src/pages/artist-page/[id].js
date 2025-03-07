@@ -11,73 +11,42 @@ import {
     SongDetailsRow,
     SongDetailsText,
 } from "../../styles/StyledComponents";
-import albumpic from "../../images/albumpic.jpg"; // Import album image
 import Image from "next/image";
-import { fetchArtistData } from '../../utils/apiCalls'; // Import your API controller
+import { fetchArtistData, fetchArtistTopSongs } from '../../utils/apiCalls'; // API calls
 import { useRouter } from 'next/router';
+import Link from "next/link"; // Import Link from Next.js
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 import UnknownArtwork from '@/images/unknown_artwork.jpg';
 
 const ArtistPage = () => {
-  const topSongs = [
-    {
-      albumCover: albumpic,
-      songName: "Song 1",
-      albumName: "Album 1",
-      year: "2020",
-      stars: 5,
-    },
-    {
-      albumCover: albumpic,
-      songName: "Song 2",
-      albumName: "Album 2",
-      year: "2019",
-      stars: 4,
-    },
-    {
-      albumCover: albumpic,
-      songName: "Song 3",
-      albumName: "Album 3",
-      year: "2021",
-      stars: 4.5,
-    },
-    {
-      albumCover: albumpic,
-      songName: "Song 4",
-      albumName: "Album 4",
-      year: "2018",
-      stars: 5,
-    },
-    {
-      albumCover: albumpic,
-      songName: "Song 5",
-      albumName: "Album 5",
-      year: "2022",
-      stars: 3.5,
-    },
-  ];
-
   const router = useRouter();
   const { id: artistId } = router.query; // Get artistId from the dynamic route
+
   const [artistDetails, setArtistDetails] = useState({
     name: "",
-    images: [{ url: UnknownArtwork }]
+    images: [{ url: UnknownArtwork }],
   });
+  const [topSongs, setTopSongs] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (artistId) {
       const getArtistData = async () => {
         try {
-
           setError(null); // Reset any previous errors
 
-          // Fetch artist details using the token
+          // Fetch artist details
           const details = await fetchArtistData(artistId);
           setArtistDetails(details);
+
+          // Fetch top songs
+          const songs = await fetchArtistTopSongs(artistId);
+          setTopSongs(songs);
+          console.log(songs)
+
         } catch (error) {
-          console.error('Error fetching artist data:', error);
-          setError('Failed to fetch artist details.');
+          console.error('Error fetching artist data or top songs:', error);
+          setError('Failed to fetch artist details or top songs.');
         }
       };
 
@@ -107,7 +76,6 @@ const ArtistPage = () => {
                 <Typography variant="h4" style={{ color: "#fff", marginBottom: "8px" }}>
                   {artistDetails.name}
                 </Typography>
-                <Rating name="read-only" value={5} readOnly />
               </ProfileDetails>
             </ProfileDetailsContainer>
           </ProfileInfo>
@@ -131,44 +99,69 @@ const ArtistPage = () => {
                 textAlign: "center",
               }}
             >
-              Top Rated Songs
+              Top Songs
             </Typography>
 
             {topSongs.map((song, index) => (
-              <TopSongItem key={index}>
-                {/* Album Cover */}
-                <Image
-                  src={song.albumCover}
-                  alt={`Album cover for ${song.songName}`}
-                  onClick={() =>
-                    (window.location.href = "/album-page")
-                  } // Navigate to AlbumPage
-                />
+            <TopSongItem key={index}>
+              {/* Album Cover */}
+                  <Image
+                    src={song.images[1]?.url || UnknownArtwork}
+                    alt={`Album cover for ${song.name}`}
+                    width={150} // Set the width (adjust size as necessary)
+                    height={150} // Set the height (adjust size as necessary)
+                    style={{ borderRadius: "8px", cursor: "pointer" }}
+                    onClick={() => (window.location.href = `/album-page/${song.album.id}`)} // Navigate to AlbumPage with album id
+                  />
 
-                {/* Song Details */}
-                <SongDetailsRow>
-                  <SongDetailsText>
-                    <Typography
-                      className="song-name"
-                      onClick={() =>
-                        (window.location.href = "/song-page")
-                      } // Navigate to SongPage
-                    >
-                      {song.songName}
-                    </Typography>
-                    <Typography
-                      className="album-name"
-                      onClick={() =>
-                        (window.location.href = "/album-page")
-                      } // Navigate to AlbumPage
-                    >
-                      {song.albumName}
-                    </Typography>
-                    <Typography className="year">
-                      {song.year}
-                    </Typography>
-                  </SongDetailsText>
+                  {/* Song Details */}
+                  <SongDetailsRow>
+                    <SongDetailsText>
+                      {/* Song Name with Link */}
+                      <Link href={`/song-page/${song.id}`} passHref>
+                        <Typography
+                          className="song-name"
+                          style={{
+                            textDecoration: 'none',
+                            color: '#fff', // Default color
+                            fontSize: '1.2rem',
+                            cursor: 'pointer',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.textDecoration = 'underline';
+                            e.target.style.color = '#fff'; // Change color on hover
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.textDecoration = 'none';
+                            e.target.style.color = '#ccc'; // Reset color
+                          }}
+                        >
+                          {song.name}
+                        </Typography>
+                      </Link>
 
+                      {/* Album Name with Link */}
+                      <Link href={`/album-page/${song.album.id}`} passHref>
+                        <Typography
+                          className="album-name"
+                          style={{
+                            textDecoration: 'none',
+                            color: '#ccc', // Default color
+                            cursor: 'pointer',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.textDecoration = 'underline';
+                            e.target.style.color = '#fff'; // Change color on hover
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.textDecoration = 'none';
+                            e.target.style.color = '#ccc'; // Reset color
+                          }}
+                        >
+                          {song.album.name}
+                        </Typography>
+                      </Link>
+                </SongDetailsText>
                   {/* Stars */}
                   <Rating
                     name="read-only"

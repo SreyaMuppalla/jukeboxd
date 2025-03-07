@@ -83,7 +83,7 @@ export const ReviewContainer = styled.div`
     border-radius: 8px;
     padding: 16px;
     width: 100%;
-    max-width: 800px;
+    height: 180px;
     margin: 16px auto;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 `;
@@ -92,31 +92,40 @@ export const ReviewContainer = styled.div`
 export const SongInfo = styled.div`
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
     justify-content: center;
-    margin-right: 16px;
+    padding: 0 16px;
+    width: 200px;
+`;
+
+export const ReviewSubContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-grow: 2;
+  height: 100%;
+  justify-content: space-between;
 `;
 
 // User info container
 export const UserInfo = styled.div`
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    margin-right: 16px;
+    justify-content: flex-start;
+    gap: 16px;
 `;
 
 // Profile picture container
 export const ProfilePic = styled.div`
     width: 40px;
     height: 40px;
-    margin-bottom: 8px;
     overflow: hidden;
 `;
 
 // Stars rating container
 export const RatingContainer = styled.div`
-    margin-top: 4px;
+    display: flex;
+    justify-content: flex-end;
 `;
 
 // Review text container
