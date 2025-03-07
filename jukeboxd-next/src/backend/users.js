@@ -103,6 +103,12 @@ export const updateUsername = async (user_id, new_username) => {
             throw new Error("Missing user_id or new_username parameter");
         }
 
+        // Check if the new username already exists
+        const usernameInDB = await usernameExists(new_username);
+        if (usernameInDB) {
+            throw new Error(`Error: Username "${new_username}" already exists`);
+        }
+
         const userRef = doc(db, "users", user_id);
         const userDoc = await getDoc(userRef);
 
@@ -110,6 +116,7 @@ export const updateUsername = async (user_id, new_username) => {
             throw new Error("User not found");
         }
 
+        // Proceed with updating the username if no conflict exists
         await updateDoc(userRef, {
             username: new_username
         });
@@ -161,6 +168,28 @@ export const searchUsers = async (username) => {
       return [];
     }
   };
+
+  export const usernameExists = async (username) => {
+    try {
+        if (!username) {
+            throw new Error("Missing username parameter");
+        }
+
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("username", "==", username));
+
+        const querySnapshot = await getDocs(q);
+        
+        // If any document is found, it means the username exists
+        if (!querySnapshot.empty) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        throw error;
+    }
+};
 
   export const followUser = async (user_id, friend_id) => {
     try {
