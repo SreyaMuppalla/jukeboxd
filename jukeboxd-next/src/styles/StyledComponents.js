@@ -4,7 +4,8 @@ import Image from "next/image";
 
 export const Background = styled.div`
     background-color: #212121;
-    height: 100%;
+    height: auto;
+    min-height: 90vh;
     display: flex;
     flex-direction: column;
 `;
@@ -65,7 +66,6 @@ export const LargeAlbumCover = styled.div`
     overflow: hidden;
 `;
 
-
 // Song name styling
 export const SongName = styled(Typography)`
     font-size: 14px;
@@ -101,12 +101,12 @@ export const SongInfo = styled.div`
 `;
 
 export const ReviewSubContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex-grow: 2;
-  height: 100%;
-  justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 2;
+    height: 100%;
+    justify-content: space-between;
 `;
 
 // User info container
@@ -135,7 +135,7 @@ export const RatingContainer = styled.div`
 export const ReviewText = styled.div`
     flex-grow: 2;
     color: #fff;
-    font-size: 14px;
+    font-size: 18px;
     margin-top: 8px;
 `;
 // Main container for the Profile Page
@@ -184,8 +184,7 @@ export const StatItem = styled.div`
 export const ReviewsSection = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-top: 32px;
+    gap: 5px;
 `;
 export const ProfileDetailsContainer = styled.div`
     display: flex;
@@ -206,7 +205,8 @@ export const AlbumInfoContainer = styled.div`
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 16px 42px;
+    gap: 24px;
+    padding: 16px 32px;
 `;
 
 // Container for album details (name, artist, stars)
@@ -220,7 +220,7 @@ export const AlbumDetails = styled.div`
 
 // Container for the list of songs
 export const SongsListContainer = styled.div`
-    flex: 0 0 50%;  /* Take up 50% of the parent container */
+    flex: 0 0 50%; /* Take up 50% of the parent container */
     padding: 16px;
     background-color: #333;
     border-radius: 16px;
@@ -333,7 +333,6 @@ export const SearchInput = styled.input`
     }
 `;
 
-
 export const SongCard = ({ albumCover, songName, artistName }) => {
     return (
         <Box
@@ -365,7 +364,6 @@ export const SongCard = ({ albumCover, songName, artistName }) => {
                 >
                     {songName} by {artistName}
                 </Typography>
-
             </Box>
         </Box>
     );
@@ -397,7 +395,6 @@ export const SearchDropdown = styled.select`
         border: 2px solid #1db954;
     }
 `;
-
 
 export const SearchInputContainer = styled.div`
     display: flex;
