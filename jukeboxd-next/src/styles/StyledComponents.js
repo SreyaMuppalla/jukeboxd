@@ -4,7 +4,8 @@ import Image from "next/image";
 
 export const Background = styled.div`
     background-color: #212121;
-    height: 90vh;
+    height: auto;
+    min-height: 90vh;
     display: flex;
     flex-direction: column;
 `;
@@ -180,8 +181,7 @@ export const StatItem = styled.div`
 export const ReviewsSection = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-top: 32px;
+    gap: 5px;
 `;
 export const ProfileDetailsContainer = styled.div`
     display: flex;

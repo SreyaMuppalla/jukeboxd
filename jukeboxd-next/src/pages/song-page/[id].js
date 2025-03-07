@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Rating, Typography, Button } from "@mui/material";
+import { Box, Rating, Typography, Button, Tab, Tabs } from "@mui/material";
 import { Bookmark } from "@mui/icons-material";
 import {
     Background,
@@ -41,6 +41,8 @@ const SongPage = () => {
     const [token, _] = useAtom(currItem); // Access token state
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [bookmarkLoading, setBookmarkLoading] = useState(false); // Fetch reviews on component mount
+
+    const [selectedTab, setSelectedTab] = useState(0);
     useEffect(() => {
         const fetchReviews = async () => {
             try {
@@ -151,6 +153,7 @@ const SongPage = () => {
                                     variant="h3"
                                     style={{
                                         color: "#fff",
+                                        fontWeight: "bold",
                                         marginBottom: "8px",
                                         wordBreak: "break-word",
                                     }}
@@ -272,13 +275,37 @@ const SongPage = () => {
 
                     {/* Reviews Section */}
                     <Box marginTop="32px" width="100%">
-                        <ReviewsSection>
-                            <Typography
-                                variant="h5"
-                                style={{ color: "#fff", marginBottom: "16px" }}
+                        <ReviewsSection
+                            style={{
+                                marginTop: "32px",
+                                padding: "16px",
+                                backgroundColor: "#333",
+                                borderRadius: "16px",
+                                width: "100%",
+                                margin: "32px auto",
+                            }}
+                        >
+                            <Tabs
+                                value={selectedTab}
+                                onChange={(event, newValue) =>
+                                    setSelectedTab(newValue)
+                                }
+                                centered
+                                textColor="inherit"
+                                TabIndicatorProps={{
+                                    style: { backgroundColor: "#1db954" },
+                                }}
                             >
-                                Reviews:
-                            </Typography>
+                                <Tab
+                                    label="Recent Reviews"
+                                    sx={{
+                                        color: "white",
+                                        fontFamily: "Inter",
+                                        textTransform: "none", // Optional: Prevent uppercase transformation
+                                        fontSize: "16px",
+                                    }}
+                                />
+                            </Tabs>
                             {reviews.length > 0 ? (
                                 reviews.map((review) => (
                                     <Review review={review} />
