@@ -88,10 +88,56 @@ export const updateUserBio = async (user_id, new_bio) => {
         }
 
         await updateDoc(userRef, {
-            bio: new_bio
+            user_bio: new_bio
         });
 
         return { message: "User bio updated successfully" };
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const updateUsername = async (user_id, new_username) => {
+    try {
+        if (!user_id || !new_username) {
+            throw new Error("Missing user_id or new_username parameter");
+        }
+
+        const userRef = doc(db, "users", user_id);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+            throw new Error("User not found");
+        }
+
+        await updateDoc(userRef, {
+            username: new_username
+        });
+
+        return { message: "Username updated successfully" };
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const updateUserProfilePicture = async (user_id, profile_picture_url) => {
+    try {
+        if (!user_id || !profile_picture_url) {
+            throw new Error("Missing user_id or profile_picture_url parameter");
+        }
+
+        const userRef = doc(db, "users", user_id);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+            throw new Error("User not found");
+        }
+
+        await updateDoc(userRef, {
+            profilePicture: profile_picture_url
+        });
+
+        return { message: "Profile picture updated successfully" };
     } catch (error) {
         throw error;
     }
