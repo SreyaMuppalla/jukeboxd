@@ -197,7 +197,7 @@ const SongPage = () => {
                                     variant="h6"
                                     style={{
                                         color: "#b3b3b3",
-                                        marginBottom: "16px",
+                                        marginBottom: "10px",
                                     }}
                                 >
                                     {songDetails.artists.map(
