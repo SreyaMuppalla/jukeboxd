@@ -137,7 +137,7 @@ export default function ReviewForm({ userData }) {
           </Typography>
         </Box>
 
-        <SearchBar type="review" />
+        <SearchBar type="review" query={selectedItem?.review_type}/>
 
         <Box
           display="flex"
