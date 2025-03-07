@@ -10,7 +10,7 @@ import {
     signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "./firebaseConfig";
-import { createUser } from "./users";
+import { createUser, usernameExists } from "./users";
 
 const AuthContext = createContext();
 
@@ -31,6 +31,10 @@ export function AuthProvider({ children }) {
 
     const signUp = async (username, email, password, profilePicture, bio) => {
         try {
+            const usernameInDB = await usernameExists(username);
+            if (usernameInDB) {
+                throw new Error("Username already exists");
+            }
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
                 email,

@@ -27,6 +27,7 @@ const PersonalProfilePage = () => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [profileUpdateError, setProfileUpdateError] = useState("")
     const [reviews, setReviews] = useState([]);
     const [editingBio, setEditingBio] = useState(false);
     const [bio, setBio] = useState("");
@@ -73,16 +74,31 @@ const PersonalProfilePage = () => {
     };
 
     const handleEditUsername = async () => {
-      if (!userData) return;
-      if (editingUsername) {
+        if (!userData) return;
+      
+        if (editingUsername) {
+            if (username === userData.username) {
+                setProfileUpdateError(""); // Clear error if the update succeeds
+                setEditingUsername(!editingUsername);  // Toggle editing state
+                return;  // Exit the function early
+            }
           try {
+            
             await updateUsername(user.uid, username);
+            setUserData(userData => ({
+                ...userData,
+                username: username  // Replace "newUsername" with the desired username
+            }));
+            setUsername(username)
+            setProfileUpdateError(""); // Clear error if the update succeeds
           } catch (error) {
-              console.error("Error updating username:", error);
+            console.error(error)
+            setUsername(userData.username)
+            setProfileUpdateError(error.message); // Set error message
           }
-      }
-      setEditingUsername(!editingUsername);
-    };
+        }
+        setEditingUsername(!editingUsername);
+      };
 
     const handleImageUpload = async (event) => {
       const file = event.target.files[0];
@@ -213,6 +229,8 @@ const PersonalProfilePage = () => {
                         >
                             {editingUsername ? "Save Username" : "Edit Username"}
                         </Button>
+                        {profileUpdateError && (
+                        <p style={{ color: "red" }}>{profileUpdateError}</p>)} 
                             </ProfileDetails>
 
                             {/* Stats aligned to the right */}
