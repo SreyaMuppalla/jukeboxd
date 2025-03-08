@@ -259,8 +259,12 @@ const SongPage = () => {
                                     )}
                                 </Typography>
 
-                                {/* Static Rating */}
-                                <StarRating rating={3.2} />
+                                <Box display="flex" alignItems="center" gap={1}>
+                                    <StarRating rating={songDetails.num_reviews > 0 ? songDetails.review_score / songDetails.num_reviews : 0} />
+                                    <Typography variant="body1" style={{ color: '#d3d3d3', marginLeft: '8px' }}>
+                                            ({songDetails.num_reviews} Reviews)
+                                    </Typography>
+                                </Box>   
                             </AlbumDetails>
 
                             {/* Bookmark Button (to the far right) */}

@@ -17,6 +17,7 @@ import { useAtom } from 'jotai';
 import { currItem } from '@/states/currItem';
 import unknownArtwork from '@/images/unknown_artwork.jpg';
 import ProtectedRoute from '@/smallcomponents/ProtectedRoute';
+import StarRating from "@/smallcomponents/StarRating";
 import { useAuth } from '@/backend/auth';
 import { getUser, BookmarkAlbum, removeAlbumBookmark } from '@/backend/users';
 import { getReviews } from '@/backend/reviews';
@@ -215,21 +216,12 @@ const AlbumPage = () => {
                 ))}
               </Typography>
               {/* Rating (Stars Placeholder) */}
-              <Rating
-                size="medium"
-                value={5}
-                readOnly
-                sx={{
-                  alignSelf: 'flex-start',
-                  fontSize: '3rem',
-                  '& .MuiRating-iconEmpty': {
-                    color: 'white',
-                  },
-                  '& .MuiRating-iconFilled': {
-                    fontSize: 'inherit',
-                  },
-                }}
-              />
+              <Box display="flex" alignItems="center" gap={1}>
+                  <StarRating rating={albumDetails.num_reviews > 0 ? albumDetails.review_score / albumDetails.num_reviews : 0} />
+                  <Typography variant="body1" style={{ color: '#d3d3d3', marginLeft: '8px' }}>
+                          ({albumDetails.num_reviews} Reviews)
+                    </Typography>
+              </Box>              
             </AlbumDetails>
           </AlbumInfoContainer>
           {/* Content Section (Songs and Reviews) */}
