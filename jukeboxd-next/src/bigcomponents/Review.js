@@ -250,17 +250,17 @@ const handleDislike = async () => {
                     justifyContent="end"
                     mt={1}
                 >
-                    {/* Likes & Dislikes */}
-     
-          <IconButton onClick={handleLike} sx = {{color: "#1DB954"}}>
-          <ThumbUpIcon />
-        </IconButton>
-        <Typography variant="body2" color="white" mx={1}>{likes}</Typography>
-        <IconButton onClick={handleDislike} sx = {{color: "#D9534F"}}>
-          <ThumbDownIcon />
-        </IconButton>
-        <Typography variant="body2" color="white" mx={1}>{dislikes}</Typography>
-     
+                    {/* Like Button */}
+                    <IconButton onClick={handleLike} sx={{ color: liked ? "#1DB954" : "white" }}>
+                      {liked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
+                    </IconButton>
+                    <Typography variant="body2" color="white" mx={1}>{likes}</Typography>
+
+                    {/* Dislike Button */}
+                    <IconButton onClick={handleDislike} sx={{ color: disliked ? "#D9534F" : "white" }}>
+                      {disliked ? <ThumbDownIcon /> : <ThumbDownOutlinedIcon />}
+                    </IconButton>
+              <Typography variant="body2" color="white" mx={1}>{dislikes}</Typography>       
                 </Box>
             </ReviewSubContainer>
         </ReviewContainer>
