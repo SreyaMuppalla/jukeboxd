@@ -239,10 +239,10 @@ export const UnfollowUser = async (user_id, friend_id) => {
     }
 }
 
-export const BookmarkSong = async (user_id, song_id) => {
+export const BookmarkSong = async (user_id, song_id, song_name, song_artist) => {
     try {
-        if (!user_id || !song_id) {
-            throw new Error("Missing user_id or song_id parameter");
+        if (!user_id || !song_id || !song_name || !song_artist) {
+            throw new Error("Missing user_id, song_id, song_name, or song_artist parameter");
         }
 
         const userRef = doc(db, "users", user_id);
@@ -252,8 +252,10 @@ export const BookmarkSong = async (user_id, song_id) => {
             throw new Error("User not found");
         }
 
+        const currentBookmarks = userDoc.data().bookmarkedSongs || [];
+
         await updateDoc(userRef, {
-            bookmarkedSongs: [...(userDoc.data().bookmarkedSongs || []), song_id]
+            bookmarkedSongs: [...currentBookmarks, {song_id, song_name, song_artist}]
         });
 
         return { message: "Song bookmarked successfully" };
