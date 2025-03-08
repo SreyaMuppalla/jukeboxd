@@ -152,9 +152,16 @@ const AlbumPage = () => {
             <img
               src={albumDetails.images[1]?.url || unknownArtwork} // Fallback to a default image if unavailable
               alt="Album Cover"
-              width={250}
-              height={250}
+              width={200}
+              height={200}
+              style={{ borderRadius: "8px" }}
             />
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              flex="1"
+              alignItems="flex-start"
+            >
             <AlbumDetails>
               {/* Album Name */}
               <Typography
@@ -222,7 +229,8 @@ const AlbumPage = () => {
                           ({albumDetails.num_reviews} Reviews)
                     </Typography>
               </Box>              
-            </AlbumDetails>
+              </AlbumDetails>
+              </Box>
           </AlbumInfoContainer>
           {/* Content Section (Songs and Reviews) */}
           <Box display="flex" width="95%" marginTop="32px">
