@@ -32,7 +32,7 @@ import Image from "next/image";
 
 //AlbumCover, song_id and ArtistName need to be updated to render correctly. 
 // Currently default and null. 
-const Review = ({id, review}) => {
+const Review = ({review}) => {
   const album_ref = "/album-page/" + review.album_id;
   const song_ref = "/song-page/" + review.song_id;
   const artist_ref = "/artist-page/" + review.artists[0].id;
