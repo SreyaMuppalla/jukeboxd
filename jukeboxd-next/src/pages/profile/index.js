@@ -10,16 +10,14 @@ import {
     ProfileDetails,
     StatsContainer,
     StatItem,
-    SongsListContainer,
-    ReviewsSection,
-    SongCard,
+    SongsListContainer
 } from "../../styles/StyledComponents";
 import Review from "../../bigcomponents/Review";
 import Link from "next/link";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
 import Image from "next/image";
 import albumpic from '../../images/albumpic.jpg'; // Import the album image
-import { getUser, updateUserBio, updateUsername, updateUserProfilePicture} from "../../backend/users";
+import { getUser, updateUserBio, updateUserProfilePicture} from "../../backend/users";
 import { useRouter } from "next/router";
 import { useAuth } from "../../backend/auth.js";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
@@ -75,33 +73,6 @@ const PersonalProfilePage = () => {
 
         setEditingBio(!editingBio);
     };
-
-    const handleEditUsername = async () => {
-        if (!userData) return;
-      
-        if (editingUsername) {
-            if (username === userData.username) {
-                setProfileUpdateError(""); // Clear error if the update succeeds
-                setEditingUsername(!editingUsername);  // Toggle editing state
-                return;  // Exit the function early
-            }
-          try {
-            
-            await updateUsername(user.uid, username);
-            setUserData(userData => ({
-                ...userData,
-                username: username  // Replace "newUsername" with the desired username
-            }));
-            setUsername(username)
-            setProfileUpdateError(""); // Clear error if the update succeeds
-          } catch (error) {
-            console.error(error)
-            setUsername(userData.username)
-            setProfileUpdateError(error.message); // Set error message
-          }
-        }
-        setEditingUsername(!editingUsername);
-      };
 
     const handleImageUpload = async (event) => {
       const file = event.target.files[0];
@@ -227,22 +198,6 @@ const PersonalProfilePage = () => {
                             </Typography>
                         )}
 
-                        <Button
-                            onClick={handleEditUsername}
-                            variant="contained"
-                            style={{
-                                backgroundColor: "#1db954",
-                                color: "#fff",
-                                marginTop: "16px",
-                                textTransform: "none",
-                                width: "10%",
-                                padding: "16px",
-                            }}
-                        >
-                            {editingUsername ? "Save Username" : "Edit Username"}
-                        </Button>
-                        {profileUpdateError && (
-                        <p style={{ color: "red" }}>{profileUpdateError}</p>)} 
                             </ProfileDetails>
 
                             {/* Stats aligned to the right */}
