@@ -17,7 +17,6 @@ import { useRouter } from 'next/router';
 import Link from "next/link"; // Import Link from Next.js
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 import UnknownArtwork from '@/images/unknown_artwork.jpg';
-import StarRating from "@/smallcomponents/StarRating";
 
 const ArtistPage = () => {
   const router = useRouter();
@@ -184,10 +183,6 @@ const ArtistPage = () => {
                         </Typography>
                       </Link>
                 </SongDetailsText>
-                  {/* Stars */}
-                  <Box style={{ marginLeft: 'auto' }}>
-                    <StarRating rating={3.2} />
-                  </Box>
                 </SongDetailsRow>
               </TopSongItem>
             ))}
