@@ -131,7 +131,13 @@ const AlbumPage = () => {
     }
     else{
       try {
-        await BookmarkAlbum(user.uid, albumId);
+        let artist = albumDetails.artists[0];
+        let album_artist = artist instanceof Map 
+                ? Array.from(artist.values())[0] || "Unknown Artist" // Get first artist from Map
+                : Array.isArray(artist) 
+                    ? artist[0]?.name || "Unknown Artist" // Handle array case
+                    : artist?.name || "Unknown Artist";
+        await BookmarkAlbum(user.uid, albumId, albumDetails.name, album_artist);
         setIsBookmarked(true);
       } catch (error) {
         console.error('Error bookmarking album:', error);

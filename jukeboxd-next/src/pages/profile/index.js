@@ -30,6 +30,7 @@ const PersonalProfilePage = () => {
     const [profileUpdateError, setProfileUpdateError] = useState("")
     const [reviews, setReviews] = useState([]);
     const [songBookmarks, setSongBookmarks] = useState([]);
+    const [albumBookmarks, setAlbumBookmarks] = useState([]);
     const [editingBio, setEditingBio] = useState(false);
     const [bio, setBio] = useState("");
     const [editingUsername, setEditingUsername] = useState(false);
@@ -120,8 +121,17 @@ const PersonalProfilePage = () => {
                         userSongBookmarks.push(songId);
                     }
                 }
+
+                const userAlbumBookmarks = [];
+                for (const albumId of data.bookmarkedAlbums || []) {
+                    if (albumId) {
+                        userAlbumBookmarks.push(albumId);
+                    }
+                }
+
                 setReviews(reviews);
                 setSongBookmarks(userSongBookmarks);
+                setAlbumBookmarks(userAlbumBookmarks);
                 setUserData(data);
                 setBio(data.user_bio)
                 setUsername(data.username)
@@ -410,7 +420,59 @@ const PersonalProfilePage = () => {
                                     
                                     )}
                                 </ol>
+                            </SongsListContainer>
+                            {/* Albums List */}
+                            <SongsListContainer>
+                                <Typography
+                                    variant="h5"
+                                    style={{ color: '#fff', marginBottom: '16px' }}
+                                >
+                                    Albums:
+                                </Typography>
+                                <ol style={{ paddingLeft: '16px', color: '#b3b3b3' }}>
+                                    { albumBookmarks.length > 0 ? ( albumBookmarks.map((album, index) => (
+                                    <li key={index} style={{ marginBottom: '8px' }}>
+                                        <Link
+                                        href={`/album-page/${album.album_id}`}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.color = '#fff';
+                                            e.currentTarget.style.textDecoration = 'underline';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.color = '#b3b3b3';
+                                            e.currentTarget.style.textDecoration = 'none';
+                                        }}
+                                        style={{
+                                            fontSize: '20px',
+                                        }}
+                                        >
+                                        <Box display="flex" gap={5} alignItems="center">
+                                            <Typography
+                                                                      variant="h6"
+                                                                      sx={{ minWidth: 30, textAlign: 'right' }}
+                                                                    >
+                                                                      {index + 1}
+                                                                    </Typography>
+                                            <Typography variant="h6">
+                                            {album.album_name} by {album.album_artist}
+                                            </Typography>
+                                        </Box>
+                                        </Link>
+                                    </li>
+                                    )) ) : (
+                                        <>
+                                        <Typography 
+                                            variant="body1" 
+                                            style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
+                                        >
+                                            No album bookmarks yet.
+                                        </Typography>
+                                        </>
+
+                                    )}
+                                </ol>
                                 </SongsListContainer>
+
                             
                             </Box>
                         )}
