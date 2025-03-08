@@ -108,7 +108,7 @@ const ArtistPage = () => {
               }
               textColor="inherit"
               TabIndicatorProps={{
-                style: { backgroundColor: "#1db954" },
+                style: { backgroundColor: "#1db954", marginBottom: "16px" },
               }}
             >
               <Tab
@@ -118,6 +118,7 @@ const ArtistPage = () => {
                   fontFamily: "Inter",
                   textTransform: "none", // Optional: Prevent uppercase transformation
                   fontSize: "16px",
+                  marginBottom: "16px",
                 }}
               />
               </Tabs>
