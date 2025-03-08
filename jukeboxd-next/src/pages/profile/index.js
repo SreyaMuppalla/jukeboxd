@@ -12,6 +12,7 @@ import {
     StatItem,
     ReviewsSection,
     SongCard,
+    SignInButton,
 } from "../../styles/StyledComponents";
 import Review from "../../bigcomponents/Review";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
@@ -161,6 +162,14 @@ const PersonalProfilePage = () => {
             <Background>
                 <ProfileContainer>
                     {/* Profile Info Section */}
+                    <Box
+                        style={{
+                            marginTop: "16px",
+                            padding: "16px",
+                            width: "90%",
+                            margin: "auto",
+                        }}
+                    >
                     <ProfileInfo>
                         {/* Profile Picture */}
                         <ProfilePicContainer>
@@ -177,12 +186,13 @@ const PersonalProfilePage = () => {
                                   style={{ display: "none" }} 
                                   onChange={handleImageUpload} 
                               />
-                              <button 
-                                  onClick={handleButtonClick} 
-                                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                              <SignInButton 
+                                    onClick={handleButtonClick} 
+                                    style={{padding: "5px 24px",
+                                        marginTop: "16px"}}
                               >
                                   Upload Image
-                              </button>
+                              </SignInButton>
                           </ProfilePicContainer>
                         {/* Username and Stats */}
                         <ProfileDetailsContainer>
@@ -210,25 +220,10 @@ const PersonalProfilePage = () => {
                                 }}
                             />
                         ) : (
-                            <Typography style={{ color: "#b3b3b3" }}>
+                            <Typography style={{ color: "#ffffff", fontWeight: "bold", fontSize: "50px" }}>
                                 {username}
                             </Typography>
                         )}
-
-                        <Button
-                            onClick={handleEditUsername}
-                            variant="contained"
-                            style={{
-                                backgroundColor: "#1db954",
-                                color: "#fff",
-                                marginTop: "16px",
-                                textTransform: "none",
-                                width: "10%",
-                                padding: "16px",
-                            }}
-                        >
-                            {editingUsername ? "Save Username" : "Edit Username"}
-                        </Button>
                         {profileUpdateError && (
                         <p style={{ color: "red" }}>{profileUpdateError}</p>)} 
                             </ProfileDetails>
@@ -280,6 +275,7 @@ const PersonalProfilePage = () => {
                             </StatsContainer>
                         </ProfileDetailsContainer>
                     </ProfileInfo>
+                    </Box>
 
                     {/* Bio Section */}
                     <Box
@@ -407,13 +403,11 @@ const PersonalProfilePage = () => {
                             right: 16,
                         }}
                     >
-                        <Button
-                            variant="contained"
-                            color="secondary"
+                        <SignInButton
                             onClick={handleLogout}
                         >
                             Logout
-                        </Button>
+                        </SignInButton>
                     </Box>
                 )}
             </Background>
