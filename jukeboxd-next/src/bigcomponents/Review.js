@@ -40,9 +40,13 @@ const Review = ({review}) => {
   //TODO: pull in backend for initial setting of likes and dislikes (replace useState(0))
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
+  const [likedByUsers, setLikedByUsers] = useState([]);
+  const [dislikedByUsers, setDislikedByUsers] = useState([]);
 
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
+  const userHasLiked = likedByUsers.includes(review.user_id);
+  const userHasDisliked = dislikedByUsers.includes(review.user_id);
 
   useEffect(() => {
     if (!review?.id) {
@@ -51,16 +55,19 @@ const Review = ({review}) => {
     }
 
     const fetchLikesAndDislikes = async () => {
-        try {
-            const likes = await getReviewLikes(review.id);
-            const dislikes = await getReviewDislikes(review.id);
-
-            setLikes(likes);
-            setDislikes(dislikes);
-        } catch (error) {
-            console.error("Error fetching likes/dislikes:", error);
-        }
-    };
+      try {
+          const { count: likeCount, likedBy } = await getReviewLikes(review.id);
+          const { count: dislikeCount, dislikedBy } = await getReviewDislikes(review.id);
+  
+          setLikes(likeCount);
+          setDislikes(dislikeCount);
+          setLikedByUsers(likedBy);  // Store the list of users who liked
+          setDislikedByUsers(dislikedBy);  // Store the list of users who disliked
+      } catch (error) {
+          console.error("Error fetching likes/dislikes:", error);
+      }
+  };
+  
 
     fetchLikesAndDislikes();
     return () => {}; 
@@ -68,54 +75,65 @@ const Review = ({review}) => {
 
 
 const handleLike = async () => {
-    if (!review?.id) {
-        console.error("Error: Missing review_id when trying to like");
-        return;
-    }
+  if (!review?.id || !review?.user_id) {
+      console.error("Error: Missing review_id or user_id when trying to like");
+      return;
+  }
 
-    if (liked) {
-        // If already liked, remove the like
-        await removeLike(review.id);
-        setLikes(likes - 1);
-        setLiked(false);
-    } else {
-        // If not liked, add a like
-        await likeReview(review.id);
-        setLikes(likes + 1);
-        setLiked(true);
+  try {
+      if (likedByUsers.includes(review.user_id)) {
+          // If already liked, remove the like
+          await removeLike(review.id, review.user_id);
+          setLikes(likes - 1);
+          setLikedByUsers(likedByUsers.filter((id) => id !== review.user_id));
+      } else {
+          // If not liked, add a like
+          await likeReview(review.id, review.user_id);
+          setLikes(likes + 1);
+          setLikedByUsers([...likedByUsers, review.user_id]);
 
-        // If previously disliked, remove dislike
-        if (disliked) {
-            setDislikes(dislikes - 1);
-            setDisliked(false);
-        }
-    }
+          // If previously disliked, remove dislike
+          if (dislikedByUsers.includes(review.user_id)) {
+              await removeDislike(review.id, review.user_id);
+              setDislikes(dislikes - 1);
+              setDislikedByUsers(dislikedByUsers.filter((id) => id !== review.user_id));
+          }
+      }
+  } catch (error) {
+      console.error("Error in handleLike:", error);
+  }
 };
 
 const handleDislike = async () => {
-    if (!review?.id) {
-        console.error("Error: Missing review_id when trying to dislike");
-        return;
-    }
+  if (!review?.id || !review?.user_id) {
+      console.error("Error: Missing review_id or user_id when trying to dislike");
+      return;
+  }
 
-    if (disliked) {
-        // If already disliked, remove the dislike
-        await removeDislike(review.id);
-        setDislikes(dislikes - 1);
-        setDisliked(false);
-    } else {
-        // If not disliked, add a dislike
-        await dislikeReview(review.id);
-        setDislikes(dislikes + 1);
-        setDisliked(true);
+  try {
+      if (dislikedByUsers.includes(review.user_id)) {
+          // If already disliked, remove the dislike
+          await removeDislike(review.id, review.user_id);
+          setDislikes(dislikes - 1);
+          setDislikedByUsers(dislikedByUsers.filter((id) => id !== review.user_id));
+      } else {
+          // If not disliked, add a dislike
+          await dislikeReview(review.id, review.user_id);
+          setDislikes(dislikes + 1);
+          setDislikedByUsers([...dislikedByUsers, review.user_id]);
 
-        // If previously liked, remove like
-        if (liked) {
-            setLikes(likes - 1);
-            setLiked(false);
-        }
-    }
+          // If previously liked, remove like
+          if (likedByUsers.includes(review.user_id)) {
+              await removeLike(review.id, review.user_id);
+              setLikes(likes - 1);
+              setLikedByUsers(likedByUsers.filter((id) => id !== review.user_id));
+          }
+      }
+  } catch (error) {
+      console.error("Error in handleDislike:", error);
+  }
 };
+
 
     return (
         <ReviewContainer>
@@ -251,14 +269,14 @@ const handleDislike = async () => {
                     mt={1}
                 >
                     {/* Like Button */}
-                    <IconButton onClick={handleLike} sx={{ color: liked ? "#1DB954" : "white" }}>
-                      {liked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
+                    <IconButton onClick={handleLike} sx={{ color: userHasLiked ? "#1DB954" : "white" }}>
+                      {userHasLiked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
                     </IconButton>
                     <Typography variant="body2" color="white" mx={1}>{likes}</Typography>
 
                     {/* Dislike Button */}
-                    <IconButton onClick={handleDislike} sx={{ color: disliked ? "#D9534F" : "white" }}>
-                      {disliked ? <ThumbDownIcon /> : <ThumbDownOutlinedIcon />}
+                    <IconButton onClick={handleDislike} sx={{ color: userHasDisliked ? "#D9534F" : "white" }}>
+                      {userHasDisliked ? <ThumbDownIcon /> : <ThumbDownOutlinedIcon />}
                     </IconButton>
               <Typography variant="body2" color="white" mx={1}>{dislikes}</Typography>       
                 </Box>

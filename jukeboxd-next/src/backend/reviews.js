@@ -62,6 +62,8 @@ export const createReview = async (reviewData) => {
             review_text: reviewData.review_text || null,
             likes: reviewData.likes || 0,
             dislikes: reviewData.dislikes || 0,
+            likedBy: reviewData.likedBy || [],
+            dislikedBy: reviewData.dislikedBy || [],
             date: reviewData.date || new Date(),
             type: reviewData.type,
             created_at: new Date()
