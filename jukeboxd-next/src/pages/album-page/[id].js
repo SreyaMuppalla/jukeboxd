@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Rating, Typography, Button } from '@mui/material';
+import { Box, Rating, Typography, Button, Tab, Tabs } from '@mui/material';
 import { Bookmark } from '@mui/icons-material';
 import {
   Background,
@@ -42,6 +42,7 @@ const AlbumPage = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [selectedTab, setSelectedTab] = useState(0);
   useEffect(() => {
     const fetchReviews = async () => {
       try {
@@ -240,7 +241,7 @@ const AlbumPage = () => {
             <SongsListContainer>
               <Typography
                 variant="h5"
-                style={{ color: '#fff', marginBottom: '16px' }}
+                style={{ color: '#fff', marginBottom: '16px', textDecoration: 'underline' }}
               >
                 Songs:
               </Typography>
@@ -276,7 +277,7 @@ const AlbumPage = () => {
               </ol>
             </SongsListContainer>
             {/* Reviews Section */}
-            <Box marginTop="32px" width="100%">
+            <Box width="100%">
               <ReviewsSection
               style={{
                 marginTop: "32px",
@@ -287,12 +288,25 @@ const AlbumPage = () => {
                 margin: "32px auto",
                 }}
               >
-              <Typography
-                variant="h5"
-                style={{ color: '#fff', marginBottom: '16px' }}
-              >
-                Reviews:
-              </Typography>
+                <Tabs
+                  value={selectedTab}
+                  onChange={(event, newValue) => setSelectedTab(newValue)}
+                  left
+                  textColor="inherit"
+                  TabIndicatorProps={{
+                    style: { backgroundColor: "#1db954" },
+                  }}
+                >
+                  <Tab
+                    label="Recent Reviews"
+                    sx={{
+                      color: "white",
+                      fontFamily: "Inter",
+                      textTransform: "none", // Optional: Prevent uppercase transformation
+                      fontSize: "16px", 
+                    }}
+                  />
+                </Tabs>
               {reviews.length > 0 ? (
                   reviews.map((review) => (
                   <Review review={review}/>
