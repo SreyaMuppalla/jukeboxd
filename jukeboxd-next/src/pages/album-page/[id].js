@@ -170,27 +170,6 @@ const AlbumPage = () => {
               >
                 {albumDetails.name}
               </Typography>
-              {/* Bookmark Button */}
-              <Button
-                  onClick={handleBookmark}
-                  disabled={bookmarkLoading}
-                  variant="contained"
-                  sx={{
-                    backgroundColor: isBookmarked ? '#1DB954' : '#333',
-                    color: '#fff',
-                    '&:hover': {
-                      backgroundColor: isBookmarked ? '#1ed760' : '#444',
-                    },
-                    minWidth: '120px',
-                    height: '40px',
-                    borderRadius: '20px',
-                    textTransform: 'none',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  <Bookmark />
-                  {isBookmarked ? 'Bookmarked' : 'Bookmark'}
-                </Button>
               {/* Artist Name */}
               <Typography
                 variant="h6"
@@ -230,6 +209,29 @@ const AlbumPage = () => {
                     </Typography>
               </Box>              
               </AlbumDetails>
+              {/* Bookmark Button */}
+              <Box display="flex" justifyContent="flex-end" alignItems="center">
+              <Button
+                  onClick={handleBookmark}
+                  disabled={bookmarkLoading}
+                  variant="contained"
+                  sx={{
+                    backgroundColor: isBookmarked ? '#1DB954' : '#333',
+                    color: '#fff',
+                    '&:hover': {
+                      backgroundColor: isBookmarked ? '#1ed760' : '#444',
+                    },
+                    minWidth: '120px',
+                    height: '40px',
+                    borderRadius: '20px',
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  <Bookmark />
+                  {isBookmarked ? 'Bookmarked' : 'Bookmark'}
+                </Button>
+                </Box>
               </Box>
           </AlbumInfoContainer>
           {/* Content Section (Songs and Reviews) */}
