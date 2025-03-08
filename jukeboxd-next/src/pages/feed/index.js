@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Tab, Tabs } from "@mui/material";
 import { Background } from "../../styles/StyledComponents";
 import SongsCarousel from "../../bigcomponents/SongsCarousal";
 import Review from "../../bigcomponents/Review";
@@ -14,7 +14,8 @@ const FeedPage = () => {
   const [error, setError] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [userData, setUserData] = useState({});
-  const {user} = useAuth()
+  const { user } = useAuth()
+  const [selectedTab, setSelectedTab] = useState(0);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -57,16 +58,27 @@ const FeedPage = () => {
           }}
         >
           {/* Reviews Section Header */}
-          <Typography
-            variant="h5"
-            style={{
-              color: "#fff",
-              marginBottom: "16px",
-              textAlign: "center",
-            }}
-          >
-            Reviews from Friends
-          </Typography>
+          <Tabs
+                        value={selectedTab}
+                        onChange={(event, newValue) =>
+                          setSelectedTab(newValue)
+                        }
+                        textColor="inherit"
+                        TabIndicatorProps={{
+                          style: { backgroundColor: "#1db954", marginBottom: "16px" },
+                        }}
+                      >
+                        <Tab
+                          label="Reviews From Friends"
+                          sx={{
+                            color: "white",
+                            fontFamily: "Inter",
+                            textTransform: "none", // Optional: Prevent uppercase transformation
+                            fontSize: "16px",
+                            marginBottom: "16px",
+                          }}
+                        />
+                        </Tabs>
 
           {/* Individual Reviews */}
           {reviews.length > 0 ? (

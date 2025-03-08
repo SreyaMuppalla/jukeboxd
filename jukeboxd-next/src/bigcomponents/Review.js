@@ -136,7 +136,6 @@ const Review = ({ review }) => {
                         variant="subtitle1"
                         sx={{
                             color: "#fff",
-                            marginLeft: "8px",
                             fontWeight: "bold",
                             fontSize: "18px",
                             cursor: "pointer",
