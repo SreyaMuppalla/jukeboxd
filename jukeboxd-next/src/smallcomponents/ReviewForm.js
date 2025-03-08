@@ -135,6 +135,9 @@ export default function ReviewForm({ userData }) {
             right: '20px',
             top: 'unset',
             borderRadius: '20px',
+            borderWidth: '10px',
+            borderStyle: 'solid',
+            borderColor: '#1db954',
             backgroundColor: '#535353',
             overflowY: 'auto',
             scrollbarWidth: 'none',
@@ -234,6 +237,7 @@ export default function ReviewForm({ userData }) {
             onChange={handleReviewChange}
             sx={{
               marginBottom: 2,
+              borderRadius: '8px',
               backgroundColor: '#b3b3b3',
               '& .MuiInputBase-input': {
                 color: 'white',
