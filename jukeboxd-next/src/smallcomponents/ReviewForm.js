@@ -86,10 +86,10 @@ export default function ReviewForm({ userData }) {
             bottom: 20,
             right: 20,
             zIndex: 1000,
-            backgroundColor: 'primary.main',
+            backgroundColor: '#1db954',
             color: 'white',
             '&:hover': {
-              backgroundColor: 'primary.dark', // Darker shade on hover
+              backgroundColor: '#1AAE4E', // Darker shade on hover
             },
             transition: 'background-color 0.3s ease-in-out', // Smooth hover transition
           }}
@@ -258,7 +258,14 @@ export default function ReviewForm({ userData }) {
         <Box display="flex" justifyContent="flex-end">
           <Button
             variant="contained"
-            color="primary"
+            sx={{
+              backgroundColor: '#1db954',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#1AAE4E', // Darker shade on hover
+              },
+              transition: 'background-color 0.3s ease-in-out', // Smooth hover transition
+            }}
             onClick={handleSubmit}
             disabled={!isFormValid || loading} // Disable button based on form validity or loading state
             startIcon={
