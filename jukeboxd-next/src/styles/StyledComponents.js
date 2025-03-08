@@ -4,19 +4,23 @@ import Image from "next/image";
 
 export const Background = styled.div`
     background-color: #212121;
-    height: 100%;
+    height: auto;
+    min-height: 90vh;
     display: flex;
     flex-direction: column;
 `;
 export const HeaderBackground = styled.header`
     background-color: #121212;
-    height: 108px;
+    height: 80px;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between; /* Ensures that logo, search bar, and buttons are spaced apart */
     padding: 0px 20px;
     gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 `;
 export const ButtonContainer = styled.div`
     display: flex;
@@ -62,7 +66,6 @@ export const LargeAlbumCover = styled.div`
     overflow: hidden;
 `;
 
-
 // Song name styling
 export const SongName = styled(Typography)`
     font-size: 14px;
@@ -83,7 +86,7 @@ export const ReviewContainer = styled.div`
     border-radius: 8px;
     padding: 16px;
     width: 100%;
-    max-width: 800px;
+    height: 180px;
     margin: 16px auto;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 `;
@@ -92,38 +95,47 @@ export const ReviewContainer = styled.div`
 export const SongInfo = styled.div`
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
     justify-content: center;
-    margin-right: 16px;
+    padding: 0 16px;
+    width: 200px;
+`;
+
+export const ReviewSubContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 2;
+    height: 100%;
+    justify-content: space-between;
 `;
 
 // User info container
 export const UserInfo = styled.div`
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    margin-right: 16px;
+    justify-content: flex-start;
+    gap: 16px;
 `;
 
 // Profile picture container
 export const ProfilePic = styled.div`
     width: 40px;
     height: 40px;
-    margin-bottom: 8px;
     overflow: hidden;
 `;
 
 // Stars rating container
 export const RatingContainer = styled.div`
-    margin-top: 4px;
+    display: flex;
+    justify-content: flex-end;
 `;
 
 // Review text container
 export const ReviewText = styled.div`
     flex-grow: 2;
     color: #fff;
-    font-size: 14px;
+    font-size: 18px;
     margin-top: 8px;
 `;
 // Main container for the Profile Page
@@ -172,8 +184,7 @@ export const StatItem = styled.div`
 export const ReviewsSection = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-top: 32px;
+    gap: 5px;
 `;
 export const ProfileDetailsContainer = styled.div`
     display: flex;
@@ -194,7 +205,8 @@ export const AlbumInfoContainer = styled.div`
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 16px 42px;
+    gap: 24px;
+    padding: 16px 32px;
 `;
 
 // Container for album details (name, artist, stars)
@@ -208,7 +220,7 @@ export const AlbumDetails = styled.div`
 
 // Container for the list of songs
 export const SongsListContainer = styled.div`
-    flex: 0 0 50%;  /* Take up 50% of the parent container */
+    flex: 0 0 50%; /* Take up 50% of the parent container */
     padding: 16px;
     background-color: #333;
     border-radius: 16px;
@@ -321,7 +333,6 @@ export const SearchInput = styled.input`
     }
 `;
 
-
 export const SongCard = ({ albumCover, songName, artistName }) => {
     return (
         <Box
@@ -353,7 +364,6 @@ export const SongCard = ({ albumCover, songName, artistName }) => {
                 >
                     {songName} by {artistName}
                 </Typography>
-
             </Box>
         </Box>
     );
@@ -385,7 +395,6 @@ export const SearchDropdown = styled.select`
         border: 2px solid #1db954;
     }
 `;
-
 
 export const SearchInputContainer = styled.div`
     display: flex;

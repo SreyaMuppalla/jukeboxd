@@ -62,7 +62,7 @@ const ProfilePage = () => {
         };
 
         fetchUserData();
-    }, [id, user]); // Re-run the effect when the id changes
+    }, [id, user, isFollowing]); // Re-run the effect when these fields change
 
     const handleFollow = async () => {
         if (!user || !userData) return;

@@ -17,10 +17,10 @@ import { searchUsers } from '@/backend/users';
 import { useAtom } from 'jotai';
 import spotifyTokenService from '../states/spotifyTokenManager'; // Import the singleton
 
-const SearchBar = ({ type: searchBarType }) => {
+const SearchBar = ({ type: searchBarType, query: defaultQuery='song' }) => {
   const [query, setQuery] = useState('');
   const [recommendations, setRecommendations] = useState([]);
-  const [queryType, setQueryType] = useState('song');
+  const [queryType, setQueryType] = useState(defaultQuery);
 
   const router = useRouter();
   const [selectedItem, setSelectedItem] = useAtom(currItem);
@@ -153,10 +153,10 @@ const SearchBar = ({ type: searchBarType }) => {
           {/* Dynamic dropdown options based on searchBarType */}
           {searchBarType === 'header' && (
             <>
-              <option value="profile">User</option>
               <option value="song">Song</option>
-              <option value="artist">Artist</option>
               <option value="album">Album</option>
+              <option value="artist">Artist</option>
+              <option value="profile">User</option>
             </>
           )}
           {searchBarType === 'review' && (

@@ -17,10 +17,12 @@ import { useAtom } from 'jotai';
 import { currItem } from '@/states/currItem';
 import unknownArtwork from '@/images/unknown_artwork.jpg';
 import ProtectedRoute from '@/smallcomponents/ProtectedRoute';
+import StarRating from "@/smallcomponents/StarRating";
 import { useAuth } from '@/backend/auth';
 import { getUser, BookmarkAlbum, removeAlbumBookmark } from '@/backend/users';
 import { getReviews } from '@/backend/reviews';
 import ReviewForm from '@/smallcomponents/ReviewForm';
+import spotifyTokenService from '@/states/spotifyTokenManager';
 
 const AlbumPage = () => {
   const router = useRouter();
@@ -33,13 +35,13 @@ const AlbumPage = () => {
     images: [{}, { url: unknownArtwork }],
     songs: []
   });
+  const [selectedItem, setSelectedItem] = useAtom(currItem);
   const [reviews, setReviews] = useState([]);
   const [error, setError] = useState(null);
-  const [token, _] = useAtom(currItem); // Access token state
+  const token = spotifyTokenService; // Access token state
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
   const [userData, setUserData] = useState(null);
-
   useEffect(() => {
     const fetchReviews = async () => {
       try {
@@ -77,6 +79,23 @@ const AlbumPage = () => {
       getAlbumData();
     }
   }, [albumId, token]); // Trigger useEffect whenever albumId or token changes
+
+  useEffect(() => {
+    // Prefill review form
+    const newSelectedItem = {
+      ...albumDetails,
+      album_id: albumDetails.id,
+      album_name: albumDetails.name,
+      review_type: 'album',
+    };
+
+    // Only update Jotai atom if the value has changed
+    setSelectedItem((prevItem) =>
+      JSON.stringify(prevItem) !== JSON.stringify(newSelectedItem)
+        ? newSelectedItem
+        : prevItem
+    );
+  }, [albumDetails]);
 
   if (error) {
     return (
@@ -197,21 +216,12 @@ const AlbumPage = () => {
                 ))}
               </Typography>
               {/* Rating (Stars Placeholder) */}
-              <Rating
-                size="medium"
-                value={5}
-                readOnly
-                sx={{
-                  alignSelf: 'flex-start',
-                  fontSize: '3rem',
-                  '& .MuiRating-iconEmpty': {
-                    color: 'white',
-                  },
-                  '& .MuiRating-iconFilled': {
-                    fontSize: 'inherit',
-                  },
-                }}
-              />
+              <Box display="flex" alignItems="center" gap={1}>
+                  <StarRating rating={albumDetails.num_reviews > 0 ? albumDetails.review_score / albumDetails.num_reviews : 0} />
+                  <Typography variant="body1" style={{ color: '#d3d3d3', marginLeft: '8px' }}>
+                          ({albumDetails.num_reviews} Reviews)
+                    </Typography>
+              </Box>              
             </AlbumDetails>
           </AlbumInfoContainer>
           {/* Content Section (Songs and Reviews) */}

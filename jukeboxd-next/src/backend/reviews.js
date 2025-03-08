@@ -1,5 +1,5 @@
 import {db} from "./firebaseConfig";
-import {doc, getDoc, addDoc, getDocs, query, collection, where, updateDoc} from "firebase/firestore";
+import {doc, getDoc, addDoc, getDocs, query, collection, where, updateDoc, orderBy} from "firebase/firestore";
 
 
 export const getReviewById = async (review_id) => {
@@ -73,7 +73,7 @@ export const createReview = async (reviewData) => {
 
         // Update user's reviews array
         await updateDoc(userRef, {
-            reviews: [...(userDoc.data().reviews || []), reviewDocId]
+            reviews: [reviewDocId, ...(userDoc.data().reviews || [])]
         });
 
         return reviewDocId;
@@ -96,7 +96,7 @@ export const getFriendReviews = async (user_id) => {
             return [];
         }
         const reviews = [];
-        const querySnapshot = await getDocs(query(collection(db, "reviews"), where("user_id", "in", user_friends)));
+        const querySnapshot = await getDocs(query(collection(db, "reviews"), where("user_id", "in", user_friends), orderBy("created_at", "desc")));
         querySnapshot.forEach((doc) => {
             reviews.push({
                 id: doc.id,
@@ -122,10 +122,10 @@ export const getReviews = async (item_id, song_or_album) => {
         const reviews = [];
         let querySnapshot;
         if(song_or_album === "song"){
-        querySnapshot = await getDocs(query(collection(db, "reviews"), where("type", "==", "song"), where("song_id", "==", item_id)));
+        querySnapshot = await getDocs(query(collection(db, "reviews"), where("type", "==", "song"), where("song_id", "==", item_id), orderBy("created_at", "desc")));
         }
         else{
-        querySnapshot = await getDocs(query(collection(db, "reviews"), where("type", "==", "album"), where("album_id", "==", item_id)));
+        querySnapshot = await getDocs(query(collection(db, "reviews"), where("type", "==", "album"), where("album_id", "==", item_id), orderBy("created_at", "desc")));
         }
         querySnapshot.forEach((doc) => {
             reviews.push({ id: doc.id, ...doc.data() });

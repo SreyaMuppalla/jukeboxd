@@ -16,18 +16,19 @@ import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import { getReviewLikes, getReviewDislikes, likeReview, dislikeReview, removeDislike, removeLike } from '../backend/firebase_api.js';
 
 import {
-  ReviewContainer,
-  AlbumCover,
-  SongInfo,
-  UserInfo,
-  ProfilePic,
-  RatingContainer,
-  ReviewText,
-} from '../styles/StyledComponents';
-import albumpic from '../images/albumpic.jpg'; // Import the album image
-import pfp from '../images/pfp.jpg'; // Add a placeholder profile pic
-import Link from 'next/link';
-import Image from 'next/image';
+    ReviewContainer,
+    AlbumCover,
+    SongInfo,
+    UserInfo,
+    ProfilePic,
+    RatingContainer,
+    ReviewText,
+    ReviewSubContainer,
+} from "../styles/StyledComponents";
+import albumpic from "../images/albumpic.jpg"; // Import the album image
+import pfp from "../images/pfp.jpg"; // Add a placeholder profile pic
+import Link from "next/link";
+import Image from "next/image";
 
 //AlbumCover, song_id and ArtistName need to be updated to render correctly. 
 // Currently default and null. 
@@ -116,85 +117,154 @@ const handleDislike = async () => {
     }
 };
 
-  return (
-    <ReviewContainer>
-      {/* Album Cover */}
-      <AlbumCover
-        style={{ cursor: 'pointer' }} // Pointer cursor for clickable elements
-      >
-        <Link href={album_ref}>
-          <Image
-            src={review.images[0].url || albumpic}
-            alt="Album Cover"
-            width={100}
-            height={100}
-            style={{ width: '100%', height: '100%', borderRadius: '8px' }}
-          />
-        </Link>
-      </AlbumCover>
+    return (
+        <ReviewContainer>
+            {/* Album Cover */}
+            <AlbumCover
+                style={{ cursor: "pointer" }} // Pointer cursor for clickable elements
+            >
+                <Link href={album_ref}>
+                    <Image
+                        src={review.images[0].url || albumpic}
+                        alt="Album Cover"
+                        width={100}
+                        height={100}
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            borderRadius: "8px",
+                            "&:hover": { textDecoration: "underline" },
+                        }}
+                    />
+                </Link>
+            </AlbumCover>
 
-      {/* Song and Artist Info */}
-      <SongInfo>
-        <Typography
-          variant="h6"
-          style={{ color: '#fff', marginBottom: '4px', cursor: 'pointer' }} // Pointer cursor
-        >
-          <Link href={review.type === "song" ? song_ref : album_ref}>{review.type === "song" ? review.song_name : review.album_name || "Song/Album Name"}</Link>
-        </Typography>
-        <Typography
-          variant="subtitle2"
-          style={{ color: '#d3d3d3', cursor: 'pointer' }} // Pointer cursor
-        >
-          <Link href={artist_ref}>{review.artists[0].name || "Artist Name"}</Link>
-        </Typography>
-      </SongInfo>
+            {/* Song and Artist Info */}
+            <SongInfo>
+                <Typography
+                    variant="h6"
+                    component="div"
+                    sx={{
+                        color: "#fff",
+                        cursor: "pointer",
+                        width: "100%",
+                        overflow: "hidden",
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        WebkitLineClamp: 3,
+                        textOverflow: "ellipsis",
+                        maxHeight: "4.5em",
+                        lineHeight: "1.5em",
+                        "& a": { textDecoration: "none", color: "inherit" }, // Ensures no default underline
+                        "& a:hover": { textDecoration: "underline" }, // Underline on hover
+                    }}
+                >
+                    <Link href={review.type === "song" ? song_ref : album_ref}>
+                        {review.type === "song"
+                            ? review.song_name
+                            : review.album_name || "Song/Album Name"}
+                    </Link>
+                </Typography>
 
-      {/* User Info */}
-      <UserInfo>
-        <ProfilePic
-          style={{ cursor: 'pointer' }} // Pointer cursor
-        >
-          <Link href={profile_ref}>
-            <Image
-              src={review.user_pfp || pfp}
-              alt="User Profile"
-              style={{ width: '100%', height: '100%', borderRadius: '50%' }}
-            />
-          </Link>
-        </ProfilePic>
-        <Typography
-          variant="subtitle2"
-          style={{ color: '#fff', marginLeft: '8px', cursor: 'pointer' }} // Pointer cursor
-        >
-          <Link href={profile_ref}>{review.username || "Username"}</Link>
-        </Typography>
-        <RatingContainer>
-          <Rating name="read-only" value={review.rating} readOnly />
-        </RatingContainer>
-      </UserInfo>
+                <Typography
+                    variant="subtitle1"
+                    sx={{
+                        color: "#d3d3d3",
+                        cursor: "pointer",
+                        "& a": { textDecoration: "none", color: "inherit" },
+                        "& a:hover": { textDecoration: "underline" },
+                    }}
+                >
+                    <Link href={artist_ref}>
+                        {review.artists[0].name || "Artist Name"}
+                    </Link>
+                </Typography>
+            </SongInfo>
 
-      {/* Review Text */}
-      <ReviewText>
-        {review.review_text || "Review Text"}
-      </ReviewText>
-      
-      {/* Likes & Dislikes */}
-      <Box display="flex" alignItems="center" mt={1}>
-          <IconButton onClick={handleLike} sx={{ color: liked ? "#1DB954" : "white" }}>
-            {liked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
-          </IconButton>
+            <ReviewSubContainer>
+                {/* User Info */}
+                <UserInfo>
+                    <ProfilePic
+                        style={{ cursor: "pointer" }} // Pointer cursor
+                    >
+                        <Link href={profile_ref}>
+                            <Image
+                                src={review.user_pfp || pfp}
+                                alt="User Profile"
+                                width={50}
+                                height={50}
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    borderRadius: "50%",
+                                    minWidth: 25,
+                                    minHeight: 25,
+                                }}
+                            />
+                        </Link>
+                    </ProfilePic>
+                    <Typography
+                        variant="subtitle1"
+                        style={{
+                            color: "#fff",
+                            marginLeft: "8px",
+                            fontWeight: "bold",
+                            fontSize: "18px",
+                            cursor: "pointer",
+                            "&:hover": { textDecoration: "underline" },
+                        }} // Pointer cursor
+                    >
+                        <Link href={profile_ref}>
+                            {review.username || "Username"}
+                        </Link>
+                    </Typography>
+                    <RatingContainer>
+                        <Rating
+                            name="read-only"
+                            value={review.rating}
+                            readOnly
+                        />
+                    </RatingContainer>
+                    <Typography
+                        variant="subtitle2"
+                        style={{ color: "#fff", cursor: "pointer" }}
+                    >
+                        {review.created_at?.seconds
+                            ? new Date(
+                                  review.created_at.seconds * 1000
+                              ).toLocaleDateString("en-US", {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                              })
+                            : "Unknown Date"}
+                    </Typography>
+                </UserInfo>
+
+                {/* Review Text */}
+                <ReviewText>{review.review_text || "Review Text"}</ReviewText>
+                {/* Likes & Dislikes */}
+                <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="end"
+                    mt={1}
+                >
+                    {/* Likes & Dislikes */}
+     
+          <IconButton onClick={handleLike} sx = {{color: "#1DB954"}}>
+          <ThumbUpIcon />
+        </IconButton>
         <Typography variant="body2" color="white" mx={1}>{likes}</Typography>
-
-        <IconButton onClick={handleDislike} sx={{ color: disliked ? "#D9534F" : "white" }}>
-                {disliked ? <ThumbDownIcon /> : <ThumbDownOutlinedIcon />}
-            </IconButton>
+        <IconButton onClick={handleDislike} sx = {{color: "#D9534F"}}>
+          <ThumbDownIcon />
+        </IconButton>
         <Typography variant="body2" color="white" mx={1}>{dislikes}</Typography>
-      </Box>
-
-    </ReviewContainer>
-
-    
-  );
+     
+                </Box>
+            </ReviewSubContainer>
+        </ReviewContainer>
+    );
 };
 
 export default Review;
