@@ -11,8 +11,6 @@ import {
     StatsContainer,
     StatItem,
     SongsListContainer,
-    ReviewsSection,
-    SongCard, 
     SignInButton,
 } from "../../styles/StyledComponents";
 import Review from "../../bigcomponents/Review";
