@@ -438,13 +438,7 @@ const PersonalProfilePage = () => {
                                                                       {index + 1}
                                                                     </Typography>
                                             <Typography variant="h6">
-                                            {song.song_name} by { 
-                                                song.song_artist instanceof Map 
-                                                    ? Array.from(song.song_artist.values())[0] || "Unknown Artist" // Get first artist from Map
-                                                    : Array.isArray(song.song_artist) 
-                                                        ? song.song_artist[0]?.name || "Unknown Artist" // Handle array case
-                                                        : song.song_artist?.name || "Unknown Artist" // Handle object case
-                                                }
+                                            {song.song_name} by {song.song_artist}
                                             </Typography>
                                         </Box>
                                         </Link>

@@ -125,7 +125,14 @@ const SongPage = () => {
             }
         } else {
             try {
-                await BookmarkSong(user.uid, songId, songDetails.name, songDetails.artists[0]);
+                let artist = songDetails.artists[0]
+                let song_artist = artist instanceof Map 
+                ? Array.from(artist.values())[0] || "Unknown Artist" // Get first artist from Map
+                : Array.isArray(artist) 
+                    ? artist[0]?.name || "Unknown Artist" // Handle array case
+                    : artist?.name || "Unknown Artist" // Handle object case
+                console.log({song_artist});
+                await BookmarkSong(user.uid, songId, songDetails.name, song_artist);
                 setIsBookmarked(true);
             } catch (error) {
                 console.error("Error bookmarking song:", error);
