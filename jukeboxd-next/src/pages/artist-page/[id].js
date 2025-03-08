@@ -123,7 +123,7 @@ const ArtistPage = () => {
               </Tabs>
 
             {topSongs.map((song, index) => (
-            <TopSongItem key={index} style={{ gap: "12px" }}>
+            <TopSongItem key={index} style={{ gap: "12px", display: "flex"}}>
               {/* Album Cover */}
                   <Image
                     src={song.images[1]?.url || UnknownArtwork}
@@ -184,7 +184,9 @@ const ArtistPage = () => {
                       </Link>
                 </SongDetailsText>
                   {/* Stars */}
-                  <StarRating rating={3.2} style={{ marginLeft: "auto" }} />
+                  <Box style={{ marginLeft: 'auto' }}>
+                    <StarRating rating={3.2} />
+                  </Box>
                 </SongDetailsRow>
               </TopSongItem>
             ))}
