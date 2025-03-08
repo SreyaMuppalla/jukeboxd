@@ -137,7 +137,7 @@ export default function ReviewForm({ userData }) {
             borderRadius: '20px',
             borderWidth: '10px',
             borderStyle: 'solid',
-            borderColor: '#1db954',
+            borderColor: '#b3b3b3',
             backgroundColor: '#535353',
             overflowY: 'auto',
             scrollbarWidth: 'none',
