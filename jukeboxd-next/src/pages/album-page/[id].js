@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Rating, Typography, Button } from '@mui/material';
+import { Box, Rating, Typography, Button, Tab, Tabs } from '@mui/material';
 import { Bookmark } from '@mui/icons-material';
 import {
   Background,
@@ -42,6 +42,7 @@ const AlbumPage = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [selectedTab, setSelectedTab] = useState(0);
   useEffect(() => {
     const fetchReviews = async () => {
       try {
@@ -152,38 +153,24 @@ const AlbumPage = () => {
             <img
               src={albumDetails.images[1]?.url || unknownArtwork} // Fallback to a default image if unavailable
               alt="Album Cover"
-              width={250}
-              height={250}
+              width={200}
+              height={200}
+              style={{ borderRadius: "8px" }}
             />
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              flex="1"
+              alignItems="flex-start"
+            >
             <AlbumDetails>
               {/* Album Name */}
               <Typography
                 variant="h3"
-                style={{ color: '#fff', marginBottom: '8px' }}
+                style={{ color: '#fff', marginBottom: '8px', fontWeight: 'bold' }}
               >
                 {albumDetails.name}
               </Typography>
-              {/* Bookmark Button */}
-              <Button
-                  onClick={handleBookmark}
-                  disabled={bookmarkLoading}
-                  variant="contained"
-                  sx={{
-                    backgroundColor: isBookmarked ? '#1DB954' : '#333',
-                    color: '#fff',
-                    '&:hover': {
-                      backgroundColor: isBookmarked ? '#1ed760' : '#444',
-                    },
-                    minWidth: '120px',
-                    height: '40px',
-                    borderRadius: '20px',
-                    textTransform: 'none',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  <Bookmark />
-                  {isBookmarked ? 'Bookmarked' : 'Bookmark'}
-                </Button>
               {/* Artist Name */}
               <Typography
                 variant="h6"
@@ -222,7 +209,31 @@ const AlbumPage = () => {
                           ({albumDetails.num_reviews} Reviews)
                     </Typography>
               </Box>              
-            </AlbumDetails>
+              </AlbumDetails>
+              {/* Bookmark Button */}
+              <Box display="flex" justifyContent="flex-end" alignItems="center">
+              <Button
+                  onClick={handleBookmark}
+                  disabled={bookmarkLoading}
+                  variant="contained"
+                  sx={{
+                    backgroundColor: isBookmarked ? '#1DB954' : '#333',
+                    color: '#fff',
+                    '&:hover': {
+                      backgroundColor: isBookmarked ? '#1ed760' : '#444',
+                    },
+                    minWidth: '120px',
+                    height: '40px',
+                    borderRadius: '20px',
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  <Bookmark />
+                  {isBookmarked ? 'Bookmarked' : 'Bookmark'}
+                </Button>
+                </Box>
+              </Box>
           </AlbumInfoContainer>
           {/* Content Section (Songs and Reviews) */}
           <Box display="flex" width="95%" marginTop="32px">
@@ -230,11 +241,11 @@ const AlbumPage = () => {
             <SongsListContainer>
               <Typography
                 variant="h5"
-                style={{ color: '#fff', marginBottom: '16px' }}
+                style={{ color: '#fff', marginBottom: '16px', textDecoration: 'underline' }}
               >
                 Songs:
               </Typography>
-              <ol style={{ paddingLeft: '16px', color: '#b3b3b3' }}>
+              <ol style={{ color: '#b3b3b3' }}>
                 {albumDetails.songs.map((track, index) => (
                   <li key={track.id} style={{ marginBottom: '8px' }}>
                     <Link
@@ -266,13 +277,36 @@ const AlbumPage = () => {
               </ol>
             </SongsListContainer>
             {/* Reviews Section */}
-            <ReviewsSection>
-              <Typography
-                variant="h5"
-                style={{ color: '#fff', marginBottom: '16px' }}
+            <Box width="100%">
+              <ReviewsSection
+              style={{
+                marginTop: "32px",
+                padding: "16px",
+                backgroundColor: "#333",
+                borderRadius: "16px",
+                width: "100%",
+                margin: "32px auto",
+                }}
               >
-                Reviews:
-              </Typography>
+                <Tabs
+                  value={selectedTab}
+                  onChange={(event, newValue) => setSelectedTab(newValue)}
+                  left
+                  textColor="inherit"
+                  TabIndicatorProps={{
+                    style: { backgroundColor: "#1db954" },
+                  }}
+                >
+                  <Tab
+                    label="Recent Reviews"
+                    sx={{
+                      color: "white",
+                      fontFamily: "Inter",
+                      textTransform: "none", // Optional: Prevent uppercase transformation
+                      fontSize: "16px", 
+                    }}
+                  />
+                </Tabs>
               {reviews.length > 0 ? (
                   reviews.map((review) => (
                   <Review review={review}/>
@@ -287,7 +321,8 @@ const AlbumPage = () => {
                   </Typography>
                   </>
               )}
-            </ReviewsSection>
+              </ReviewsSection>
+              </Box>
           </Box>
         </AlbumContainer>
         <ReviewForm userData={userData}></ReviewForm>
