@@ -369,112 +369,123 @@ const PersonalProfilePage = () => {
                         </Box>
                         )}
                         {selectedTab === 1 && (
-                            <Box style={{marginTop: "12px"}}>
-                                {/* Songs List */}
-                                <SongsListContainer>
+                            <Box 
+                            display="flex" 
+                            flexWrap="wrap" 
+                            gap={4} 
+                            justifyContent="space-between" 
+                            alignItems="flex-start" 
+                            style={{ marginTop: "12px", width: "100%" }}
+                        >
+                            {/* Songs List */}
+                            <Box flex="1" minWidth="45%">
                                 <Typography
                                     variant="h5"
-                                    style={{ color: '#fff', marginBottom: '16px' }}
+                                    style={{ color: '#fff', marginBottom: '12px', textAlign: "center" }}
                                 >
-                                    Songs:
+                                    🎵 Songs:
                                 </Typography>
-                                <ol style={{ paddingLeft: '16px', color: '#b3b3b3' }}>
-                                    { songBookmarks.length > 0 ? ( songBookmarks.map((song, index) => (
-                                    <li key={index} style={{ marginBottom: '8px' }}>
-                                        <Link
-                                        href={`/song-page/${song.song_id}`}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.color = '#fff';
-                                            e.currentTarget.style.textDecoration = 'underline';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.color = '#b3b3b3';
-                                            e.currentTarget.style.textDecoration = 'none';
-                                        }}
-                                        style={{
-                                            fontSize: '20px',
-                                        }}
-                                        >
-                                        <Box display="flex" gap={5} alignItems="center">
-                                            <Typography
-                                                                      variant="h6"
-                                                                      sx={{ minWidth: 30, textAlign: 'right' }}
-                                                                    >
-                                                                      {index + 1}
-                                                                    </Typography>
-                                            <Typography variant="h6">
-                                            {song.song_name} by {song.song_artist}
-                                            </Typography>
-                                        </Box>
-                                        </Link>
-                                    </li>
-                                    )) ) : (
-                                        <>
-                                        <Typography 
-                                            variant="body1" 
-                                            style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
-                                        >
-                                            No song bookmarks yet.
-                                        </Typography>
-                                        </>
-                                    
-                                    )}
-                                </ol>
-                            </SongsListContainer>
-                            {/* Albums List */}
-                            <SongsListContainer>
-                                <Typography
-                                    variant="h5"
-                                    style={{ color: '#fff', marginBottom: '16px' }}
+                                <Box 
+                                    style={{
+                                        backgroundColor: "#222", 
+                                        borderRadius: "12px", 
+                                        padding: "16px", 
+                                        width: "100%",
+                                        minHeight: "300px" // Ensures alignment when albums/songs have different amounts
+                                    }}
                                 >
-                                    Albums:
-                                </Typography>
-                                <ol style={{ paddingLeft: '16px', color: '#b3b3b3' }}>
-                                    { albumBookmarks.length > 0 ? ( albumBookmarks.map((album, index) => (
-                                    <li key={index} style={{ marginBottom: '8px' }}>
-                                        <Link
-                                        href={`/album-page/${album.album_id}`}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.color = '#fff';
-                                            e.currentTarget.style.textDecoration = 'underline';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.color = '#b3b3b3';
-                                            e.currentTarget.style.textDecoration = 'none';
-                                        }}
-                                        style={{
-                                            fontSize: '20px',
-                                        }}
-                                        >
-                                        <Box display="flex" gap={5} alignItems="center">
-                                            <Typography
-                                                                      variant="h6"
-                                                                      sx={{ minWidth: 30, textAlign: 'right' }}
-                                                                    >
-                                                                      {index + 1}
-                                                                    </Typography>
-                                            <Typography variant="h6">
-                                            {album.album_name} by {album.album_artist}
+                                    <ol style={{ paddingLeft: '16px', color: '#b3b3b3', listStyle: "none", margin: 0 }}>
+                                        {songBookmarks.length > 0 ? (
+                                            songBookmarks.map((song, index) => (
+                                                <li key={index} style={{ marginBottom: '12px' }}>
+                                                    <Link
+                                                        href={`/song-page/${song.song_id}`}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.color = '#fff';
+                                                            e.currentTarget.style.textDecoration = 'underline';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.color = '#b3b3b3';
+                                                            e.currentTarget.style.textDecoration = 'none';
+                                                        }}
+                                                        style={{ fontSize: '18px', display: "flex", alignItems: "center", textDecoration: "none", color: "#b3b3b3" }}
+                                                    >
+                                                        <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'right' }}>
+                                                            {index + 1}
+                                                        </Typography>
+                                                        <Typography variant="h6" sx={{ marginLeft: "12px" }}>
+                                                            {song.song_name} by {song.song_artist}
+                                                        </Typography>
+                                                    </Link>
+                                                </li>
+                                            ))
+                                        ) : (
+                                            <Typography 
+                                                variant="body1" 
+                                                style={{ color: '#b3b3b3', textAlign: 'center', marginTop: '16px' }}
+                                            >
+                                                No song bookmarks yet.
                                             </Typography>
-                                        </Box>
-                                        </Link>
-                                    </li>
-                                    )) ) : (
-                                        <>
-                                        <Typography 
-                                            variant="body1" 
-                                            style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
-                                        >
-                                            No album bookmarks yet.
-                                        </Typography>
-                                        </>
-
-                                    )}
-                                </ol>
-                                </SongsListContainer>
-
-                            
+                                        )}
+                                    </ol>
+                                </Box>
                             </Box>
+                        
+                            {/* Albums List */}
+                            <Box flex="1" minWidth="45%">
+                                <Typography
+                                    variant="h5"
+                                    style={{ color: '#fff', marginBottom: '12px', textAlign: "center" }}
+                                >
+                                    💿 Albums:
+                                </Typography>
+                                <Box 
+                                    style={{
+                                        backgroundColor: "#222", 
+                                        borderRadius: "12px", 
+                                        padding: "16px", 
+                                        width: "100%",
+                                        minHeight: "300px" // Ensures alignment when albums/songs have different amounts
+                                    }}
+                                >
+                                    <ol style={{ paddingLeft: '16px', color: '#b3b3b3', listStyle: "none", margin: 0 }}>
+                                        {albumBookmarks.length > 0 ? (
+                                            albumBookmarks.map((album, index) => (
+                                                <li key={index} style={{ marginBottom: '12px' }}>
+                                                    <Link
+                                                        href={`/album-page/${album.album_id}`}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.color = '#fff';
+                                                            e.currentTarget.style.textDecoration = 'underline';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.color = '#b3b3b3';
+                                                            e.currentTarget.style.textDecoration = 'none';
+                                                        }}
+                                                        style={{ fontSize: '18px', display: "flex", alignItems: "center", textDecoration: "none", color: "#b3b3b3" }}
+                                                    >
+                                                        <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'right' }}>
+                                                            {index + 1}
+                                                        </Typography>
+                                                        <Typography variant="h6" sx={{ marginLeft: "12px" }}>
+                                                            {album.album_name} by {album.album_artist}
+                                                        </Typography>
+                                                    </Link>
+                                                </li>
+                                            ))
+                                        ) : (
+                                            <Typography 
+                                                variant="body1" 
+                                                style={{ color: '#b3b3b3', textAlign: 'center', marginTop: '16px' }}
+                                            >
+                                                No album bookmarks yet.
+                                            </Typography>
+                                        )}
+                                    </ol>
+                                </Box>
+                            </Box>
+                        </Box>
+                        
                         )}
                     </Box>
                 </ProfileContainer>
