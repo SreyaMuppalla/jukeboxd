@@ -7,10 +7,13 @@
 // review
 // upvotes/downvotes
 // extension to comments
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Rating, IconButton } from '@mui/material'; // Material UI components
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
+import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import { getReviewLikes, getReviewDislikes, likeReview, dislikeReview, removeDislike, removeLike } from '../backend/firebase_api.js';
 
 import {
   ReviewContainer,
@@ -28,7 +31,7 @@ import Image from 'next/image';
 
 //AlbumCover, song_id and ArtistName need to be updated to render correctly. 
 // Currently default and null. 
-const Review = ({review}) => {
+const Review = ({id, review}) => {
   const album_ref = "/album-page/" + review.album_id;
   const song_ref = "/song-page/" + review.song_id;
   const artist_ref = "/artist-page/" + review.artists[0].id;
@@ -40,33 +43,78 @@ const Review = ({review}) => {
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
 
-  const handleLike = () => {
-    if (liked) {
-      setLikes(likes - 1);
-      setLiked(false);
-    } else {
-      setLikes(likes + 1);
-      if (disliked) {
-        setDislikes(dislikes - 1);
-        setDisliked(false);
-      }
-      setLiked(true);
+  useEffect(() => {
+    if (!review?.id) {
+        console.error("Error: review_id is missing. Firestore calls skipped.");
+        return;
     }
-  };
 
-  const handleDislike = () => {
-    if (disliked) {
-      setDislikes(dislikes - 1);
-      setDisliked(false);
-    } else {
-      setDislikes(dislikes + 1);
-      if (liked) {
+    const fetchLikesAndDislikes = async () => {
+        try {
+            const likes = await getReviewLikes(review.id);
+            const dislikes = await getReviewDislikes(review.id);
+
+            setLikes(likes);
+            setDislikes(dislikes);
+        } catch (error) {
+            console.error("Error fetching likes/dislikes:", error);
+        }
+    };
+
+    fetchLikesAndDislikes();
+    return () => {}; 
+}, [review?.id]);
+
+
+const handleLike = async () => {
+    if (!review?.id) {
+        console.error("Error: Missing review_id when trying to like");
+        return;
+    }
+
+    if (liked) {
+        // If already liked, remove the like
+        await removeLike(review.id);
         setLikes(likes - 1);
         setLiked(false);
-      }
-      setDisliked(true);
+    } else {
+        // If not liked, add a like
+        await likeReview(review.id);
+        setLikes(likes + 1);
+        setLiked(true);
+
+        // If previously disliked, remove dislike
+        if (disliked) {
+            setDislikes(dislikes - 1);
+            setDisliked(false);
+        }
     }
-  };
+};
+
+const handleDislike = async () => {
+    if (!review?.id) {
+        console.error("Error: Missing review_id when trying to dislike");
+        return;
+    }
+
+    if (disliked) {
+        // If already disliked, remove the dislike
+        await removeDislike(review.id);
+        setDislikes(dislikes - 1);
+        setDisliked(false);
+    } else {
+        // If not disliked, add a dislike
+        await dislikeReview(review.id);
+        setDislikes(dislikes + 1);
+        setDisliked(true);
+
+        // If previously liked, remove like
+        if (liked) {
+            setLikes(likes - 1);
+            setLiked(false);
+        }
+    }
+};
 
   return (
     <ReviewContainer>
@@ -129,15 +177,17 @@ const Review = ({review}) => {
       <ReviewText>
         {review.review_text || "Review Text"}
       </ReviewText>
+      
       {/* Likes & Dislikes */}
       <Box display="flex" alignItems="center" mt={1}>
-        <IconButton onClick={handleLike} sx = {{color: "#1DB954"}}>
-          <ThumbUpIcon />
-        </IconButton>
+          <IconButton onClick={handleLike} sx={{ color: liked ? "#1DB954" : "white" }}>
+            {liked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
+          </IconButton>
         <Typography variant="body2" color="white" mx={1}>{likes}</Typography>
-        <IconButton onClick={handleDislike} sx = {{color: "#D9534F"}}>
-          <ThumbDownIcon />
-        </IconButton>
+
+        <IconButton onClick={handleDislike} sx={{ color: disliked ? "#D9534F" : "white" }}>
+                {disliked ? <ThumbDownIcon /> : <ThumbDownOutlinedIcon />}
+            </IconButton>
         <Typography variant="body2" color="white" mx={1}>{dislikes}</Typography>
       </Box>
 

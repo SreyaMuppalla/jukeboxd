@@ -13,7 +13,7 @@ export const getReviewById = async (review_id) => {
             throw new Error("Review not found");
         }
 
-        return reviewDoc.data();
+        return { id: review_id, ...reviewDoc.data() }; // Ensure review_id is included
     }
     catch(error){
         throw error;
@@ -128,7 +128,7 @@ export const getReviews = async (item_id, song_or_album) => {
         querySnapshot = await getDocs(query(collection(db, "reviews"), where("type", "==", "album"), where("album_id", "==", item_id)));
         }
         querySnapshot.forEach((doc) => {
-            reviews.push(doc.data());
+            reviews.push({ id: doc.id, ...doc.data() });
         });
 
         return reviews;
