@@ -125,7 +125,7 @@ const SongPage = () => {
             }
         } else {
             try {
-                await BookmarkSong(user.uid, songId);
+                await BookmarkSong(user.uid, songId, songDetails.name, songDetails.artists[0]);
                 setIsBookmarked(true);
             } catch (error) {
                 console.error("Error bookmarking song:", error);

@@ -10,10 +10,12 @@ import {
     ProfileDetails,
     StatsContainer,
     StatItem,
+    SongsListContainer,
     ReviewsSection,
     SongCard,
 } from "../../styles/StyledComponents";
 import Review from "../../bigcomponents/Review";
+import Link from "next/link";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
 import Image from "next/image";
 import albumpic from '../../images/albumpic.jpg'; // Import the album image
@@ -29,6 +31,7 @@ const PersonalProfilePage = () => {
     const [error, setError] = useState(null);
     const [profileUpdateError, setProfileUpdateError] = useState("")
     const [reviews, setReviews] = useState([]);
+    const [songBookmarks, setSongBookmarks] = useState([]);
     const [editingBio, setEditingBio] = useState(false);
     const [bio, setBio] = useState("");
     const [editingUsername, setEditingUsername] = useState(false);
@@ -132,13 +135,22 @@ const PersonalProfilePage = () => {
                 const curr_user = user.uid;
                 const data = await getUser(curr_user);
                 const reviews = [];
+
                 for (const reviewId of data.reviews) {
                     const review = await getReviewById(reviewId);
                     if (review) {
                         reviews.push(review);
                     }
                 }
+                
+                const userSongBookmarks = [];
+                for (const songId of data.bookmarkedSongs || []) {
+                    if (songId) {
+                        userSongBookmarks.push(songId);
+                    }
+                }
                 setReviews(reviews);
+                setSongBookmarks(userSongBookmarks);
                 setUserData(data);
                 setBio(data.user_bio)
                 setUsername(data.username)
@@ -393,7 +405,50 @@ const PersonalProfilePage = () => {
                         )}
                         {selectedTab === 1 && (
                             <Box style={{marginTop: "12px"}}>
-                                <SongCard albumCover={albumpic} songName="Song 1" artistName="Artist A" />
+                                {/* Songs List */}
+                                <SongsListContainer>
+                                <Typography
+                                    variant="h5"
+                                    style={{ color: '#fff', marginBottom: '16px' }}
+                                >
+                                    Songs:
+                                </Typography>
+                                <ol style={{ paddingLeft: '16px', color: '#b3b3b3' }}>
+                                    { songBookmarks.length > 0 ? ( songBookmarks.map((song) => (
+                                    <li key={song} style={{ marginBottom: '8px' }}>
+                                        <Link
+                                        href={`/song-page/${song.song_id}`}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.color = '#fff';
+                                            e.currentTarget.style.textDecoration = 'underline';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.color = '#b3b3b3';
+                                            e.currentTarget.style.textDecoration = 'none';
+                                        }}
+                                        style={{
+                                            fontSize: '20px',
+                                        }}
+                                        >
+                                        <Box display="flex" gap={5} alignItems="center">
+                                            <Typography variant="h6">{song.song_name}</Typography>
+                                        </Box>
+                                        </Link>
+                                    </li>
+                                    )) ) : (
+                                        <>
+                                        <Typography 
+                                            variant="body1" 
+                                            style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
+                                        >
+                                            No song bookmarks yet.
+                                        </Typography>
+                                        </>
+                                    
+                                    )}
+                                </ol>
+                                </SongsListContainer>
+                            
                             </Box>
                         )}
                     </Box>
