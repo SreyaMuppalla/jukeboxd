@@ -220,9 +220,8 @@ export const AlbumDetails = styled.div`
 
 // Container for the list of songs
 export const SongsListContainer = styled.div`
-    flex: 0 0 50%; /* Take up 50% of the parent container */
+    flex: 0 0 30%; /* Take up 50% of the parent container */
     padding: 16px;
-    background-color: #333;
     border-radius: 16px;
     margin-right: 16px;
 `;

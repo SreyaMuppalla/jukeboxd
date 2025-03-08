@@ -17,13 +17,11 @@ import {
     AlbumCover,
     SongInfo,
     UserInfo,
-    ProfilePic,
     RatingContainer,
     ReviewText,
     ReviewSubContainer,
 } from "../styles/StyledComponents";
 import albumpic from "../images/albumpic.jpg"; // Import the album image
-import pfp from "../images/pfp.jpg"; // Add a placeholder profile pic
 import Link from "next/link";
 import Image from "next/image";
 
@@ -134,59 +132,31 @@ const Review = ({ review }) => {
             <ReviewSubContainer>
                 {/* User Info */}
                 <UserInfo>
-                    <ProfilePic
-                        style={{ cursor: "pointer" }} // Pointer cursor
-                    >
-                        <Link href={profile_ref}>
-                            <Image
-                                src={review.user_pfp || pfp}
-                                alt="User Profile"
-                                width={50}
-                                height={50}
-                                style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    borderRadius: "50%",
-                                    minWidth: 25,
-                                    minHeight: 25,
-                                }}
-                            />
-                        </Link>
-                    </ProfilePic>
                     <Typography
                         variant="subtitle1"
-                        style={{
+                        sx={{
                             color: "#fff",
                             marginLeft: "8px",
                             fontWeight: "bold",
                             fontSize: "18px",
                             cursor: "pointer",
-                            "&:hover": { textDecoration: "underline" },
-                        }} // Pointer cursor
+                            "&:hover": { textDecoration: "underline" }, // Underline on hover
+                        }}
                     >
-                        <Link href={profile_ref}>
+                        <Link href={profile_ref} style={{ textDecoration: "none", color: "inherit" }}>
                             {review.username || "Username"}
                         </Link>
                     </Typography>
                     <RatingContainer>
-                        <Rating
-                            name="read-only"
-                            value={review.rating}
-                            readOnly
-                        />
+                        <Rating name="read-only" value={review.rating} readOnly />
                     </RatingContainer>
-                    <Typography
-                        variant="subtitle2"
-                        style={{ color: "#fff", cursor: "pointer" }}
-                    >
+                    <Typography variant="subtitle2" sx={{ color: "#fff", cursor: "pointer" }}>
                         {review.created_at?.seconds
-                            ? new Date(
-                                  review.created_at.seconds * 1000
-                              ).toLocaleDateString("en-US", {
-                                  year: "numeric",
-                                  month: "short",
-                                  day: "numeric",
-                              })
+                            ? new Date(review.created_at.seconds * 1000).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                            })
                             : "Unknown Date"}
                     </Typography>
                 </UserInfo>
