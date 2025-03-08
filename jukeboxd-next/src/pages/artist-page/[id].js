@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Rating } from "@mui/material";
+import { Box, Typography, Rating, Tab, Tabs } from "@mui/material";
 import {
     Background,
     ProfileContainer,
@@ -28,6 +28,7 @@ const ArtistPage = () => {
   });
   const [topSongs, setTopSongs] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedTab, setSelectedTab] = useState(0);
 
   useEffect(() => {
     if (artistId) {
@@ -62,6 +63,13 @@ const ArtistPage = () => {
     <ProtectedRoute>
       <Background>
         <ProfileContainer>
+        <Box
+            style={{
+              marginTop: "16px",
+              width: "90%",
+              margin: "auto",
+            }}
+        >
           {/* Profile Info Section */}
           <ProfileInfo>
             <ProfilePicContainer>
@@ -73,12 +81,13 @@ const ArtistPage = () => {
             </ProfilePicContainer>
             <ProfileDetailsContainer>
               <ProfileDetails>
-                <Typography variant="h4" style={{ color: "#fff", marginBottom: "8px" }}>
+                <Typography variant="h4" style={{ color: "#ffffff", fontWeight: "bold", fontSize: "50px" }}>
                   {artistDetails.name}
                 </Typography>
               </ProfileDetails>
             </ProfileDetailsContainer>
-          </ProfileInfo>
+            </ProfileInfo>
+            </Box>
 
           {/* Top Rated Songs Section */}
           <Box
@@ -91,19 +100,30 @@ const ArtistPage = () => {
               margin: "32px auto",
             }}
           >
-            <Typography
-              variant="h5"
-              style={{
-                color: "#fff",
-                marginBottom: "16px",
-                textAlign: "center",
+            <Tabs
+              value={selectedTab}
+              onChange={(event, newValue) =>
+                setSelectedTab(newValue)
+              }
+              textColor="inherit"
+              TabIndicatorProps={{
+                style: { backgroundColor: "#1db954", marginBottom: "16px" },
               }}
             >
-              Top Songs
-            </Typography>
+              <Tab
+                label="Top Songs"
+                sx={{
+                  color: "white",
+                  fontFamily: "Inter",
+                  textTransform: "none", // Optional: Prevent uppercase transformation
+                  fontSize: "16px",
+                  marginBottom: "16px",
+                }}
+              />
+              </Tabs>
 
             {topSongs.map((song, index) => (
-            <TopSongItem key={index}>
+            <TopSongItem key={index} style={{ gap: "12px", display: "flex"}}>
               {/* Album Cover */}
                   <Image
                     src={song.images[1]?.url || UnknownArtwork}
@@ -125,6 +145,7 @@ const ArtistPage = () => {
                             textDecoration: 'none',
                             color: '#fff', // Default color
                             fontSize: '1.2rem',
+                            fontWeight: 'bold',
                             cursor: 'pointer',
                           }}
                           onMouseEnter={(e) => {
@@ -162,13 +183,6 @@ const ArtistPage = () => {
                         </Typography>
                       </Link>
                 </SongDetailsText>
-                  {/* Stars */}
-                  <Rating
-                    name="read-only"
-                    value={song.stars}
-                    precision={0.5}
-                    readOnly
-                  />
                 </SongDetailsRow>
               </TopSongItem>
             ))}
