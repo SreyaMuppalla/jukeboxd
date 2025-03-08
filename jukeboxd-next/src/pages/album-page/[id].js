@@ -166,7 +166,7 @@ const AlbumPage = () => {
               {/* Album Name */}
               <Typography
                 variant="h3"
-                style={{ color: '#fff', marginBottom: '8px' }}
+                style={{ color: '#fff', marginBottom: '8px', fontWeight: 'bold' }}
               >
                 {albumDetails.name}
               </Typography>
@@ -244,7 +244,7 @@ const AlbumPage = () => {
               >
                 Songs:
               </Typography>
-              <ol style={{ paddingLeft: '16px', color: '#b3b3b3' }}>
+              <ol style={{ color: '#b3b3b3' }}>
                 {albumDetails.songs.map((track, index) => (
                   <li key={track.id} style={{ marginBottom: '8px' }}>
                     <Link
@@ -276,7 +276,17 @@ const AlbumPage = () => {
               </ol>
             </SongsListContainer>
             {/* Reviews Section */}
-            <ReviewsSection>
+            <Box marginTop="32px" width="100%">
+              <ReviewsSection
+              style={{
+                marginTop: "32px",
+                padding: "16px",
+                backgroundColor: "#333",
+                borderRadius: "16px",
+                width: "100%",
+                margin: "32px auto",
+                }}
+              >
               <Typography
                 variant="h5"
                 style={{ color: '#fff', marginBottom: '16px' }}
@@ -297,7 +307,8 @@ const AlbumPage = () => {
                   </Typography>
                   </>
               )}
-            </ReviewsSection>
+              </ReviewsSection>
+              </Box>
           </Box>
         </AlbumContainer>
         <ReviewForm userData={userData}></ReviewForm>
