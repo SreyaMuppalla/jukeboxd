@@ -414,8 +414,8 @@ const PersonalProfilePage = () => {
                                     Songs:
                                 </Typography>
                                 <ol style={{ paddingLeft: '16px', color: '#b3b3b3' }}>
-                                    { songBookmarks.length > 0 ? ( songBookmarks.map((song) => (
-                                    <li key={song} style={{ marginBottom: '8px' }}>
+                                    { songBookmarks.length > 0 ? ( songBookmarks.map((song, index) => (
+                                    <li key={index} style={{ marginBottom: '8px' }}>
                                         <Link
                                         href={`/song-page/${song.song_id}`}
                                         onMouseEnter={(e) => {
@@ -431,7 +431,21 @@ const PersonalProfilePage = () => {
                                         }}
                                         >
                                         <Box display="flex" gap={5} alignItems="center">
-                                            <Typography variant="h6">{song.song_name}</Typography>
+                                            <Typography
+                                                                      variant="h6"
+                                                                      sx={{ minWidth: 30, textAlign: 'right' }}
+                                                                    >
+                                                                      {index + 1}
+                                                                    </Typography>
+                                            <Typography variant="h6">
+                                            {song.song_name} by { 
+                                                song.song_artist instanceof Map 
+                                                    ? Array.from(song.song_artist.values())[0] || "Unknown Artist" // Get first artist from Map
+                                                    : Array.isArray(song.song_artist) 
+                                                        ? song.song_artist[0]?.name || "Unknown Artist" // Handle array case
+                                                        : song.song_artist?.name || "Unknown Artist" // Handle object case
+                                                }
+                                            </Typography>
                                         </Box>
                                         </Link>
                                     </li>
