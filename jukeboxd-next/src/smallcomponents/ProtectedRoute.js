@@ -18,10 +18,6 @@ const ProtectedRoute = ({ children }) => {
         }
     }, [user, loading, router]);
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-
     return isUserValid ? <>{children}</> : null;
 };
 
