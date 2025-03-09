@@ -48,22 +48,32 @@ const SongPage = () => {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                if (!user) return;
+                if (!user || !songId) return;
+                
                 const data = await getUser(user.uid);
                 const reviews_data = await getReviews(songId, "song");
                 setReviews(reviews_data);
-                setIsBookmarked(
-                    data.bookmarkedSongs?.includes(songId) || false
-                );
+    
+                if (data && Array.isArray(data.bookmarkedSongs)) {
+                    // Check if any object in bookmarkedSongs matches songId
+                    const isAlreadyBookmarked = data.bookmarkedSongs.some(song => {
+                        return song.song_id.trim() === String(songId).trim();
+                    });
+                    setIsBookmarked(isAlreadyBookmarked);
+                } else {
+                    setIsBookmarked(false);
+                }
+    
                 setUserData({ ...data, uid: user.uid });
             } catch (err) {
                 console.error("Error fetching reviews:", err);
                 setError(err.message);
             }
         };
-
+    
         fetchReviews();
     }, [songId, user]);
+    
 
     // Fetch song data when songId is available
     useEffect(() => {
