@@ -65,23 +65,18 @@ const SearchBar = ({ type: searchBarType, query: defaultQuery='song' }) => {
           const uniqueResults = results.filter((item, index, self) => {
             if (queryType === 'album') {
               return index === self.findIndex((t) =>
-                t.name === item.name &&
-                t.release_date === item.release_date &&
-                t.total_tracks === item.total_tracks &&
-                t.artists.map((artist) => artist.name).join(', ') === item.artists.map((artist) => artist.name).join(', ')
+                t.name === item.name &&  // Check if the album name is the same
+                t.artists.map((artist) => artist.name).join(', ') === item.artists.map((artist) => artist.name).join(', ')  // Check if the artist names are the same
               );
             } else if (queryType === 'song') {
               return index === self.findIndex((t) =>
-                t.name === item.name &&
-                t.album?.name === item.album?.name &&
-                t.album?.release_date === item.album?.release_date &&
-                t.artists.map((artist) => artist.name).join(', ') === item.artists.map((artist) => artist.name).join(', ')
+                t.name === item.name &&  // Check if the song name is the same
+                t.album?.name === item.album?.name &&  // Check if the album name is the same
+                t.artists.map((artist) => artist.name).join(', ') === item.artists.map((artist) => artist.name).join(', ')  // Check if the artist names are the same
               );
-            }
-            else if (queryType === 'profile') {
+            } else if (queryType === 'profile') {
               return index === self.findIndex((t) => t.id === item.id);
-            }
-            else {
+            } else {
               return index === self.findIndex((t) => t.id === item.id);
             }
           });
