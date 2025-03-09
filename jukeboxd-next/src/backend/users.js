@@ -300,7 +300,7 @@ export const BookmarkAlbum = async (user_id, album_id, album_name, album_artist)
             throw new Error("User not found");
         }
 
-        const currentBookmarks = userDoc.data().bookmarkedSongs || [];
+        const currentBookmarks = userDoc.data().bookmarkedAlbums || [];
 
         await updateDoc(userRef, {
             bookmarkedAlbums: [...currentBookmarks, {album_id, album_name, album_artist}]
