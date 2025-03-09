@@ -325,12 +325,16 @@ export const removeAlbumBookmark = async (user_id, album_id) => {
             throw new Error("User not found");
         }
 
+        const userData = userDoc.data();
+        const updatedBookmarks = (userData.bookmarkedAlbums || []).filter(album => album.album_id !== album_id);
+
         await updateDoc(userRef, {
-            bookmarkedAlbums: userDoc.data().bookmarkedAlbums.filter(id => id !== album_id)
+            bookmarkedAlbums: updatedBookmarks
         });
 
         return { message: "Album removed from bookmarks successfully" };
     } catch (error) {
         throw error;
     }
-}
+};
+
