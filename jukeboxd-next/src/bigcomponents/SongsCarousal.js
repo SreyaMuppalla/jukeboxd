@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, Typography, Rating } from '@mui/material'; // Import Material UI components
+import { Box, Typography, Rating, Skeleton } from '@mui/material'; // Import Material UI components
 import {
   CarouselContainer,
   SongItem,
@@ -14,6 +14,7 @@ import { fetchTrendingSongs } from '@/utils/apiCalls';
 
 const SongsCarousel = () => {
   const [songs, setSongs] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
   const [isHovering, setIsHovering] = useState(false);
   const carouselRef = useRef(null);
 
@@ -32,7 +33,10 @@ const SongsCarousel = () => {
       }
     };
 
-    getTrendingSongs();
+    getTrendingSongs().then(() => {
+      setLoading(false);
+    });
+    
   }, []);
 
   const scrollRight = () => {
@@ -72,26 +76,54 @@ const SongsCarousel = () => {
         ref={carouselRef}
         style={{ scrollSnapType: 'x mandatory' }}
       >
-        {songs.map((song, index) => (
-          <SongItem key={index} style={{ scrollSnapAlign: 'start' }}>
-            {/* Album cover */}
-            <AlbumCover style={{ cursor: 'pointer' }}>
-              <Link href={`/album-page/${song.id}`}>
-                <Image
-                  src={song.images[0].url}
-                  alt={`Album cover for ${song.name}`}
-                  width="300"
-                  height="300"
-                />
-              </Link>
-            </AlbumCover>
+        {loading
+          ? // Render skeletons when loading
+            Array.from({ length: 8 }).map((_, index) => (
+              <SongItem
+                key={`skeleton-${index}`}
+                style={{ scrollSnapAlign: 'start' }}
+              >
+                {/* Album cover skeleton */}
+                <AlbumCover style={{ cursor: 'pointer' }}>
+                  <Skeleton
+                    variant="rectangular"
+                    width={300}
+                    height={300}
+                    sx={{ bgcolor: '#535353' }}
+                  />
+                </AlbumCover>
 
-            {/* Song name */}
-            <SongName style={{ cursor: 'pointer' }}>
-              <Link href={`/album-page/${song.id}`}>{song.name}</Link>
-            </SongName>
-          </SongItem>
-        ))}
+                {/* Song name skeleton */}
+                <SongName style={{ cursor: 'pointer' }}>
+                  <Skeleton
+                    variant="text"
+                    width={200}
+                    sx={{ bgcolor: '#535353' }}
+                  />
+                </SongName>
+              </SongItem>
+            ))
+          : // Render actual songs when not loading
+            songs.map((song, index) => (
+              <SongItem key={index} style={{ scrollSnapAlign: 'start' }}>
+                {/* Album cover */}
+                <AlbumCover style={{ cursor: 'pointer' }}>
+                  <Link href={`/album-page/${song.id}`}>
+                    <Image
+                      src={song.images[0].url}
+                      alt={`Album cover for ${song.name}`}
+                      width="300"
+                      height="300"
+                    />
+                  </Link>
+                </AlbumCover>
+
+                {/* Song name */}
+                <SongName style={{ cursor: 'pointer' }}>
+                  <Link href={`/album-page/${song.id}`}>{song.name}</Link>
+                </SongName>
+              </SongItem>
+            ))}
       </CarouselContainer>
 
       {/* Left Scroll Button */}

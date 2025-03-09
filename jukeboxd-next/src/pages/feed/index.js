@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography } from "@mui/material";
-import { Background } from "../../styles/StyledComponents";
+import { Box, Skeleton, Typography } from "@mui/material";
+import { Background, ReviewContainer } from "../../styles/StyledComponents";
 import SongsCarousel from "../../bigcomponents/SongsCarousal";
 import Review from "../../bigcomponents/Review";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
@@ -37,8 +37,6 @@ const FeedPage = () => {
     fetchReviews();
   }, [user]);
 
-
-  if (loading) return <div>Loading profile...</div>;
   if (error) return <div>Error loading reviews: {error}</div>;
 
   return (
@@ -48,39 +46,35 @@ const FeedPage = () => {
         {/* Reviews from Friends */}
         <Box
           style={{
-            marginTop: "32px",
-            padding: "16px",
-            backgroundColor: "#333",
-            borderRadius: "16px",
-            width: "90%",
-            margin: "32px auto",
+            marginTop: '32px',
+            padding: '16px',
+            backgroundColor: '#333',
+            borderRadius: '16px',
+            width: '90%',
+            margin: '32px auto',
           }}
         >
           {/* Reviews Section Header */}
           <Typography
             variant="h5"
             style={{
-              color: "#fff",
-              marginBottom: "16px",
-              textAlign: "center",
+              color: '#fff',
+              marginBottom: '16px',
+              textAlign: 'center',
             }}
           >
             Reviews from Friends
           </Typography>
 
           {/* Individual Reviews */}
-          {reviews.length > 0 ? (
-            reviews.map((review) => (
-              <Review review={review}/>
-            ))
-          ) : (
-            <Typography
-              variant="body1"
-              style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
-            >
-              No reviews yet.
-            </Typography>
-          )}
+          {reviews.length > 0
+            ? reviews.map((review) => <Review review={review} />)
+            : Array.from({ length: 2 }).map((_, index) => (
+                <ReviewContainer>
+                  <Skeleton variant="rectangular" key={`skeleton-${index}`} width="100%" height="100%" />
+                </ReviewContainer>
+              ))
+          }
         </Box>
         <ReviewForm userData={userData}></ReviewForm>
       </Background>
