@@ -58,7 +58,7 @@ const SongPage = () => {
                 if (data && Array.isArray(data.bookmarkedSongs)) {
                     // Check if any object in bookmarkedSongs matches songId
                     const isAlreadyBookmarked = data.bookmarkedSongs.some(song => {
-                        return song.song_id.trim() === String(songId).trim();
+                        return String(song.song_id || '').trim() === String(songId || '').trim();
                     });
                     setIsBookmarked(isAlreadyBookmarked);
                 } else {

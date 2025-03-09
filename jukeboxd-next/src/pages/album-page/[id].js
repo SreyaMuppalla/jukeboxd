@@ -87,7 +87,7 @@ const AlbumPage = () => {
   useEffect(() => {
       if (userData && Array.isArray(userData.bookmarkedAlbums) && albumId) {
           const isAlreadyBookmarked = userData.bookmarkedAlbums.some(album => {
-              return String(album.album_id).trim() === String(albumId).trim();
+            return String(album.album_id || '').trim() === String(albumId || '').trim();
           });
 
           console.log("Updating isBookmarked to:", isAlreadyBookmarked);
