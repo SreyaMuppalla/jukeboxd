@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, Skeleton } from "@mui/material";
 import {
     Background,
     ProfileContainer,
@@ -12,6 +12,7 @@ import {
     StatItem,
     ReviewsSection,
     SignInButton,
+    ReviewContainer,
 } from "../../styles/StyledComponents";
 import Review from "../../bigcomponents/Review";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
@@ -86,8 +87,6 @@ const ProfilePage = () => {
         }
     };
 
-    if (!id) return <div>Loading...</div>;
-    if (loading) return <div>Loading profile...</div>;
     if (error) return <div>Error loading profile: {error}</div>;
 
     // Don't show follow button if viewing own profile
@@ -109,6 +108,7 @@ const ProfilePage = () => {
                     <ProfileInfo>
                         {/* Profile Picture */}
                         <ProfilePicContainer>
+                            {loading ? <Skeleton variant="circular" width={150} height={150}/> :
                             <Image
                                 src={userData?.profilePicture || pfp}
                                 alt="Profile"
@@ -118,7 +118,7 @@ const ProfilePage = () => {
                                     borderRadius: "50%",
                                     marginRight: "16px",
                                 }}
-                            />
+                            />}
                         </ProfilePicContainer>
                         {/* Username and Stats */}
                         <ProfileDetailsContainer>
@@ -133,7 +133,7 @@ const ProfilePage = () => {
                                             fontWeight: "bold",
                                             }}
                                     >
-                                        {userData?.username || "Username"}
+                                        {loading ? <Skeleton width={200}/> : userData?.username || "Username"}
                                     </Typography>
                                     {showFollowButton && (
                                         <Button
@@ -219,7 +219,7 @@ const ProfilePage = () => {
                             Bio
                         </Typography>
                         <Typography style={{ color: "#b3b3b3" }}>
-                            {userData?.user_bio || "No bio available."}
+                            {loading ? <Skeleton /> : userData?.user_bio || "No bio available."}
                         </Typography>
                     </Box>
                     {/* Reviews Section */}
@@ -245,8 +245,19 @@ const ProfilePage = () => {
                             Recent Reviews
                         </Typography>
 
+                        {loading && 
+                            Array.from({ length: 2 }).map((_, index) => (
+                                <ReviewContainer>
+                                    <Skeleton
+                                        variant="rectangular"
+                                        key={`skeleton-${index}`}
+                                        width="100%"
+                                        height="100%"
+                                    />
+                                </ReviewContainer>
+                        ))}
                         {/* Individual Reviews */}
-                        {reviews.length > 0 ? (
+                        {loading || reviews.length > 0 ? (
                             reviews.map((review, index) => (
                                 <Review review={review}/>
                             ))
