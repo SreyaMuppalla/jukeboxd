@@ -10,4 +10,6 @@ export const currItem = atom(null); // Initial value is 0
  * album_name: string - song
  * album_id : string - album_id
  * image: string - song/album/artst image url
+ * review_type: string - song/album/artist/friend
+ * ...additional fields fetched
  */

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Rating, Typography, Button } from '@mui/material';
+import { Box, Rating, Typography, Button, Tab, Tabs } from '@mui/material';
 import { Bookmark } from '@mui/icons-material';
 import {
   Background,
@@ -17,31 +17,39 @@ import { useAtom } from 'jotai';
 import { currItem } from '@/states/currItem';
 import unknownArtwork from '@/images/unknown_artwork.jpg';
 import ProtectedRoute from '@/smallcomponents/ProtectedRoute';
+import StarRating from "@/smallcomponents/StarRating";
 import { useAuth } from '@/backend/auth';
 import { getUser, BookmarkAlbum, removeAlbumBookmark } from '@/backend/users';
+import { getReviews } from '@/backend/reviews';
+import ReviewForm from '@/smallcomponents/ReviewForm';
+import spotifyTokenService from '@/states/spotifyTokenManager';
 
 const AlbumPage = () => {
   const router = useRouter();
   const { id: albumId } = router.query; // Correctly get the albumId from the dynamic route
   const { user } = useAuth();
-
+  const [loading, setLoading] = useState(true);
   const [albumDetails, setAlbumDetails] = useState({
     name: '',
     artists: [{ id: '', name: '' }],
     images: [{}, { url: unknownArtwork }],
     songs: []
   });
+  const [selectedItem, setSelectedItem] = useAtom(currItem);
+  const [reviews, setReviews] = useState([]);
   const [error, setError] = useState(null);
-  const [token, _] = useAtom(currItem); // Access token state
+  const token = spotifyTokenService; // Access token state
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
-
+  const [userData, setUserData] = useState(null);
+  const [selectedTab, setSelectedTab] = useState(0);
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         if (!user) return;
         const data = await getUser(user.uid);
         setIsBookmarked(data.bookmarkedAlbums?.includes(albumId) || false);
+        setUserData({ ...data, uid: user.uid });
       } catch (err) {
         console.error('Error fetching reviews:', err);
         setError(err.message);
@@ -57,17 +65,38 @@ const AlbumPage = () => {
           setError(null); // Reset any previous errors
           // Fetch album details and tracks
           const details = await fetchAlbumData(albumId);
-          // Update state with the fetched data
+          const reviews_data = await getReviews(albumId, 'album');
           setAlbumDetails(details);
+          setReviews(reviews_data);
         } catch (error) {
           console.error('Error fetching album data:', error);
           setError('Failed to fetch album details.');
+        }
+        finally {
+          setLoading(false);
         }
       };
     if(albumId){
       getAlbumData();
     }
   }, [albumId, token]); // Trigger useEffect whenever albumId or token changes
+
+  useEffect(() => {
+    // Prefill review form
+    const newSelectedItem = {
+      ...albumDetails,
+      album_id: albumDetails.id,
+      album_name: albumDetails.name,
+      review_type: 'album',
+    };
+
+    // Only update Jotai atom if the value has changed
+    setSelectedItem((prevItem) =>
+      JSON.stringify(prevItem) !== JSON.stringify(newSelectedItem)
+        ? newSelectedItem
+        : prevItem
+    );
+  }, [albumDetails]);
 
   if (error) {
     return (
@@ -103,7 +132,13 @@ const AlbumPage = () => {
     }
     else{
       try {
-        await BookmarkAlbum(user.uid, albumId);
+        let artist = albumDetails.artists[0];
+        let album_artist = artist instanceof Map 
+                ? Array.from(artist.values())[0] || "Unknown Artist" // Get first artist from Map
+                : Array.isArray(artist) 
+                    ? artist[0]?.name || "Unknown Artist" // Handle array case
+                    : artist?.name || "Unknown Artist";
+        await BookmarkAlbum(user.uid, albumId, albumDetails.name, album_artist);
         setIsBookmarked(true);
       } catch (error) {
         console.error('Error bookmarking album:', error);
@@ -124,38 +159,24 @@ const AlbumPage = () => {
             <img
               src={albumDetails.images[1]?.url || unknownArtwork} // Fallback to a default image if unavailable
               alt="Album Cover"
-              width={250}
-              height={250}
+              width={200}
+              height={200}
+              style={{ borderRadius: "8px" }}
             />
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              flex="1"
+              alignItems="flex-start"
+            >
             <AlbumDetails>
               {/* Album Name */}
               <Typography
                 variant="h3"
-                style={{ color: '#fff', marginBottom: '8px' }}
+                style={{ color: '#fff', marginBottom: '8px', fontWeight: 'bold' }}
               >
                 {albumDetails.name}
               </Typography>
-              {/* Bookmark Button */}
-              <Button
-                  onClick={handleBookmark}
-                  disabled={bookmarkLoading}
-                  variant="contained"
-                  sx={{
-                    backgroundColor: isBookmarked ? '#1DB954' : '#333',
-                    color: '#fff',
-                    '&:hover': {
-                      backgroundColor: isBookmarked ? '#1ed760' : '#444',
-                    },
-                    minWidth: '120px',
-                    height: '40px',
-                    borderRadius: '20px',
-                    textTransform: 'none',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  <Bookmark />
-                  {isBookmarked ? 'Bookmarked' : 'Bookmark'}
-                </Button>
               {/* Artist Name */}
               <Typography
                 variant="h6"
@@ -188,22 +209,37 @@ const AlbumPage = () => {
                 ))}
               </Typography>
               {/* Rating (Stars Placeholder) */}
-              <Rating
-                size="medium"
-                value={5}
-                readOnly
-                sx={{
-                  alignSelf: 'flex-start',
-                  fontSize: '3rem',
-                  '& .MuiRating-iconEmpty': {
-                    color: 'white',
-                  },
-                  '& .MuiRating-iconFilled': {
-                    fontSize: 'inherit',
-                  },
-                }}
-              />
-            </AlbumDetails>
+              <Box display="flex" alignItems="center" gap={1}>
+                  <StarRating rating={albumDetails.num_reviews > 0 ? albumDetails.review_score / albumDetails.num_reviews : 0} />
+                  <Typography variant="body1" style={{ color: '#d3d3d3', marginLeft: '8px' }}>
+                          ({albumDetails.num_reviews} Reviews)
+                    </Typography>
+              </Box>              
+              </AlbumDetails>
+              {/* Bookmark Button */}
+              <Box display="flex" justifyContent="flex-end" alignItems="center">
+              <Button
+                  onClick={handleBookmark}
+                  disabled={bookmarkLoading}
+                  variant="contained"
+                  sx={{
+                    backgroundColor: isBookmarked ? '#1DB954' : '#333',
+                    color: '#fff',
+                    '&:hover': {
+                      backgroundColor: isBookmarked ? '#1ed760' : '#444',
+                    },
+                    minWidth: '120px',
+                    height: '40px',
+                    borderRadius: '20px',
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  <Bookmark />
+                  {isBookmarked ? 'Bookmarked' : 'Bookmark'}
+                </Button>
+                </Box>
+              </Box>
           </AlbumInfoContainer>
           {/* Content Section (Songs and Reviews) */}
           <Box display="flex" width="95%" marginTop="32px">
@@ -211,11 +247,11 @@ const AlbumPage = () => {
             <SongsListContainer>
               <Typography
                 variant="h5"
-                style={{ color: '#fff', marginBottom: '16px' }}
+                style={{ color: '#fff', marginBottom: '16px', textDecoration: 'underline' }}
               >
                 Songs:
               </Typography>
-              <ol style={{ paddingLeft: '16px', color: '#b3b3b3' }}>
+              <ol style={{ color: '#b3b3b3' }}>
                 {albumDetails.songs.map((track, index) => (
                   <li key={track.id} style={{ marginBottom: '8px' }}>
                     <Link
@@ -247,19 +283,55 @@ const AlbumPage = () => {
               </ol>
             </SongsListContainer>
             {/* Reviews Section */}
-            <ReviewsSection>
-              <Typography
-                variant="h5"
-                style={{ color: '#fff', marginBottom: '16px' }}
+            <Box width="100%">
+              <ReviewsSection
+              style={{
+                marginTop: "32px",
+                padding: "16px",
+                backgroundColor: "#333",
+                borderRadius: "16px",
+                width: "100%",
+                margin: "32px auto",
+                }}
               >
-                Reviews:
-              </Typography>
-              <Review />
-              <Review />
-              <Review />
-            </ReviewsSection>
+                <Tabs
+                  value={selectedTab}
+                  onChange={(event, newValue) => setSelectedTab(newValue)}
+                  left
+                  textColor="inherit"
+                  TabIndicatorProps={{
+                    style: { backgroundColor: "#1db954" },
+                  }}
+                >
+                  <Tab
+                    label="Recent Reviews"
+                    sx={{
+                      color: "white",
+                      fontFamily: "Inter",
+                      textTransform: "none", // Optional: Prevent uppercase transformation
+                      fontSize: "16px", 
+                    }}
+                  />
+                </Tabs>
+              {reviews.length > 0 ? (
+                  reviews.map((review) => (
+                  <Review review={review}/>
+                  ))
+              ) : (
+                  <>
+                  <Typography 
+                      variant="body1" 
+                      style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
+                  >
+                      No reviews yet.
+                  </Typography>
+                  </>
+              )}
+              </ReviewsSection>
+              </Box>
           </Box>
         </AlbumContainer>
+        <ReviewForm userData={userData}></ReviewForm>
       </Background>
     </ProtectedRoute>
   );

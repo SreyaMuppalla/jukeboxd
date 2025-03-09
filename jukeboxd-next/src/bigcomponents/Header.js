@@ -20,6 +20,7 @@ const Header = () => {
         <ProtectedRoute>
             <HeaderBackground>
                 {/* Logo */}
+                <Link href={"/feed"} passHref>
                 <Box
                     sx={{
                         display: "flex",
@@ -40,13 +41,14 @@ const Header = () => {
                         style={{
                         color: "#FFFFFF",
                         fontFamily: "Inter",
-                        fontSize: "40px",
+                        fontSize: "32px",
                         fontWeight: "bold",
                         }}
                     >
                         jukeboxd
                     </Typography>
                     </Box>
+                </Link>
                 <SearchBar type = "header"/>
 
                 {/* Navigation Buttons */}
@@ -56,7 +58,7 @@ const Header = () => {
                         sx={{
                         marginRight: 2,
                         borderRadius: "50px",
-                        height: "52px",
+                        height: "46px",
                         width: "90px",
                         backgroundColor: isFeedPage ? "#1DB954" : "#535353",
                         "&:hover": { backgroundColor: isFeedPage ? "#1AAE4E" : "#444444" },
@@ -68,7 +70,7 @@ const Header = () => {
                             style={{
                             color: "#FFFFFF",
                             fontFamily: "Inter",
-                            fontSize: "24px",
+                            fontSize: "20px",
                             fontWeight: "bold",
                             }}
                         >
@@ -81,7 +83,7 @@ const Header = () => {
                         variant="contained"
                         sx={{
                         borderRadius: "50px",
-                        height: "52px",
+                        height: "46px",
                         width: "154px",
                         backgroundColor: isProfilePage ? "#1DB954" : "#535353",
                         "&:hover": { backgroundColor: isProfilePage ? "#1AAE4E" : "#444444" },
@@ -93,7 +95,7 @@ const Header = () => {
                             style={{
                             color: "#FFFFFF",
                             fontFamily: "Inter",
-                            fontSize: "24px",
+                            fontSize: "20px",
                             fontWeight: "bold",
                             }}
                         >

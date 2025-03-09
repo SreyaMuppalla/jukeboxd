@@ -17,10 +17,10 @@ import { searchUsers } from '@/backend/users';
 import { useAtom } from 'jotai';
 import spotifyTokenService from '../states/spotifyTokenManager'; // Import the singleton
 
-const SearchBar = ({ type: searchBarType }) => {
+const SearchBar = ({ type: searchBarType, query: defaultQuery='song' }) => {
   const [query, setQuery] = useState('');
   const [recommendations, setRecommendations] = useState([]);
-  const [queryType, setQueryType] = useState('song');
+  const [queryType, setQueryType] = useState(defaultQuery);
 
   const router = useRouter();
   const [selectedItem, setSelectedItem] = useAtom(currItem);
@@ -77,6 +77,9 @@ const SearchBar = ({ type: searchBarType }) => {
                 t.album?.release_date === item.album?.release_date &&
                 t.artists.map((artist) => artist.name).join(', ') === item.artists.map((artist) => artist.name).join(', ')
               );
+            }
+            else if (queryType === 'profile') {
+              return index === self.findIndex((t) => t.id === item.id);
             }
             else {
               return index === self.findIndex((t) => t.id === item.id);
@@ -150,10 +153,10 @@ const SearchBar = ({ type: searchBarType }) => {
           {/* Dynamic dropdown options based on searchBarType */}
           {searchBarType === 'header' && (
             <>
-              <option value="profile">User</option>
               <option value="song">Song</option>
-              <option value="artist">Artist</option>
               <option value="album">Album</option>
+              <option value="artist">Artist</option>
+              <option value="profile">User</option>
             </>
           )}
           {searchBarType === 'review' && (
@@ -181,19 +184,28 @@ const SearchBar = ({ type: searchBarType }) => {
               {/* Conditionally render images for song, artist, or album */}
               {(queryType === 'song' && item.album?.images?.[0]?.url) ||
               (queryType === 'artist' && item.images?.[0]?.url) ||
+              (queryType === 'profile' && item.profilePicture) ||
               (queryType === 'album' && item.images?.[0]?.url) ? (
                 <img src={item.album?.images?.[0]?.url || item.images?.[0]?.url} alt={item.name} />
               ) : null}
 
               <RecommendationDetails>
-              <span className="song-title">{item.name}</span>
-            {(queryType === 'song' || queryType === 'album') && (
-              <>
-                <span className="artist-name">
-                  {item.artists && item.artists.length > 0 ? item.artists.map((artist) => artist.name).join(', ') : 'Unknown Artist'}
-                </span>
-              </>
-          )}
+              {queryType === 'profile' ? (
+                <>
+                  <span className="user-name">{item.username || 'Unknown User'}</span>
+                </>
+              ) : (
+                <>
+                  <span className="song-title">{item.name}</span>
+                  {(queryType === 'song' || queryType === 'album') && (
+                    <span className="artist-name">
+                      {item.artists && item.artists.length > 0 
+                        ? item.artists.map((artist) => artist.name).join(', ') 
+                        : 'Unknown Artist'}
+                    </span>
+                  )}
+                </>
+              )}
               </RecommendationDetails>
             </RecommendationItem>
           ))}
