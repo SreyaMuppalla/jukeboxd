@@ -1,46 +1,193 @@
-import React from "react";
-import { Box, Typography, Rating } from "@mui/material"; // Import Material UI components
-import { CarouselContainer, SongItem, AlbumCover, SongName, StarsContainer } from "../styles/StyledComponents"; // Adjust based on your folder structure
-import albumpic from "../images/albumpic.jpg";
-import Link from "next/link";
-import Image from "next/image";
+import React, { useEffect, useRef, useState } from 'react';
+import { Box, Typography, Rating } from '@mui/material'; // Import Material UI components
+import {
+  CarouselContainer,
+  SongItem,
+  AlbumCover,
+  SongName,
+  StarsContainer,
+} from '../styles/StyledComponents'; // Adjust based on your folder structure
+import Link from 'next/link';
+import Image from 'next/image';
+import spotifyTokenService from '@/states/spotifyTokenManager'; // Import the singleton
+import { fetchTrendingSongs } from '@/utils/apiCalls';
 
 const SongsCarousel = () => {
+  const [songs, setSongs] = React.useState([]);
+  const [isHovering, setIsHovering] = useState(false);
+  const carouselRef = useRef(null);
 
-  // Placeholder data for songs
-  const songs = new Array(10).fill({ albumCover: albumpic, songName: "Song Name", stars: 5 });
+  useEffect(() => {
+    // Fetch trending songs from Spotify API
+    const getTrendingSongs = async () => {
+      try {
+        const spotifyTrending = await fetchTrendingSongs();
+        if (spotifyTrending) {
+          // Step 3: Return the raw album data from Spotify
+          setSongs(spotifyTrending);
+        }
+      } catch (error) {
+        console.error('Error fetching song details:', error);
+        return null;
+      }
+    };
+
+    getTrendingSongs();
+  }, []);
+
+  const scrollRight = () => {
+    if (carouselRef.current) {
+      const itemWidth = carouselRef.current.firstChild
+        ? carouselRef.current.firstChild.offsetWidth
+        : 0;
+      const scrollAmount = itemWidth * 3; // Scroll by 3 items at a time
+      carouselRef.current.scrollBy({
+        left: scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  const scrollLeft = () => {
+    if (carouselRef.current) {
+      const itemWidth = carouselRef.current.firstChild
+        ? carouselRef.current.firstChild.offsetWidth
+        : 0;
+      const scrollAmount = itemWidth * -3; // Scroll left by 3 items
+      carouselRef.current.scrollBy({
+        left: scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   return (
-    <CarouselContainer>
-      {songs.map((song, index) => (
-        <SongItem key={index}>
-          {/* Album cover */}
-          <AlbumCover
-            style={{ cursor: 'pointer' }} // Change cursor to indicate it's clickable
-          >
-            <Link href="/album-page">
-              <Image
-                src={song.albumCover} // Use the imported album picture
-                alt={`Album cover for ${song.songName}`}
-                width="100%" // Ensures the image takes the full width of the container
-              />
-            </Link>
-          </AlbumCover>
+    <Box
+      position="relative"
+      width="100%"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      <CarouselContainer
+        ref={carouselRef}
+        style={{ scrollSnapType: 'x mandatory' }}
+      >
+        {songs.map((song, index) => (
+          <SongItem key={index} style={{ scrollSnapAlign: 'start' }}>
+            {/* Album cover */}
+            <AlbumCover style={{ cursor: 'pointer' }}>
+              <Link href={`/album-page/${song.id}`}>
+                <Image
+                  src={song.images[0].url}
+                  alt={`Album cover for ${song.name}`}
+                  width="300"
+                  height="300"
+                />
+              </Link>
+            </AlbumCover>
 
-          {/* Song name */}
-          <SongName
-            style={{ cursor: 'pointer' }} // Change cursor to indicate it's clickable
-          >
-            <Link href="/song-page">{song.songName}</Link>
-          </SongName>
+            {/* Song name */}
+            <SongName style={{ cursor: 'pointer' }}>
+              <Link href={`/album-page/${song.id}`}>{song.name}</Link>
+            </SongName>
+          </SongItem>
+        ))}
+      </CarouselContainer>
 
-          {/* Star rating */}
-          <StarsContainer>
-            <Rating name="read-only" value={song.stars} readOnly />
-          </StarsContainer>
-        </SongItem>
-      ))}
-    </CarouselContainer>
+      {/* Left Scroll Button */}
+      <Box
+        position="absolute"
+        left="70px"
+        top="50%"
+        sx={{
+          transform: 'translateY(-50%)',
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+          borderRadius: '50%',
+          width: '50px',
+          height: '50px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          cursor: 'pointer',
+          zIndex: 10,
+          transition: 'all 0.3s ease',
+          opacity: isHovering ? 1 : 0,
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            transform: 'translateY(-50%) scale(1.05)',
+            boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.3)',
+          },
+          '&:active': {
+            transform: 'translateY(-50%) scale(0.95)',
+          },
+        }}
+        onClick={scrollLeft}
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M15 18L9 12L15 6"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </Box>
+
+      {/* Right Scroll Button */}
+      <Box
+        position="absolute"
+        right="70px"
+        top="50%"
+        sx={{
+          transform: 'translateY(-50%)',
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+          borderRadius: '50%',
+          width: '50px',
+          height: '50px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          cursor: 'pointer',
+          zIndex: 10,
+          transition: 'all 0.3s ease',
+          opacity: isHovering ? 1 : 0,
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            transform: 'translateY(-50%) scale(1.05)',
+            boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.3)',
+          },
+          '&:active': {
+            transform: 'translateY(-50%) scale(0.95)',
+          },
+        }}
+        onClick={scrollRight}
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M9 18L15 12L9 6"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </Box>
+    </Box>
   );
 };
 

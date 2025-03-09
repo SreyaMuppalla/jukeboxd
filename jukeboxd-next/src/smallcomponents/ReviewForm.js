@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Drawer,
@@ -17,17 +17,14 @@ import Image from 'next/image';
 import { useAtom } from 'jotai';
 import { currItem } from '@/states/currItem';
 import { addReview } from '@/utils/apiCalls';
-import { useAuth } from '@/backend/auth';
 
-export default function ReviewForm() {
+export default function ReviewForm({ userData }) {
   const [open, setOpen] = useState(false);
   const [review, setReview] = useState('');
   const [rating, setRating] = useState(5);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
   const [selectedItem, setSelectedItem] = useAtom(currItem);
-
-  const {user} = useAuth();
 
   const toggleDrawer = (open) => {
     setOpen(open);
@@ -44,22 +41,22 @@ export default function ReviewForm() {
   const handleSubmit = async () => {
     setLoading(true);
 
-    console.log(selectedItem.artists)
-
     let reviewObj = {
-      user_id: user.uid,
+      user_id: userData.uid,
       song_name: selectedItem.song_name,
       song_id: selectedItem.song_id,
       album_name: selectedItem.album_name,
       album_id: selectedItem.album_id,
       artists: selectedItem.artists,
       images: selectedItem.images,
+      username: userData.username,
+      user_pfp: userData.profilePicture,
       rating: Number(rating),
       review_text: review,
       likes: 0,
       dislikes: 0,
       date: new Date(),
-      type: selectedItem.review_type
+      type: selectedItem.review_type,
     };
 
     addReview(reviewObj).then(() => {
@@ -81,19 +78,43 @@ export default function ReviewForm() {
   return (
     <div>
       {/* Floating Action Button */}
-      <Fab
-        onClick={() => toggleDrawer(!open)}
-        sx={{
-          position: 'fixed',
-          bottom: 20,
-          right: 20,
-          zIndex: 1000,
-          backgroundColor: 'primary.main',
-          color: 'white',
-        }}
-      >
-        +
-      </Fab>
+      {!open ? (
+        <Fab
+          onClick={() => toggleDrawer(true)}
+          sx={{
+            position: 'fixed',
+            bottom: 20,
+            right: 20,
+            zIndex: 1000,
+            backgroundColor: '#1db954',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: '#1AAE4E', // Darker shade on hover
+            },
+            transition: 'background-color 0.3s ease-in-out', // Smooth hover transition
+          }}
+        >
+          +
+        </Fab>
+      ) : (
+        <Fab
+          onClick={() => toggleDrawer(false)}
+          sx={{
+            position: 'fixed',
+            bottom: 20,
+            right: 20,
+            zIndex: 1000,
+            backgroundColor: 'red',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: '#b71c1c', // Darker red on hover
+            },
+            transition: 'background-color 0.3s ease-in-out',
+          }}
+        >
+          ✕
+        </Fab>
+      )}
 
       {/* Drawer for Review */}
       <Drawer
@@ -105,14 +126,18 @@ export default function ReviewForm() {
           width: '600px',
           flexShrink: 0,
           '& .MuiDrawer-paper': {
-            width: '500px',
+            width: '30vw',
+            maxWidth: '400px',
             padding: '0 20px 20px',
             boxSizing: 'border-box',
-            height: '50vh',
+            height: '70vh',
             bottom: '100px',
             right: '20px',
             top: 'unset',
             borderRadius: '20px',
+            borderWidth: '10px',
+            borderStyle: 'solid',
+            borderColor: '#b3b3b3',
             backgroundColor: '#535353',
             overflowY: 'auto',
             scrollbarWidth: 'none',
@@ -133,19 +158,18 @@ export default function ReviewForm() {
             paddingTop: '20px',
           }}
         >
-          <Typography variant="h3" gutterBottom sx={{ color: 'white' }}>
+          <Typography variant="h4" gutterBottom sx={{ color: 'white' }}>
             Write a Review
           </Typography>
         </Box>
 
-        <SearchBar type="review" />
+        <SearchBar type="review" query={selectedItem?.review_type}/>
 
         <Box
           display="flex"
           flexDirection="column"
           alignItems="flex-start"
-          gap={2}
-          className="mx-5"
+          gap={1}
         >
           {/* Selected Song */}
           {selectedItem && (
@@ -155,25 +179,33 @@ export default function ReviewForm() {
               gap={2}
               sx={{
                 backgroundColor: '#444',
-                padding: '10px',
+                padding: '5px',
                 borderRadius: '8px',
               }}
             >
               <Image
                 src={selectedItem.images[0].url}
-                alt={selectedItem.review_type === 'album' 
-                  ? selectedItem.album_name 
-                  : selectedItem.song_name}
-                width={50}
-                height={50}
+                alt={
+                  selectedItem.review_type === 'album'
+                    ? selectedItem.album_name
+                    : selectedItem.song_name
+                }
+                width={30}
+                height={30}
               />
-              <Typography sx={{ color: 'white', flexGrow: 1, padding: 0 }}>
-              {selectedItem.review_type === 'album' 
-                ? selectedItem.album_name 
-                : selectedItem.song_name}
+              <Typography
+                variant="subtitle2"
+                sx={{ color: 'white', flexGrow: 1, padding: 0 }}
+              >
+                {selectedItem.review_type === 'album'
+                  ? selectedItem.album_name
+                  : selectedItem.song_name}
               </Typography>
-              <IconButton onClick={handleRemoveSong} sx={{ color: 'white' }}>
-                x
+              <IconButton
+                onClick={handleRemoveSong}
+                sx={{ color: 'white', height: 10 }}
+              >
+                <Typography variant="subtitle2">x</Typography>
               </IconButton>
             </Box>
           )}
@@ -184,7 +216,7 @@ export default function ReviewForm() {
             onChange={handleRatingChange}
             sx={{
               alignSelf: 'flex-start',
-              fontSize: '3rem',
+              fontSize: '2rem',
               '& .MuiRating-iconEmpty': {
                 color: 'white',
               },
@@ -198,14 +230,14 @@ export default function ReviewForm() {
           {/* Review TextField */}
           <TextField
             multiline
-            rows={9}
+            rows={8}
             fullWidth
             value={review}
             variant="filled"
             onChange={handleReviewChange}
             sx={{
               marginBottom: 2,
-              marginTop: 2,
+              borderRadius: '8px',
               backgroundColor: '#b3b3b3',
               '& .MuiInputBase-input': {
                 color: 'white',
@@ -230,7 +262,14 @@ export default function ReviewForm() {
         <Box display="flex" justifyContent="flex-end">
           <Button
             variant="contained"
-            color="primary"
+            sx={{
+              backgroundColor: '#1db954',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#1AAE4E', // Darker shade on hover
+              },
+              transition: 'background-color 0.3s ease-in-out', // Smooth hover transition
+            }}
             onClick={handleSubmit}
             disabled={!isFormValid || loading} // Disable button based on form validity or loading state
             startIcon={
