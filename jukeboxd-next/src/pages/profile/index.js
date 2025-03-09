@@ -392,9 +392,9 @@ const PersonalProfilePage = () => {
                             <Box flex="1" minWidth="45%">
                                 <Typography
                                     variant="h5"
-                                    style={{ color: '#fff', marginBottom: '12px', textAlign: "center" }}
-                                >
-                                    🎵 Songs:
+                                    style={{ color: '#fff', marginBottom: '12px', textAlign: "center"}}
+                                        
+                                ><b>Songs</b>
                                 </Typography>
                                 <Box 
                                     style={{
@@ -421,9 +421,6 @@ const PersonalProfilePage = () => {
                                                         }}
                                                         style={{ fontSize: '18px', display: "flex", alignItems: "center", textDecoration: "none", color: "#b3b3b3" }}
                                                     >
-                                                        <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'right' }}>
-                                                            {index + 1}
-                                                        </Typography>
                                                         <Typography variant="h6" sx={{ marginLeft: "12px" }}>
                                                             {song.song_name} by {song.song_artist}
                                                         </Typography>
@@ -448,7 +445,7 @@ const PersonalProfilePage = () => {
                                     variant="h5"
                                     style={{ color: '#fff', marginBottom: '12px', textAlign: "center" }}
                                 >
-                                    💿 Albums:
+                                <b>Albums</b>
                                 </Typography>
                                 <Box 
                                     style={{
@@ -475,9 +472,6 @@ const PersonalProfilePage = () => {
                                                         }}
                                                         style={{ fontSize: '18px', display: "flex", alignItems: "center", textDecoration: "none", color: "#b3b3b3" }}
                                                     >
-                                                        <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'right' }}>
-                                                            {index + 1}
-                                                        </Typography>
                                                         <Typography variant="h6" sx={{ marginLeft: "12px" }}>
                                                             {album.album_name} by {album.album_artist}
                                                         </Typography>
