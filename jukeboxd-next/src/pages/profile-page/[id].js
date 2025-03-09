@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Button, Tab, Tabs } from "@mui/material";
+import { Box, Typography, Button, Tab, Tabs, Skeleton } from "@mui/material";
 import {
     Background,
     ProfileContainer,
