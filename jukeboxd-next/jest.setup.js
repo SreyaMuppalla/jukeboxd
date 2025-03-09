@@ -1,10 +1,14 @@
 import { initializeApp, getApps, getApp, deleteApp } from "firebase/app";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import fetch from "fetch-h2";
 import dotenv from "dotenv";
 
 // Load environment variables
 dotenv.config();
+
+// Ensure `fetch` is available globally
+global.fetch = fetch;
 
 // Firebase Test Config
 const firebaseConfig = {
