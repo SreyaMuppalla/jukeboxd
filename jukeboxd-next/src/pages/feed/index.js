@@ -38,7 +38,8 @@ const FeedPage = () => {
   }, [user]);
 
   if (error) return <div>Error loading reviews: {error}</div>;
-
+  console.log(loading);
+  console.log(reviews.length);
   return (
     <ProtectedRoute>
       <Background>
@@ -67,7 +68,7 @@ const FeedPage = () => {
           </Typography>
 
           {/* Individual Reviews */}
-          {loading &&
+          {(loading || reviews.length <= 0) &&
             Array.from({ length: 2 }).map((_, index) => (
               <ReviewContainer>
                 <Skeleton
@@ -78,7 +79,7 @@ const FeedPage = () => {
                 />
               </ReviewContainer>
             ))}
-          {loading || reviews.length > 0 ? (
+          {!loading && reviews.length > 0 ? (
             reviews.map((review) => <Review review={review} />)
           ) : (
             <Typography
