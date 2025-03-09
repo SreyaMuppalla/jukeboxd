@@ -12,6 +12,7 @@ import {
     StatItem,
     ReviewsSection,
     SongCard,
+    SignInButton
 } from "../../styles/StyledComponents";
 import Review from "../../bigcomponents/Review";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
@@ -22,6 +23,9 @@ import { useRouter } from "next/router";
 import { useAuth } from "../../backend/auth.js";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 import { getReviewById } from '@/backend/reviews';
+import {storage} from "../../backend/firebaseConfig"
+import {ref, uploadBytes, getDownloadURL} from "firebase/storage";
+import Avatar from "@mui/material/Avatar";
 
 const PersonalProfilePage = () => {
     const [userData, setUserData] = useState(null);
@@ -33,8 +37,9 @@ const PersonalProfilePage = () => {
     const [editingUsername, setEditingUsername] = useState(false);
     const [username, setUsername] = useState("");
     const fileInputRef = useRef(null);
-    const [imageUrl, setImageUrl] = useState(null);
     const [selectedTab, setSelectedTab] = useState(0);
+    const [image, setImage] = useState(null);
+    const [url, setUrl] = useState(null);
 
 
     const router = useRouter(); // Initialize navigation using Next.js router
@@ -84,25 +89,31 @@ const PersonalProfilePage = () => {
       setEditingUsername(!editingUsername);
     };
 
-    const handleImageUpload = async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      try {
-          const response = await fetch("http://localhost:5000/s3Url");
-          const { url } = await response.json();
-          await fetch(url, { method: "PUT", body: file });
-
-          const uploadedImageUrl = url.split("?")[0];
-          await updateUserProfilePicture(user.uid, uploadedImageUrl);
-          setImageUrl(uploadedImageUrl);
-      } catch (error) {
-          console.error("Upload failed:", error);
-      }
+    const handleFileSelect = () => {
+        fileInputRef.current.click(); 
     };
 
-    const handleButtonClick = () => {
-        fileInputRef.current.click();
+    const handleImageChange = (e) => {
+        if (e.target.files[0]) {
+            setImage(e.target.files[0]);
+            handleSubmit(e.target.files[0]); 
+        }
+    };
+
+    const handleSubmit = async (selectedImage) => {
+        if (!selectedImage) return;
+    
+        const imageRef = ref(storage, `profile_pictures/${user.uid}`);
+        try {
+            await uploadBytes(imageRef, selectedImage);
+            const url = await getDownloadURL(imageRef);
+            
+            setUrl(url);
+            await updateUserProfilePicture(user.uid, url);
+            setImage(null);
+        } catch (error) {
+            console.log(error.message, "error handling the image upload");
+        }
     };
 
     useEffect(() => {
@@ -126,7 +137,7 @@ const PersonalProfilePage = () => {
                 setUserData(data);
                 setBio(data.user_bio)
                 setUsername(data.username)
-                setImageUrl(data.profilePicture);
+                setUrl(data.profilePicture);
             } catch (err) {
                 console.error("Error fetching user data:", err);
                 setError(err.message);
@@ -148,25 +159,9 @@ const PersonalProfilePage = () => {
                     <ProfileInfo>
                         {/* Profile Picture */}
                         <ProfilePicContainer>
-                              <Image
-                                  src={imageUrl || pfp}
-                                  alt="Profile"
-                                  width={150}
-                                  height={150}
-                                  style={{ borderRadius: "50%", marginRight: "16px" }}
-                              />
-                              <input 
-                                  type="file" 
-                                  ref={fileInputRef} 
-                                  style={{ display: "none" }} 
-                                  onChange={handleImageUpload} 
-                              />
-                              <button 
-                                  onClick={handleButtonClick} 
-                                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                              >
-                                  Upload Image
-                              </button>
+                            <Avatar src={url} sx={{ width: 150, height: 150 }} style={{ borderRadius: "50%", marginRight: "16px" }} />
+                            <input type="file" ref={fileInputRef} onChange={handleImageChange} style={{ display: "none" }} />
+                            <SignInButton onClick={handleFileSelect} style={{padding: "5px 24px", marginTop: "16px"}}> Upload Image </SignInButton>
                           </ProfilePicContainer>
                         {/* Username and Stats */}
                         <ProfileDetailsContainer>
