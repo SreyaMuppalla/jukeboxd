@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Rating, Typography, Button, Tab, Tabs } from "@mui/material";
+import { Box, Rating, Typography, Button, Tab, Tabs, Skeleton } from "@mui/material";
 import { Bookmark } from "@mui/icons-material";
 import {
     Background,
@@ -7,6 +7,7 @@ import {
     AlbumInfoContainer,
     AlbumDetails,
     ReviewsSection,
+    ReviewContainer,
 } from "../../styles/StyledComponents";
 import Review from "../../bigcomponents/Review";
 import Link from "next/link";
@@ -84,12 +85,13 @@ const SongPage = () => {
                     const reviews_data = await getReviews(songId, "song");
                     setReviews(reviews_data);
                     setSongDetails(details);
+                    setLoading(false);
                 }
             } catch (error) {
                 console.error("Error fetching song data:", error);
                 setError("Failed to fetch song details.");
             } finally {
-                setLoading(false);
+                // setLoading(false);
             }
         };
 
@@ -161,8 +163,6 @@ const SongPage = () => {
         ); // Display error if any
     }
 
-    if (loading) return <div>Loading...</div>;
-
     return (
         <ProtectedRoute>
             <Background>
@@ -170,14 +170,16 @@ const SongPage = () => {
                     {/* Song Info Section */}
                     <AlbumInfoContainer>
                         {/* Album Cover */}
-                        <Image
+                        {loading ? 
+                        <Skeleton variant="rectangular" width={200} height={200}/> 
+                        : <Image
                             src={songDetails.images[1]?.url}
                             alt={songDetails.name + " Album Cover"}
                             width={200}
                             height={200}
                             style={{ borderRadius: "8px" }}
                         />
-
+                        }
                         {/* Right side with details and bookmark */}
                         <Box
                             display="flex"
@@ -196,7 +198,7 @@ const SongPage = () => {
                                         wordBreak: "break-word",
                                     }}
                                 >
-                                    {songDetails.name}
+                                    {loading ? <Skeleton width={400}/> : songDetails.name}
                                 </Typography>
 
                                 {/* Album Name */}
@@ -229,7 +231,7 @@ const SongPage = () => {
                                                 "none";
                                         }}
                                     >
-                                        {songDetails.album.name}
+                                        {loading ? <Skeleton width={300}/> : songDetails.album.name}
                                     </Link>
                                 </Typography>
 
@@ -241,7 +243,7 @@ const SongPage = () => {
                                         marginBottom: "10px",
                                     }}
                                 >
-                                    {songDetails.artists.map(
+                                    {loading ? <Skeleton width={300}/> : songDetails.artists.map(
                                         (artist, index) => (
                                             <span key={artist.id}>
                                                 <Link
@@ -348,7 +350,18 @@ const SongPage = () => {
                                     }}
                                 />
                             </Tabs>
-                            {reviews.length > 0 ? (
+                            {loading && 
+                                Array.from({ length: 2 }).map((_, index) => (
+                                    <ReviewContainer>
+                                    <Skeleton
+                                        variant="rectangular"
+                                        key={`skeleton-${index}`}
+                                        width="100%"
+                                        height="100%"
+                                    />
+                                    </ReviewContainer>
+                                ))}
+                            {!loading && reviews.length > 0 ? (
                                 reviews.map((review) => (
                                     <Review review={review} />
                                 ))

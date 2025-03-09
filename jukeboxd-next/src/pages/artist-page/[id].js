@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Rating, Tab, Tabs } from "@mui/material";
+import { Box, Typography, Rating, Tab, Tabs, Skeleton } from "@mui/material";
 import {
     Background,
     ProfileContainer,
@@ -17,6 +17,7 @@ import { useRouter } from 'next/router';
 import Link from "next/link"; // Import Link from Next.js
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
 import UnknownArtwork from '@/images/unknown_artwork.jpg';
+import { set } from 'lodash';
 
 const ArtistPage = () => {
   const router = useRouter();
@@ -29,6 +30,7 @@ const ArtistPage = () => {
   const [topSongs, setTopSongs] = useState([]);
   const [error, setError] = useState(null);
   const [selectedTab, setSelectedTab] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (artistId) {
@@ -43,8 +45,7 @@ const ArtistPage = () => {
           // Fetch top songs
           const songs = await fetchArtistTopSongs(artistId);
           setTopSongs(songs);
-          console.log(songs)
-
+          setLoading(false);
         } catch (error) {
           console.error('Error fetching artist data or top songs:', error);
           setError('Failed to fetch artist details or top songs.');
@@ -63,129 +64,157 @@ const ArtistPage = () => {
     <ProtectedRoute>
       <Background>
         <ProfileContainer>
-        <Box
+          <Box
             style={{
-              marginTop: "16px",
-              width: "90%",
-              margin: "auto",
+              marginTop: '16px',
+              width: '90%',
+              margin: 'auto',
             }}
-        >
-          {/* Profile Info Section */}
-          <ProfileInfo>
-            <ProfilePicContainer>
-              <img
-                src={artistDetails.images?.[0]?.url || '../../images/default-image.jpg'}
-                alt="Artist"
-                style={{ width: "150px", height: "150px", borderRadius: "50%", marginRight: "16px" }}
-              />
-            </ProfilePicContainer>
-            <ProfileDetailsContainer>
-              <ProfileDetails>
-                <Typography variant="h4" style={{ color: "#ffffff", fontWeight: "bold", fontSize: "50px" }}>
-                  {artistDetails.name}
-                </Typography>
-              </ProfileDetails>
-            </ProfileDetailsContainer>
+          >
+            {/* Profile Info Section */}
+            <ProfileInfo>
+              <ProfilePicContainer>
+                {loading ? (
+                  <Skeleton variant="circular" width={150} height={150} />
+                ) : (
+                  <img
+                    src={
+                      artistDetails.images?.[0]?.url ||
+                      '../../images/default-image.jpg'
+                    }
+                    alt="Artist"
+                    style={{
+                      width: '150px',
+                      height: '150px',
+                      borderRadius: '50%',
+                      marginRight: '16px',
+                    }}
+                  />
+                )}
+              </ProfilePicContainer>
+              <ProfileDetailsContainer>
+                <ProfileDetails>
+                  <Typography
+                    variant="h4"
+                    style={{
+                      color: '#ffffff',
+                      fontWeight: 'bold',
+                      fontSize: '50px',
+                    }}
+                  >
+                    {loading ? <Skeleton width={400} /> : artistDetails.name}
+                  </Typography>
+                </ProfileDetails>
+              </ProfileDetailsContainer>
             </ProfileInfo>
-            </Box>
+          </Box>
 
           {/* Top Rated Songs Section */}
           <Box
             style={{
-              marginTop: "32px",
-              padding: "16px",
-              backgroundColor: "#333",
-              borderRadius: "16px",
-              width: "90%",
-              margin: "32px auto",
+              marginTop: '32px',
+              padding: '16px',
+              backgroundColor: '#333',
+              borderRadius: '16px',
+              width: '90%',
+              margin: '32px auto',
             }}
           >
             <Tabs
               value={selectedTab}
-              onChange={(event, newValue) =>
-                setSelectedTab(newValue)
-              }
+              onChange={(event, newValue) => setSelectedTab(newValue)}
               textColor="inherit"
               TabIndicatorProps={{
-                style: { backgroundColor: "#1db954", marginBottom: "16px" },
+                style: { backgroundColor: '#1db954', marginBottom: '16px' },
               }}
             >
               <Tab
                 label="Top Songs"
                 sx={{
-                  color: "white",
-                  fontFamily: "Inter",
-                  textTransform: "none", // Optional: Prevent uppercase transformation
-                  fontSize: "16px",
-                  marginBottom: "16px",
+                  color: 'white',
+                  fontFamily: 'Inter',
+                  textTransform: 'none', // Optional: Prevent uppercase transformation
+                  fontSize: '16px',
+                  marginBottom: '16px',
                 }}
               />
-              </Tabs>
+            </Tabs>
 
-            {topSongs.map((song, index) => (
-            <TopSongItem key={index} style={{ gap: "12px", display: "flex"}}>
-              {/* Album Cover */}
-                  <Image
-                    src={song.images[1]?.url || UnknownArtwork}
-                    alt={`Album cover for ${song.name}`}
-                    width={150} // Set the width (adjust size as necessary)
-                    height={150} // Set the height (adjust size as necessary)
-                    style={{ borderRadius: "8px", cursor: "pointer" }}
-                    onClick={() => (window.location.href = `/album-page/${song.album.id}`)} // Navigate to AlbumPage with album id
-                  />
+            {loading
+              ? Array.from({ length: 6 }).map(() => (
+                  <TopSongItem>
+                    <Skeleton variant="rectangular" height={80}/>
+                  </TopSongItem>
+                ))
+              : topSongs.map((song, index) => (
+                  <TopSongItem
+                    key={index}
+                    style={{ gap: '12px', display: 'flex' }}
+                  >
+                    {/* Album Cover */}
+                    <Image
+                      src={song.images[1]?.url || UnknownArtwork}
+                      alt={`Album cover for ${song.name}`}
+                      width={150} // Set the width (adjust size as necessary)
+                      height={150} // Set the height (adjust size as necessary)
+                      style={{ borderRadius: '8px', cursor: 'pointer' }}
+                      onClick={() =>
+                        (window.location.href = `/album-page/${song.album.id}`)
+                      } // Navigate to AlbumPage with album id
+                    />
 
-                  {/* Song Details */}
-                  <SongDetailsRow>
-                    <SongDetailsText>
-                      {/* Song Name with Link */}
-                      <Link href={`/song-page/${song.id}`} passHref>
-                        <Typography
-                          className="song-name"
-                          style={{
-                            textDecoration: 'none',
-                            color: '#fff', // Default color
-                            fontSize: '1.2rem',
-                            fontWeight: 'bold',
-                            cursor: 'pointer',
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.textDecoration = 'underline';
-                            e.target.style.color = '#fff'; // Change color on hover
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.textDecoration = 'none';
-                            e.target.style.color = '#ccc'; // Reset color
-                          }}
-                        >
-                          {song.name}
-                        </Typography>
-                      </Link>
+                    {/* Song Details */}
+                    <SongDetailsRow>
+                      <SongDetailsText>
+                        {/* Song Name with Link */}
+                        <Link href={`/song-page/${song.id}`} passHref>
+                          <Typography
+                            className="song-name"
+                            style={{
+                              textDecoration: 'none',
+                              color: '#fff', // Default color
+                              fontSize: '1.2rem',
+                              fontWeight: 'bold',
+                              cursor: 'pointer',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.textDecoration = 'underline';
+                              e.target.style.color = '#fff'; // Change color on hover
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.textDecoration = 'none';
+                              e.target.style.color = '#ccc'; // Reset color
+                            }}
+                          >
+                            {song.name}
+                          </Typography>
+                        </Link>
 
-                      {/* Album Name with Link */}
-                      <Link href={`/album-page/${song.album.id}`} passHref>
-                        <Typography
-                          className="album-name"
-                          style={{
-                            textDecoration: 'none',
-                            color: '#ccc', // Default color
-                            cursor: 'pointer',
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.textDecoration = 'underline';
-                            e.target.style.color = '#fff'; // Change color on hover
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.textDecoration = 'none';
-                            e.target.style.color = '#ccc'; // Reset color
-                          }}
-                        >
-                          {song.album.name}
-                        </Typography>
-                      </Link>
-                </SongDetailsText>
-                </SongDetailsRow>
-              </TopSongItem>
-            ))}
+                        {/* Album Name with Link */}
+                        <Link href={`/album-page/${song.album.id}`} passHref>
+                          <Typography
+                            className="album-name"
+                            style={{
+                              textDecoration: 'none',
+                              color: '#ccc', // Default color
+                              cursor: 'pointer',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.textDecoration = 'underline';
+                              e.target.style.color = '#fff'; // Change color on hover
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.textDecoration = 'none';
+                              e.target.style.color = '#ccc'; // Reset color
+                            }}
+                          >
+                            {song.album.name}
+                          </Typography>
+                        </Link>
+                      </SongDetailsText>
+                    </SongDetailsRow>
+                  </TopSongItem>
+                ))}
           </Box>
         </ProfileContainer>
       </Background>

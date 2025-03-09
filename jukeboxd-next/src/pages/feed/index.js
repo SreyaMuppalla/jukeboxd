@@ -1,13 +1,14 @@
+
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Tab, Tabs } from "@mui/material";
-import { Background } from "../../styles/StyledComponents";
-import SongsCarousel from "../../bigcomponents/SongsCarousal";
-import Review from "../../bigcomponents/Review";
-import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
+import { Box, Skeleton, Typography, Tab, Tabs } from "@mui/material";
+import { Background, ReviewContainer } from '../../styles/StyledComponents';
+import SongsCarousel from '../../bigcomponents/SongsCarousal';
+import Review from '../../bigcomponents/Review';
+import ProtectedRoute from '@/smallcomponents/ProtectedRoute';
 import { getFriendReviews } from '@/backend/reviews';
-import ReviewForm from '@/smallcomponents/ReviewForm'
-import { useAuth } from "../../backend/auth.js";
-import { getUser } from "@/backend/users";
+import ReviewForm from '@/smallcomponents/ReviewForm';
+import { useAuth } from '../../backend/auth.js';
+import { getUser } from '@/backend/users';
 
 const FeedPage = () => {
   const [loading, setLoading] = useState(true);
@@ -21,25 +22,24 @@ const FeedPage = () => {
     const fetchReviews = async () => {
       try {
         if (!user) {
-            return;
+          return;
         }
         const userData = await getUser(user.uid);
         const reviews_data = await getFriendReviews(user.uid);
         setReviews(reviews_data);
         setUserData({ ...userData, uid: user.uid });
+        setLoading(false);
       } catch (err) {
-        console.error("Error fetching reviews:", err);
+        console.error('Error fetching reviews:', err);
         setError(err.message);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
 
     fetchReviews();
   }, [user]);
 
-
-  if (loading) return <div>Loading profile...</div>;
   if (error) return <div>Error loading reviews: {error}</div>;
 
   return (
@@ -49,12 +49,12 @@ const FeedPage = () => {
         {/* Reviews from Friends */}
         <Box
           style={{
-            marginTop: "32px",
-            padding: "16px",
-            backgroundColor: "#333",
-            borderRadius: "16px",
-            width: "90%",
-            margin: "32px auto",
+            marginTop: '32px',
+            padding: '16px',
+            backgroundColor: '#333',
+            borderRadius: '16px',
+            width: '90%',
+            margin: '32px auto',
           }}
         >
           {/* Reviews Section Header */}
@@ -81,14 +81,27 @@ const FeedPage = () => {
                         </Tabs>
 
           {/* Individual Reviews */}
-          {reviews.length > 0 ? (
-            reviews.map((review) => (
-              <Review review={review}/>
-            ))
+          {loading &&
+            Array.from({ length: 2 }).map((_, index) => (
+              <ReviewContainer>
+                <Skeleton
+                  variant="rectangular"
+                  key={`skeleton-${index}`}
+                  width="100%"
+                  height="100%"
+                />
+              </ReviewContainer>
+            ))}
+          {!loading && reviews.length > 0 ? (
+            reviews.map((review) => <Review review={review} />)
           ) : (
             <Typography
               variant="body1"
-              style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
+              style={{
+                color: '#b3b3b3',
+                textAlign: 'center',
+                marginBottom: '16px',
+              }}
             >
               No reviews yet.
             </Typography>

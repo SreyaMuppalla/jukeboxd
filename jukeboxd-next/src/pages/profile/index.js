@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef} from "react";
-import { Box, Typography, Button, TextField, Tab, Tabs } from "@mui/material";
+import { Box, Typography, Button, TextField, Tab, Tabs, Skeleton } from "@mui/material";
 import {
     Background,
     ProfileContainer,
@@ -12,6 +12,7 @@ import {
     StatItem,
     SongsListContainer,
     SignInButton,
+    ReviewContainer,
 } from "../../styles/StyledComponents";
 import Review from "../../bigcomponents/Review";
 import Link from "next/link";
@@ -137,18 +138,18 @@ const PersonalProfilePage = () => {
                 setBio(data.user_bio)
                 setUsername(data.username)
                 setImageUrl(data.profilePicture);
+                setLoading(false);
             } catch (err) {
                 console.error("Error fetching user data:", err);
                 setError(err.message);
             } finally {
-                setLoading(false);
+                // setLoading(false);
             }
         };
     
         fetchUserData();
     }, [user]);
 
-    if (loading) return <div>Loading profile...</div>;
     if (error) return <div>Error loading profile: {error}</div>;
     return (
         <ProtectedRoute>
@@ -214,7 +215,7 @@ const PersonalProfilePage = () => {
                             />
                         ) : (
                             <Typography style={{ color: "#ffffff", fontWeight: "bold", fontSize: "50px" }}>
-                                {username}
+                                {loading ? <Skeleton width={500}/> : username}
                             </Typography>
                         )}
 
@@ -227,7 +228,7 @@ const PersonalProfilePage = () => {
                                         variant="h5"
                                         style={{ color: "#1db954" }}
                                     >
-                                        {userData?.reviews?.length || 0}
+                                        {loading ? <Skeleton width={10}/> : userData?.reviews?.length || 0}
                                     </Typography>
                                     <Typography
                                         variant="subtitle2"
@@ -241,7 +242,7 @@ const PersonalProfilePage = () => {
                                         variant="h5"
                                         style={{ color: "#1db954" }}
                                     >
-                                        {userData?.followers?.length || 0}
+                                        {loading ? <Skeleton width={10}/> : userData?.followers?.length || 0}
                                     </Typography>
                                     <Typography
                                         variant="subtitle2"
@@ -255,7 +256,7 @@ const PersonalProfilePage = () => {
                                         variant="h5"
                                         style={{ color: "#1db954" }}
                                     >
-                                        {userData?.following?.length || 0}
+                                        {loading ? <Skeleton width={10}/> : userData?.following?.length || 0}
                                     </Typography>
                                     <Typography
                                         variant="subtitle2"
@@ -311,7 +312,7 @@ const PersonalProfilePage = () => {
                             />
                         ) : (
                             <Typography style={{ color: "#b3b3b3" }}>
-                                {bio}
+                                {loading ? <Skeleton /> : bio}
                             </Typography>
                         )}
 
@@ -361,9 +362,19 @@ const PersonalProfilePage = () => {
                         </Tabs>
                         {selectedTab === 0 && (
                             <Box style={{marginTop: "12px"}}>
-
+                            {loading && 
+                                Array.from({ length: 2 }).map((_, index) => (
+                                    <ReviewContainer>
+                                        <Skeleton
+                                            variant="rectangular"
+                                            key={`skeleton-${index}`}
+                                            width="100%"
+                                            height="100%"
+                                        />
+                                    </ReviewContainer>
+                            ))}
                             {/* Individual Reviews */}
-                                    {reviews.length > 0 ? (
+                            {loading || reviews.length > 0 ? (
                             reviews.map((review) => (
                             <Review review={review}/>
                             ))

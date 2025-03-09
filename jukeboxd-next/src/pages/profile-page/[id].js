@@ -12,6 +12,7 @@ import {
     StatItem,
     ReviewsSection,
     SignInButton,
+    ReviewContainer,
 } from "../../styles/StyledComponents";
 import Review from "../../bigcomponents/Review";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
@@ -87,193 +88,210 @@ const ProfilePage = () => {
         }
     };
 
-    if (!id) return <div>Loading...</div>;
-    if (loading) return <div>Loading profile...</div>;
     if (error) return <div>Error loading profile: {error}</div>;
 
     // Don't show follow button if viewing own profile
     const showFollowButton = user?.uid !== id;
 
     return (
-        <ProtectedRoute>
-            <Background>
-                <ProfileContainer>
-                    <Box
-                        style={{
-                            marginTop: "16px",
-                            padding: "16px",
-                            width: "90%",
-                            margin: "auto",
-                        }}
+      <ProtectedRoute>
+        <Background>
+          <ProfileContainer>
+            <Box
+              style={{
+                marginTop: '16px',
+                padding: '16px',
+                width: '90%',
+                margin: 'auto',
+              }}
+            >
+              {/* Profile Info Section */}
+              <ProfileInfo>
+                {/* Profile Picture */}
+                <ProfilePicContainer>
+                  {loading ? (
+                    <Skeleton variant="circular" width={150} height={150} />
+                  ) : (
+                    <Image
+                      src={userData?.profilePicture || pfp}
+                      alt="Profile"
+                      width={150}
+                      height={150}
+                      style={{
+                        borderRadius: '50%',
+                        marginRight: '16px',
+                      }}
+                    />
+                  )}
+                </ProfilePicContainer>
+                {/* Username and Stats */}
+                <ProfileDetailsContainer>
+                  <ProfileDetails>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '16px',
+                      }}
                     >
-                    {/* Profile Info Section */}
-                    <ProfileInfo>
-                        {/* Profile Picture */}
-                        <ProfilePicContainer>
-                            <Image
-                                src={userData?.profilePicture || pfp}
-                                alt="Profile"
-                                width={150}
-                                height={150}
-                                style={{
-                                    borderRadius: "50%",
-                                    marginRight: "16px",
-                                }}
-                            />
-                        </ProfilePicContainer>
-                        {/* Username and Stats */}
-                        <ProfileDetailsContainer>
-                            <ProfileDetails>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                    <Typography
-                                        variant="h4"
-                                        style={{
-                                            color: "#fff",
-                                            marginBottom: "8px",
-                                            fontSize: "50px",
-                                            fontWeight: "bold",
-                                            }}
-                                    >
-                                        {userData?.username || "Username"}
-                                    </Typography>
-                                    {showFollowButton && (
-                                        <Button
-                                            variant="contained"
-                                            color={isFollowing ? "secondary" : "primary"}
-                                            onClick={handleFollow}
-                                            style={{
-                                                backgroundColor: isFollowing ? "#555" : "#1db954",
-                                                color: "white",
-                                                textTransform: "none"
-                                            }}
-                                        >
-                                            {isFollowing ? "Unfollow" : "Follow"}
-                                        </Button>
-                                    )}
-                                </div>
-                            </ProfileDetails>
-
-                            {/* Stats aligned to the right */}
-                            <StatsContainer>
-                                <StatItem>
-                                    <Typography
-                                        variant="h5"
-                                        style={{ color: "#1db954" }}
-                                    >
-                                        {userData?.reviews?.length || 0}
-                                    </Typography>
-                                    <Typography
-                                        variant="subtitle2"
-                                        style={{ color: "#b3b3b3" }}
-                                    >
-                                        Reviews
-                                    </Typography>
-                                </StatItem>
-                                <StatItem>
-                                    <Typography
-                                        variant="h5"
-                                        style={{ color: "#1db954" }}
-                                    >
-                                        {userData?.followers?.length || 0}
-                                    </Typography>
-                                    <Typography
-                                        variant="subtitle2"
-                                        style={{ color: "#b3b3b3" }}
-                                    >
-                                        Followers
-                                    </Typography>
-                                </StatItem>
-                                <StatItem>
-                                    <Typography
-                                        variant="h5"
-                                        style={{ color: "#1db954" }}
-                                    >
-                                        {userData?.following?.length || 0}
-                                    </Typography>
-                                    <Typography
-                                        variant="subtitle2"
-                                        style={{ color: "#b3b3b3" }}
-                                    >
-                                        Following
-                                    </Typography>
-                                </StatItem>
-                            </StatsContainer>
-                        </ProfileDetailsContainer>
-                    </ProfileInfo>
-                    </Box>
-
-                    {/* Bio Section */}
-                    <Box
+                      <Typography
+                        variant="h4"
                         style={{
-                            marginTop: "16px",
-                            padding: "16px",
-                            backgroundColor: "#333",
-                            borderRadius: "16px",
-                            width: "90%",
-                            margin: "auto",
-                        }}
-                    >
-                        <Typography
-                            variant="h6"
-                            style={{ color: "#fff", marginBottom: "8px" }}
-                        >
-                            Bio
-                        </Typography>
-                        <Typography style={{ color: "#b3b3b3" }}>
-                            {userData?.user_bio || "No bio available."}
-                        </Typography>
-                    </Box>
-                    {/* Reviews Section */}
-                    <Box
-                        style={{
-                            marginTop: "32px",
-                            padding: "16px",
-                            backgroundColor: "#333",
-                            borderRadius: "16px",
-                            width: "90%",
-                            margin: "32px auto",
-                        }}
-                    >
-                        {/* Reviews Section Header */}
-                        <Tabs
-                        value={selectedTab}
-                        onChange={(event, newValue) =>
-                          setSelectedTab(newValue)
-                        }
-                        textColor="inherit"
-                        TabIndicatorProps={{
-                          style: { backgroundColor: "#1db954", marginBottom: "16px" },
+                          color: '#fff',
+                          marginBottom: '8px',
+                          fontSize: '50px',
+                          fontWeight: 'bold',
                         }}
                       >
-                        <Tab
-                          label="Reviews From Friends"
-                          sx={{
-                            color: "white",
-                            fontFamily: "Inter",
-                            textTransform: "none", // Optional: Prevent uppercase transformation
-                            fontSize: "16px",
-                            marginBottom: "16px",
-                          }}
-                        />
-                        </Tabs>
-
-                        {/* Individual Reviews */}
-                        {reviews.length > 0 ? (
-                            reviews.map((review, index) => (
-                                <Review review={review}/>
-                            ))
+                        {loading ? (
+                          <Skeleton width={200} />
                         ) : (
-                            <Typography 
-                                variant="body1" 
-                                style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: '16px' }}
-                            >
-                                No reviews yet.
-                            </Typography>
+                          userData?.username || 'Username'
                         )}
-                    </Box>
-                </ProfileContainer>
-            </Background>
-        </ProtectedRoute>
+                      </Typography>
+                      {showFollowButton && (
+                        <Button
+                          variant="contained"
+                          color={isFollowing ? 'secondary' : 'primary'}
+                          onClick={handleFollow}
+                          style={{
+                            backgroundColor: isFollowing ? '#555' : '#1db954',
+                            color: 'white',
+                            textTransform: 'none',
+                          }}
+                        >
+                          {isFollowing ? 'Unfollow' : 'Follow'}
+                        </Button>
+                      )}
+                    </div>
+                  </ProfileDetails>
+
+                  {/* Stats aligned to the right */}
+                  <StatsContainer>
+                    <StatItem>
+                      <Typography variant="h5" style={{ color: '#1db954' }}>
+                        {userData?.reviews?.length || 0}
+                      </Typography>
+                      <Typography
+                        variant="subtitle2"
+                        style={{ color: '#b3b3b3' }}
+                      >
+                        Reviews
+                      </Typography>
+                    </StatItem>
+                    <StatItem>
+                      <Typography variant="h5" style={{ color: '#1db954' }}>
+                        {userData?.followers?.length || 0}
+                      </Typography>
+                      <Typography
+                        variant="subtitle2"
+                        style={{ color: '#b3b3b3' }}
+                      >
+                        Followers
+                      </Typography>
+                    </StatItem>
+                    <StatItem>
+                      <Typography variant="h5" style={{ color: '#1db954' }}>
+                        {userData?.following?.length || 0}
+                      </Typography>
+                      <Typography
+                        variant="subtitle2"
+                        style={{ color: '#b3b3b3' }}
+                      >
+                        Following
+                      </Typography>
+                    </StatItem>
+                  </StatsContainer>
+                </ProfileDetailsContainer>
+              </ProfileInfo>
+            </Box>
+
+            {/* Bio Section */}
+            <Box
+              style={{
+                marginTop: '16px',
+                padding: '16px',
+                backgroundColor: '#333',
+                borderRadius: '16px',
+                width: '90%',
+                margin: 'auto',
+              }}
+            >
+              <Typography
+                variant="h6"
+                style={{ color: '#fff', marginBottom: '8px' }}
+              >
+                Bio
+              </Typography>
+              <Typography style={{ color: '#b3b3b3' }}>
+                {loading ? (
+                  <Skeleton />
+                ) : (
+                  userData?.user_bio || 'No bio available.'
+                )}
+              </Typography>
+            </Box>
+            {/* Reviews Section */}
+            <Box
+              style={{
+                marginTop: '32px',
+                padding: '16px',
+                backgroundColor: '#333',
+                borderRadius: '16px',
+                width: '90%',
+                margin: '32px auto',
+              }}
+            >
+              {/* Reviews Section Header */}
+              <Tabs
+                value={selectedTab}
+                onChange={(event, newValue) => setSelectedTab(newValue)}
+                textColor="inherit"
+                TabIndicatorProps={{
+                  style: { backgroundColor: '#1db954', marginBottom: '16px' },
+                }}
+              >
+                <Tab
+                  label="Reviews From Friends"
+                  sx={{
+                    color: 'white',
+                    fontFamily: 'Inter',
+                    textTransform: 'none', // Optional: Prevent uppercase transformation
+                    fontSize: '16px',
+                    marginBottom: '16px',
+                  }}
+                />
+              </Tabs>
+              {loading &&
+                Array.from({ length: 2 }).map((_, index) => (
+                  <ReviewContainer>
+                    <Skeleton
+                      variant="rectangular"
+                      key={`skeleton-${index}`}
+                      width="100%"
+                      height="100%"
+                    />
+                  </ReviewContainer>
+                ))}
+              {/* Individual Reviews */}
+              {loading || reviews.length > 0 ? (
+                reviews.map((review, index) => <Review review={review} />)
+              ) : (
+                <Typography
+                  variant="body1"
+                  style={{
+                    color: '#b3b3b3',
+                    textAlign: 'center',
+                    marginBottom: '16px',
+                  }}
+                >
+                  No reviews yet.
+                </Typography>
+              )}
+            </Box>
+          </ProfileContainer>
+        </Background>
+      </ProtectedRoute>
     );
 };
 
