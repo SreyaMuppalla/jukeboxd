@@ -5,7 +5,7 @@ const nextConfig = {
     styledComponents: true,
   },
   images: {
-    domains: ['i.scdn.co', 'profile-pictures-jukeboxd.s3.us-east-1.amazonaws.com', 'profile-pictures-jukeboxd.s3.amazonaws.com', 'lh3.googleusercontent.com'], // Add your S3 domain here
+    domains: ['i.scdn.co', 'lh3.googleusercontent.com', 'firebasestorage.googleapis.com'], // Add your S3 domain here
   },
 };
 
