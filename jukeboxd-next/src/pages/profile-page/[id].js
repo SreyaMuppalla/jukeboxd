@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, Tab, Tabs } from "@mui/material";
 import {
     Background,
     ProfileContainer,
@@ -30,6 +30,7 @@ const ProfilePage = () => {
     const [error, setError] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [isFollowing, setIsFollowing] = useState(false);
+    const [selectedTab, setSelectedTab] = useState(0);
 
     const router = useRouter();
     const { id } = router.query;
@@ -234,16 +235,27 @@ const ProfilePage = () => {
                         }}
                     >
                         {/* Reviews Section Header */}
-                        <Typography
-                            variant="h5"
-                            style={{
-                                color: "#fff",
-                                marginBottom: "16px",
-                                textAlign: "center",
-                            }}
-                        >
-                            Recent Reviews
-                        </Typography>
+                        <Tabs
+                        value={selectedTab}
+                        onChange={(event, newValue) =>
+                          setSelectedTab(newValue)
+                        }
+                        textColor="inherit"
+                        TabIndicatorProps={{
+                          style: { backgroundColor: "#1db954", marginBottom: "16px" },
+                        }}
+                      >
+                        <Tab
+                          label="Reviews From Friends"
+                          sx={{
+                            color: "white",
+                            fontFamily: "Inter",
+                            textTransform: "none", // Optional: Prevent uppercase transformation
+                            fontSize: "16px",
+                            marginBottom: "16px",
+                          }}
+                        />
+                        </Tabs>
 
                         {/* Individual Reviews */}
                         {reviews.length > 0 ? (
