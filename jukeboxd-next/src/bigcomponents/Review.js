@@ -7,10 +7,13 @@
 // review
 // upvotes/downvotes
 // extension to comments
-import React, { useState } from "react";
-import { Box, Typography, Rating, IconButton } from "@mui/material"; // Material UI components
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Rating, IconButton } from '@mui/material'; // Material UI components
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
+import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import { getReviewLikes, getReviewDislikes, likeReview, dislikeReview, removeDislike, removeLike } from '../backend/firebase_api.js';
 
 import {
     ReviewContainer,
@@ -25,45 +28,110 @@ import albumpic from "../images/albumpic.jpg"; // Import the album image
 import Link from "next/link";
 import Image from "next/image";
 
-//AlbumCover, song_id and ArtistName need to be updated to render correctly.
-// Currently default and null.
-const Review = ({ review }) => {
-    const album_ref = "/album-page/" + review.album_id;
-    const song_ref = "/song-page/" + review.song_id;
-    const artist_ref = "/artist-page/" + review.artists[0].id;
-    const profile_ref = "/profile-page/" + review.user_id;
-    //TODO: pull in backend for initial setting of likes and dislikes (replace useState(0))
-    const [likes, setLikes] = useState(0);
-    const [dislikes, setDislikes] = useState(0);
-    const [liked, setLiked] = useState(false);
-    const [disliked, setDisliked] = useState(false);
-    const handleLike = () => {
-        if (liked) {
-            setLikes(likes - 1);
-            setLiked(false);
-        } else {
-            setLikes(likes + 1);
-            if (disliked) {
-                setDislikes(dislikes - 1);
-                setDisliked(false);
-            }
-            setLiked(true);
-        }
-    };
+//AlbumCover, song_id and ArtistName need to be updated to render correctly. 
+// Currently default and null. 
+const Review = ({review}) => {
+  const album_ref = "/album-page/" + review.album_id;
+  const song_ref = "/song-page/" + review.song_id;
+  const artist_ref = "/artist-page/" + review.artists[0].id;
+  const profile_ref = "/profile-page/" + review.user_id;
+  //TODO: pull in backend for initial setting of likes and dislikes (replace useState(0))
+  const [likes, setLikes] = useState(0);
+  const [dislikes, setDislikes] = useState(0);
+  const [likedByUsers, setLikedByUsers] = useState([]);
+  const [dislikedByUsers, setDislikedByUsers] = useState([]);
 
-    const handleDislike = () => {
-        if (disliked) {
-            setDislikes(dislikes - 1);
-            setDisliked(false);
-        } else {
-            setDislikes(dislikes + 1);
-            if (liked) {
-                setLikes(likes - 1);
-                setLiked(false);
-            }
-            setDisliked(true);
-        }
-    };
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
+  const userHasLiked = likedByUsers.includes(review.user_id);
+  const userHasDisliked = dislikedByUsers.includes(review.user_id);
+
+  useEffect(() => {
+    if (!review?.id) {
+        console.error("Error: review_id is missing. Firestore calls skipped.");
+        return;
+    }
+
+    const fetchLikesAndDislikes = async () => {
+      try {
+          const { count: likeCount, likedBy } = await getReviewLikes(review.id);
+          const { count: dislikeCount, dislikedBy } = await getReviewDislikes(review.id);
+  
+          setLikes(likeCount);
+          setDislikes(dislikeCount);
+          setLikedByUsers(likedBy);  // Store the list of users who liked
+          setDislikedByUsers(dislikedBy);  // Store the list of users who disliked
+      } catch (error) {
+          console.error("Error fetching likes/dislikes:", error);
+      }
+  };
+  
+
+    fetchLikesAndDislikes();
+    return () => {}; 
+}, [review?.id]);
+
+
+const handleLike = async () => {
+  if (!review?.id || !review?.user_id) {
+      console.error("Error: Missing review_id or user_id when trying to like");
+      return;
+  }
+
+  try {
+      if (likedByUsers.includes(review.user_id)) {
+          // If already liked, remove the like
+          await removeLike(review.id, review.user_id);
+          setLikes(likes - 1);
+          setLikedByUsers(likedByUsers.filter((id) => id !== review.user_id));
+      } else {
+          // If not liked, add a like
+          await likeReview(review.id, review.user_id);
+          setLikes(likes + 1);
+          setLikedByUsers([...likedByUsers, review.user_id]);
+
+          // If previously disliked, remove dislike
+          if (dislikedByUsers.includes(review.user_id)) {
+              await removeDislike(review.id, review.user_id);
+              setDislikes(dislikes - 1);
+              setDislikedByUsers(dislikedByUsers.filter((id) => id !== review.user_id));
+          }
+      }
+  } catch (error) {
+      console.error("Error in handleLike:", error);
+  }
+};
+
+const handleDislike = async () => {
+  if (!review?.id || !review?.user_id) {
+      console.error("Error: Missing review_id or user_id when trying to dislike");
+      return;
+  }
+
+  try {
+      if (dislikedByUsers.includes(review.user_id)) {
+          // If already disliked, remove the dislike
+          await removeDislike(review.id, review.user_id);
+          setDislikes(dislikes - 1);
+          setDislikedByUsers(dislikedByUsers.filter((id) => id !== review.user_id));
+      } else {
+          // If not disliked, add a dislike
+          await dislikeReview(review.id, review.user_id);
+          setDislikes(dislikes + 1);
+          setDislikedByUsers([...dislikedByUsers, review.user_id]);
+
+          // If previously liked, remove like
+          if (likedByUsers.includes(review.user_id)) {
+              await removeLike(review.id, review.user_id);
+              setLikes(likes - 1);
+              setLikedByUsers(likedByUsers.filter((id) => id !== review.user_id));
+          }
+      }
+  } catch (error) {
+      console.error("Error in handleDislike:", error);
+  }
+};
+
 
     return (
         <ReviewContainer>
@@ -169,21 +237,17 @@ const Review = ({ review }) => {
                     justifyContent="end"
                     mt={1}
                 >
-                    <IconButton onClick={handleLike} sx={{ color: "#1DB954" }}>
-                        <ThumbUpIcon />
+                    {/* Like Button */}
+                    <IconButton onClick={handleLike} sx={{ color: userHasLiked ? "#1DB954" : "white" }}>
+                      {userHasLiked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
                     </IconButton>
-                    <Typography variant="body2" color="white" mx={1}>
-                        {likes}
-                    </Typography>
-                    <IconButton
-                        onClick={handleDislike}
-                        sx={{ color: "#D9534F" }}
-                    >
-                        <ThumbDownIcon />
+                    <Typography variant="body2" color="white" mx={1}>{likes}</Typography>
+
+                    {/* Dislike Button */}
+                    <IconButton onClick={handleDislike} sx={{ color: userHasDisliked ? "#D9534F" : "white" }}>
+                      {userHasDisliked ? <ThumbDownIcon /> : <ThumbDownOutlinedIcon />}
                     </IconButton>
-                    <Typography variant="body2" color="white" mx={1}>
-                        {dislikes}
-                    </Typography>
+              <Typography variant="body2" color="white" mx={1}>{dislikes}</Typography>       
                 </Box>
             </ReviewSubContainer>
         </ReviewContainer>
