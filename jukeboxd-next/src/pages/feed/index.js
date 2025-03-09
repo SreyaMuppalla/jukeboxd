@@ -1,33 +1,33 @@
-import React, { useState, useEffect } from "react";
-import { Box, Skeleton, Typography } from "@mui/material";
-import { Background, ReviewContainer } from "../../styles/StyledComponents";
-import SongsCarousel from "../../bigcomponents/SongsCarousal";
-import Review from "../../bigcomponents/Review";
-import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
+import React, { useState, useEffect } from 'react';
+import { Box, Skeleton, Typography } from '@mui/material';
+import { Background, ReviewContainer } from '../../styles/StyledComponents';
+import SongsCarousel from '../../bigcomponents/SongsCarousal';
+import Review from '../../bigcomponents/Review';
+import ProtectedRoute from '@/smallcomponents/ProtectedRoute';
 import { getFriendReviews } from '@/backend/reviews';
-import ReviewForm from '@/smallcomponents/ReviewForm'
-import { useAuth } from "../../backend/auth.js";
-import { getUser } from "@/backend/users";
+import ReviewForm from '@/smallcomponents/ReviewForm';
+import { useAuth } from '../../backend/auth.js';
+import { getUser } from '@/backend/users';
 
 const FeedPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [userData, setUserData] = useState({});
-  const {user} = useAuth()
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         if (!user) {
-            return;
+          return;
         }
         const userData = await getUser(user.uid);
         const reviews_data = await getFriendReviews(user.uid);
         setReviews(reviews_data);
         setUserData({ ...userData, uid: user.uid });
       } catch (err) {
-        console.error("Error fetching reviews:", err);
+        console.error('Error fetching reviews:', err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -67,14 +67,31 @@ const FeedPage = () => {
           </Typography>
 
           {/* Individual Reviews */}
-          {reviews.length > 0
-            ? reviews.map((review) => <Review review={review} />)
-            : Array.from({ length: 2 }).map((_, index) => (
-                <ReviewContainer>
-                  <Skeleton variant="rectangular" key={`skeleton-${index}`} width="100%" height="100%" />
-                </ReviewContainer>
-              ))
-          }
+          {loading &&
+            Array.from({ length: 2 }).map((_, index) => (
+              <ReviewContainer>
+                <Skeleton
+                  variant="rectangular"
+                  key={`skeleton-${index}`}
+                  width="100%"
+                  height="100%"
+                />
+              </ReviewContainer>
+            ))}
+          {loading || reviews.length > 0 ? (
+            reviews.map((review) => <Review review={review} />)
+          ) : (
+            <Typography
+              variant="body1"
+              style={{
+                color: '#b3b3b3',
+                textAlign: 'center',
+                marginBottom: '16px',
+              }}
+            >
+              No reviews yet.
+            </Typography>
+          )}
         </Box>
         <ReviewForm userData={userData}></ReviewForm>
       </Background>
