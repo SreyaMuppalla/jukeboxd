@@ -13,7 +13,7 @@ export const getReviewById = async (review_id) => {
             throw new Error("Review not found");
         }
 
-        return reviewDoc.data();
+        return { id: review_id, ...reviewDoc.data() }; // Ensure review_id is included
     }
     catch(error){
         throw error;
@@ -62,6 +62,8 @@ export const createReview = async (reviewData) => {
             review_text: reviewData.review_text || null,
             likes: reviewData.likes || 0,
             dislikes: reviewData.dislikes || 0,
+            likedBy: reviewData.likedBy || [],
+            dislikedBy: reviewData.dislikedBy || [],
             date: reviewData.date || new Date(),
             type: reviewData.type,
             created_at: new Date()
@@ -128,7 +130,7 @@ export const getReviews = async (item_id, song_or_album) => {
         querySnapshot = await getDocs(query(collection(db, "reviews"), where("type", "==", "album"), where("album_id", "==", item_id), orderBy("created_at", "desc")));
         }
         querySnapshot.forEach((doc) => {
-            reviews.push(doc.data());
+            reviews.push({ id: doc.id, ...doc.data() });
         });
 
         return reviews;
