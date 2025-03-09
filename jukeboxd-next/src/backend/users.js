@@ -277,20 +277,24 @@ export const removeSongBookmark = async (user_id, song_id) => {
             throw new Error("User not found");
         }
 
+        const userData = userDoc.data();
+        const updatedBookmarks = (userData.bookmarkedSongs || []).filter(song => song.song_id !== song_id);
+
         await updateDoc(userRef, {
-            bookmarkedSongs: userDoc.data().bookmarkedSongs.filter(id => id !== song_id)
+            bookmarkedSongs: updatedBookmarks
         });
 
         return { message: "Song removed from bookmarks successfully" };
     } catch (error) {
         throw error;
     }
-}
+};
 
-export const BookmarkAlbum = async (user_id, album_id) => {
+
+export const BookmarkAlbum = async (user_id, album_id, album_name, album_artist) => {
     try {
-        if (!user_id || !album_id) {
-            throw new Error("Missing user_id or album_id parameter");
+        if (!user_id || !album_id || !album_name || !album_artist) {
+            throw new Error("Missing user_id or album_id or album_name or album artist parameter");
         }
 
         const userRef = doc(db, "users", user_id);
@@ -300,8 +304,10 @@ export const BookmarkAlbum = async (user_id, album_id) => {
             throw new Error("User not found");
         }
 
+        const currentBookmarks = userDoc.data().bookmarkedAlbums || [];
+
         await updateDoc(userRef, {
-            bookmarkedAlbums: [...(userDoc.data().bookmarkedAlbums || []), album_id]
+            bookmarkedAlbums: [...currentBookmarks, {album_id, album_name, album_artist}]
         });
 
         return { message: "Album bookmarked successfully" };
@@ -323,12 +329,16 @@ export const removeAlbumBookmark = async (user_id, album_id) => {
             throw new Error("User not found");
         }
 
+        const userData = userDoc.data();
+        const updatedBookmarks = (userData.bookmarkedAlbums || []).filter(album => album.album_id !== album_id);
+
         await updateDoc(userRef, {
-            bookmarkedAlbums: userDoc.data().bookmarkedAlbums.filter(id => id !== album_id)
+            bookmarkedAlbums: updatedBookmarks
         });
 
         return { message: "Album removed from bookmarks successfully" };
     } catch (error) {
         throw error;
     }
-}
+};
+

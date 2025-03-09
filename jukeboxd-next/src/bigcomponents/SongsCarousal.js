@@ -118,12 +118,12 @@ const SongsCarousel = () => {
                   </Link>
                 </AlbumCover>
 
-                {/* Song name */}
-                <SongName style={{ cursor: 'pointer' }}>
-                  <Link href={`/album-page/${song.id}`}>{song.name}</Link>
-                </SongName>
-              </SongItem>
-            ))}
+            {/* Song name */}
+            <SongName style={{ cursor: 'pointer', fontFamily: "Inter", color: "#FFFFFF", fontWeight: "bolder" }}>
+              <Link href={`/album-page/${song.id}`}>{song.name}</Link>
+            </SongName>
+          </SongItem>
+        ))}
       </CarouselContainer>
 
       {/* Left Scroll Button */}

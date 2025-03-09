@@ -54,19 +54,47 @@ const AlbumPage = () => {
   const [userData, setUserData] = useState(null);
   const [selectedTab, setSelectedTab] = useState(0);
   useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        if (!user) return;
-        const data = await getUser(user.uid);
-        setIsBookmarked(data.bookmarkedAlbums?.includes(albumId) || false);
-        setUserData({ ...data, uid: user.uid });
-      } catch (err) {
-        console.error('Error fetching reviews:', err);
-        setError(err.message);
-      }
+    const fetchUserData = async () => {
+        try {
+            if (!user || !albumId) return; // Ensure user and albumId exist
+
+            const data = await getUser(user.uid);
+
+            if (data && Array.isArray(data.bookmarkedAlbums)) {
+                setUserData({ ...data, uid: user.uid });
+
+                // Check if album_id exists in bookmarkedAlbums
+                const isAlreadyBookmarked = data.bookmarkedAlbums.some(album => {
+                    return album.album_id.trim() === String(albumId).trim();
+                });
+
+                setIsBookmarked(prev => {
+                    return isAlreadyBookmarked;
+                });
+            } else {
+                setIsBookmarked(false);
+            }
+        } catch (err) {
+            console.error('Error fetching user data:', err);
+            setError(err.message);
+        }
     };
-    fetchReviews();
-  }, [albumId, user]);
+
+    fetchUserData();
+  }, [albumId, user]); // Ensure this runs on user or albumId changes
+
+  // Ensure isBookmarked updates if userData changes
+  useEffect(() => {
+      if (userData && Array.isArray(userData.bookmarkedAlbums) && albumId) {
+          const isAlreadyBookmarked = userData.bookmarkedAlbums.some(album => {
+              return album.album_id.trim() === String(albumId).trim();
+          });
+
+          console.log("Updating isBookmarked to:", isAlreadyBookmarked);
+          setIsBookmarked(isAlreadyBookmarked);
+      }
+  }, [userData, albumId]);
+
 
   useEffect(() => {
     // Ensure albumId and token are present before making API calls
@@ -138,7 +166,13 @@ const AlbumPage = () => {
       }
     } else {
       try {
-        await BookmarkAlbum(user.uid, albumId);
+        let artist = albumDetails.artists[0];
+        let album_artist = artist instanceof Map 
+                ? Array.from(artist.values())[0] || "Unknown Artist" // Get first artist from Map
+                : Array.isArray(artist) 
+                    ? artist[0]?.name || "Unknown Artist" // Handle array case
+                    : artist?.name || "Unknown Artist";
+        await BookmarkAlbum(user.uid, albumId, albumDetails.name, album_artist);
         setIsBookmarked(true);
       } catch (error) {
         console.error('Error bookmarking album:', error);
