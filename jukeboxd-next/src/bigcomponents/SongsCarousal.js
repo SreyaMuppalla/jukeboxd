@@ -87,7 +87,7 @@ const SongsCarousel = () => {
             </AlbumCover>
 
             {/* Song name */}
-            <SongName style={{ cursor: 'pointer' }}>
+            <SongName style={{ cursor: 'pointer', fontFamily: "Inter", color: "#FFFFFF", fontWeight: "bolder" }}>
               <Link href={`/album-page/${song.id}`}>{song.name}</Link>
             </SongName>
           </SongItem>
