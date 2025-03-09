@@ -26,11 +26,12 @@ const FeedPage = () => {
         const reviews_data = await getFriendReviews(user.uid);
         setReviews(reviews_data);
         setUserData({ ...userData, uid: user.uid });
+        setLoading(false);
       } catch (err) {
         console.error('Error fetching reviews:', err);
         setError(err.message);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
 
@@ -38,8 +39,7 @@ const FeedPage = () => {
   }, [user]);
 
   if (error) return <div>Error loading reviews: {error}</div>;
-  console.log(loading);
-  console.log(reviews.length);
+
   return (
     <ProtectedRoute>
       <Background>
@@ -68,7 +68,7 @@ const FeedPage = () => {
           </Typography>
 
           {/* Individual Reviews */}
-          {(loading || reviews.length <= 0) &&
+          {loading &&
             Array.from({ length: 2 }).map((_, index) => (
               <ReviewContainer>
                 <Skeleton
