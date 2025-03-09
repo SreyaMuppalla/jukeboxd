@@ -11,6 +11,7 @@ import {
     StatsContainer,
     StatItem,
     ReviewsSection,
+    SignInButton,
 } from "../../styles/StyledComponents";
 import Review from "../../bigcomponents/Review";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
@@ -62,7 +63,7 @@ const ProfilePage = () => {
         };
 
         fetchUserData();
-    }, [id, user]); // Re-run the effect when the id changes
+    }, [id, user, isFollowing]); // Re-run the effect when these fields change
 
     const handleFollow = async () => {
         if (!user || !userData) return;
@@ -96,6 +97,14 @@ const ProfilePage = () => {
         <ProtectedRoute>
             <Background>
                 <ProfileContainer>
+                    <Box
+                        style={{
+                            marginTop: "16px",
+                            padding: "16px",
+                            width: "90%",
+                            margin: "auto",
+                        }}
+                    >
                     {/* Profile Info Section */}
                     <ProfileInfo>
                         {/* Profile Picture */}
@@ -120,7 +129,9 @@ const ProfilePage = () => {
                                         style={{
                                             color: "#fff",
                                             marginBottom: "8px",
-                                        }}
+                                            fontSize: "50px",
+                                            fontWeight: "bold",
+                                            }}
                                     >
                                         {userData?.username || "Username"}
                                     </Typography>
@@ -188,6 +199,7 @@ const ProfilePage = () => {
                             </StatsContainer>
                         </ProfileDetailsContainer>
                     </ProfileInfo>
+                    </Box>
 
                     {/* Bio Section */}
                     <Box

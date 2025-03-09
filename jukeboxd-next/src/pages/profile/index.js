@@ -10,15 +10,17 @@ import {
     ProfileDetails,
     StatsContainer,
     StatItem,
-    ReviewsSection,
+    SongsListContainer,
+    SignInButton,
+    ReviewsSection, 
     SongCard,
-    SignInButton
 } from "../../styles/StyledComponents";
 import Review from "../../bigcomponents/Review";
+import Link from "next/link";
 import pfp from "../../images/pfp.jpg"; // Add a placeholder profile pic
 import Image from "next/image";
 import albumpic from '../../images/albumpic.jpg'; // Import the album image
-import { getUser, updateUserBio, updateUsername, updateUserProfilePicture} from "../../backend/users";
+import { getUser, updateUserBio, updateUserProfilePicture} from "../../backend/users";
 import { useRouter } from "next/router";
 import { useAuth } from "../../backend/auth.js";
 import ProtectedRoute from "@/smallcomponents/ProtectedRoute";
@@ -31,7 +33,10 @@ const PersonalProfilePage = () => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [profileUpdateError, setProfileUpdateError] = useState("")
     const [reviews, setReviews] = useState([]);
+    const [songBookmarks, setSongBookmarks] = useState([]);
+    const [albumBookmarks, setAlbumBookmarks] = useState([]);
     const [editingBio, setEditingBio] = useState(false);
     const [bio, setBio] = useState("");
     const [editingUsername, setEditingUsername] = useState(false);
@@ -77,18 +82,6 @@ const PersonalProfilePage = () => {
         setEditingBio(!editingBio);
     };
 
-    const handleEditUsername = async () => {
-      if (!userData) return;
-      if (editingUsername) {
-          try {
-            await updateUsername(user.uid, username);
-          } catch (error) {
-              console.error("Error updating username:", error);
-          }
-      }
-      setEditingUsername(!editingUsername);
-    };
-
     const handleFileSelect = () => {
         fileInputRef.current.click(); 
     };
@@ -127,13 +120,31 @@ const PersonalProfilePage = () => {
                 const curr_user = user.uid;
                 const data = await getUser(curr_user);
                 const reviews = [];
+
                 for (const reviewId of data.reviews) {
                     const review = await getReviewById(reviewId);
                     if (review) {
                         reviews.push(review);
                     }
                 }
+                
+                const userSongBookmarks = [];
+                for (const songId of data.bookmarkedSongs || []) {
+                    if (songId) {
+                        userSongBookmarks.push(songId);
+                    }
+                }
+
+                const userAlbumBookmarks = [];
+                for (const albumId of data.bookmarkedAlbums || []) {
+                    if (albumId) {
+                        userAlbumBookmarks.push(albumId);
+                    }
+                }
+
                 setReviews(reviews);
+                setSongBookmarks(userSongBookmarks);
+                setAlbumBookmarks(userAlbumBookmarks);
                 setUserData(data);
                 setBio(data.user_bio)
                 setUsername(data.username)
@@ -156,6 +167,14 @@ const PersonalProfilePage = () => {
             <Background>
                 <ProfileContainer>
                     {/* Profile Info Section */}
+                    <Box
+                        style={{
+                            marginTop: "16px",
+                            padding: "16px",
+                            width: "90%",
+                            margin: "auto",
+                        }}
+                    >
                     <ProfileInfo>
                         {/* Profile Picture */}
                         <ProfilePicContainer>
@@ -189,25 +208,11 @@ const PersonalProfilePage = () => {
                                 }}
                             />
                         ) : (
-                            <Typography style={{ color: "#b3b3b3" }}>
+                            <Typography style={{ color: "#ffffff", fontWeight: "bold", fontSize: "50px" }}>
                                 {username}
                             </Typography>
                         )}
 
-                        <Button
-                            onClick={handleEditUsername}
-                            variant="contained"
-                            style={{
-                                backgroundColor: "#1db954",
-                                color: "#fff",
-                                marginTop: "16px",
-                                textTransform: "none",
-                                width: "10%",
-                                padding: "16px",
-                            }}
-                        >
-                            {editingUsername ? "Save Username" : "Edit Username"}
-                        </Button>
                             </ProfileDetails>
 
                             {/* Stats aligned to the right */}
@@ -257,6 +262,7 @@ const PersonalProfilePage = () => {
                             </StatsContainer>
                         </ProfileDetailsContainer>
                     </ProfileInfo>
+                    </Box>
 
                     {/* Bio Section */}
                     <Box
@@ -369,9 +375,123 @@ const PersonalProfilePage = () => {
                         </Box>
                         )}
                         {selectedTab === 1 && (
-                            <Box style={{marginTop: "12px"}}>
-                                <SongCard albumCover={albumpic} songName="Song 1" artistName="Artist A" />
+                            <Box 
+                            display="flex" 
+                            flexWrap="wrap" 
+                            gap={4} 
+                            justifyContent="space-between" 
+                            alignItems="flex-start" 
+                            style={{ marginTop: "12px", width: "100%" }}
+                        >
+                            {/* Songs List */}
+                            <Box flex="1" minWidth="45%">
+                                <Typography
+                                    variant="h5"
+                                    style={{ color: '#fff', marginBottom: '12px', textAlign: "center" }}
+                                >
+                                    🎵 Songs:
+                                </Typography>
+                                <Box 
+                                    style={{
+                                        backgroundColor: "#222", 
+                                        borderRadius: "12px", 
+                                        padding: "16px", 
+                                        width: "100%",
+                                        minHeight: "300px" // Ensures alignment when albums/songs have different amounts
+                                    }}
+                                >
+                                    <ol style={{ paddingLeft: '16px', color: '#b3b3b3', listStyle: "none", margin: 0 }}>
+                                        {songBookmarks.length > 0 ? (
+                                            songBookmarks.map((song, index) => (
+                                                <li key={index} style={{ marginBottom: '12px' }}>
+                                                    <Link
+                                                        href={`/song-page/${song.song_id}`}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.color = '#fff';
+                                                            e.currentTarget.style.textDecoration = 'underline';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.color = '#b3b3b3';
+                                                            e.currentTarget.style.textDecoration = 'none';
+                                                        }}
+                                                        style={{ fontSize: '18px', display: "flex", alignItems: "center", textDecoration: "none", color: "#b3b3b3" }}
+                                                    >
+                                                        <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'right' }}>
+                                                            {index + 1}
+                                                        </Typography>
+                                                        <Typography variant="h6" sx={{ marginLeft: "12px" }}>
+                                                            {song.song_name} by {song.song_artist}
+                                                        </Typography>
+                                                    </Link>
+                                                </li>
+                                            ))
+                                        ) : (
+                                            <Typography 
+                                                variant="body1" 
+                                                style={{ color: '#b3b3b3', textAlign: 'center', marginTop: '16px' }}
+                                            >
+                                                No song bookmarks yet.
+                                            </Typography>
+                                        )}
+                                    </ol>
+                                </Box>
                             </Box>
+                        
+                            {/* Albums List */}
+                            <Box flex="1" minWidth="45%">
+                                <Typography
+                                    variant="h5"
+                                    style={{ color: '#fff', marginBottom: '12px', textAlign: "center" }}
+                                >
+                                    💿 Albums:
+                                </Typography>
+                                <Box 
+                                    style={{
+                                        backgroundColor: "#222", 
+                                        borderRadius: "12px", 
+                                        padding: "16px", 
+                                        width: "100%",
+                                        minHeight: "300px" // Ensures alignment when albums/songs have different amounts
+                                    }}
+                                >
+                                    <ol style={{ paddingLeft: '16px', color: '#b3b3b3', listStyle: "none", margin: 0 }}>
+                                        {albumBookmarks.length > 0 ? (
+                                            albumBookmarks.map((album, index) => (
+                                                <li key={index} style={{ marginBottom: '12px' }}>
+                                                    <Link
+                                                        href={`/album-page/${album.album_id}`}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.color = '#fff';
+                                                            e.currentTarget.style.textDecoration = 'underline';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.color = '#b3b3b3';
+                                                            e.currentTarget.style.textDecoration = 'none';
+                                                        }}
+                                                        style={{ fontSize: '18px', display: "flex", alignItems: "center", textDecoration: "none", color: "#b3b3b3" }}
+                                                    >
+                                                        <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'right' }}>
+                                                            {index + 1}
+                                                        </Typography>
+                                                        <Typography variant="h6" sx={{ marginLeft: "12px" }}>
+                                                            {album.album_name} by {album.album_artist}
+                                                        </Typography>
+                                                    </Link>
+                                                </li>
+                                            ))
+                                        ) : (
+                                            <Typography 
+                                                variant="body1" 
+                                                style={{ color: '#b3b3b3', textAlign: 'center', marginTop: '16px' }}
+                                            >
+                                                No album bookmarks yet.
+                                            </Typography>
+                                        )}
+                                    </ol>
+                                </Box>
+                            </Box>
+                        </Box>
+                        
                         )}
                     </Box>
                 </ProfileContainer>
@@ -384,13 +504,11 @@ const PersonalProfilePage = () => {
                             right: 16,
                         }}
                     >
-                        <Button
-                            variant="contained"
-                            color="secondary"
+                        <SignInButton
                             onClick={handleLogout}
                         >
                             Logout
-                        </Button>
+                        </SignInButton>
                     </Box>
                 )}
             </Background>

@@ -20,6 +20,7 @@ const Header = () => {
         <ProtectedRoute>
             <HeaderBackground>
                 {/* Logo */}
+                <Link href={"/feed"} passHref>
                 <Box
                     sx={{
                         display: "flex",
@@ -47,6 +48,7 @@ const Header = () => {
                         jukeboxd
                     </Typography>
                     </Box>
+                </Link>
                 <SearchBar type = "header"/>
 
                 {/* Navigation Buttons */}

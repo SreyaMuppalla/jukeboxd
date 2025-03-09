@@ -86,10 +86,10 @@ export default function ReviewForm({ userData }) {
             bottom: 20,
             right: 20,
             zIndex: 1000,
-            backgroundColor: 'primary.main',
+            backgroundColor: '#1db954',
             color: 'white',
             '&:hover': {
-              backgroundColor: 'primary.dark', // Darker shade on hover
+              backgroundColor: '#1AAE4E', // Darker shade on hover
             },
             transition: 'background-color 0.3s ease-in-out', // Smooth hover transition
           }}
@@ -135,6 +135,9 @@ export default function ReviewForm({ userData }) {
             right: '20px',
             top: 'unset',
             borderRadius: '20px',
+            borderWidth: '10px',
+            borderStyle: 'solid',
+            borderColor: '#b3b3b3',
             backgroundColor: '#535353',
             overflowY: 'auto',
             scrollbarWidth: 'none',
@@ -234,6 +237,7 @@ export default function ReviewForm({ userData }) {
             onChange={handleReviewChange}
             sx={{
               marginBottom: 2,
+              borderRadius: '8px',
               backgroundColor: '#b3b3b3',
               '& .MuiInputBase-input': {
                 color: 'white',
@@ -258,7 +262,14 @@ export default function ReviewForm({ userData }) {
         <Box display="flex" justifyContent="flex-end">
           <Button
             variant="contained"
-            color="primary"
+            sx={{
+              backgroundColor: '#1db954',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#1AAE4E', // Darker shade on hover
+              },
+              transition: 'background-color 0.3s ease-in-out', // Smooth hover transition
+            }}
             onClick={handleSubmit}
             disabled={!isFormValid || loading} // Disable button based on form validity or loading state
             startIcon={

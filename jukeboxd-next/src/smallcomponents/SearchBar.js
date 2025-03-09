@@ -153,10 +153,10 @@ const SearchBar = ({ type: searchBarType, query: defaultQuery='song' }) => {
           {/* Dynamic dropdown options based on searchBarType */}
           {searchBarType === 'header' && (
             <>
-              <option value="profile">User</option>
               <option value="song">Song</option>
-              <option value="artist">Artist</option>
               <option value="album">Album</option>
+              <option value="artist">Artist</option>
+              <option value="profile">User</option>
             </>
           )}
           {searchBarType === 'review' && (
