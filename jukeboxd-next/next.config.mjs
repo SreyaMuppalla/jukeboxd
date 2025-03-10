@@ -4,8 +4,10 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
+  output: 'export',
   images: {
-    domains: ['i.scdn.co', 'profile-pictures-jukeboxd.s3.us-east-1.amazonaws.com', 'profile-pictures-jukeboxd.s3.amazonaws.com', 'lh3.googleusercontent.com'], // Add your S3 domain here
+    domains: ['i.scdn.co', 'lh3.googleusercontent.com'], // Allow loading images from spotify
+    unoptimized: true, // Required for static export
   },
 };
 
