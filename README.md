@@ -53,7 +53,7 @@ The app should now be running on `http://localhost:3000/`.
 5. To have upload profile picture feature working, also must start server:
    ```bash
     node /path/to/server.js 
-    ```
+   ```
 
 ## Directory Structure
 The project follows a structures directory layour to keep components, pages and styles organized. The src/ directory contains reusable components such as `bigcomponents/` and `smallcomponents/`, page specific files (`pages/`), global styles (`styles/`) and backend interaction files (`backend/`). A `tests/` directory is included at the root for Jest-based testing containing several test suites verifying API functionality. Configuration files like `jest.config.js`, `jest.setup.js`, and `jest.globalTeardown.js` ensure smooth testing setup and teardown, whereas `package-lock.json` and `package.json` ensure npm package dependencies are included across development environments. Lastly, `firebase.json`, `firestore.rules` and `firebase.indexes.json` include the standard firebase configurations.
