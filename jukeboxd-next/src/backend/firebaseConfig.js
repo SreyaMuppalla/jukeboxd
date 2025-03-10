@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, connectAuthEmulator } from "firebase/auth";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import {getStorage} from "firebase/storage"
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -26,6 +27,7 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
+const storage = getStorage(app)
 
 // Connect Firebase to Emulators for testing
 if (process.env.NODE_ENV === "test" || process.env.USE_FIREBASE_EMULATOR === "true") {
@@ -33,4 +35,4 @@ if (process.env.NODE_ENV === "test" || process.env.USE_FIREBASE_EMULATOR === "tr
     connectFirestoreEmulator(db, "localhost", 8080);
   }
 
-export { app, auth, provider, db };
+export { app, auth, provider, db, storage };

@@ -6,8 +6,8 @@ const nextConfig = {
   },
   output: 'export',
   images: {
-    domains: ['i.scdn.co', 'lh3.googleusercontent.com'], // Allow loading images from spotify
-    unoptimized: true, // Required for static export
+    domains: ['i.scdn.co', 'lh3.googleusercontent.com', 'firebasestorage.googleapis.com'], // Add your S3 domain here
+    unoptimized: true,
   },
 };
 
