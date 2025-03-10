@@ -20,5 +20,38 @@
       "enabled": true
     },
     "singleProjectMode": true
+  },
+  "hosting": {
+    "public": "out",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ], 
+    "rewrites": [
+      {
+        "source": "/album-page/**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/song-page/**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/artist-page/**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/profile-page/**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/**",
+        "dynamicLinks": true
+      }
+    ],
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "appAssociation": "AUTO"
   }
 }

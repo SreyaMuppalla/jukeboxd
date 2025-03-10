@@ -30,6 +30,12 @@ service cloud.firestore {
       allow update: if request.auth != null; // Any authenticated user can edit albums
     }
 
+    match /artists/{artistId} {
+      allow read: if true; // Anyone can read albums
+      allow create: if request.auth != null; // Only authenticated users can add albums
+      allow update: if request.auth != null; // Any authenticated user can edit albums
+    }
+
     // 🔹 Comments (Public Read, Only Owners Can Modify)
     match /comments/{commentId} {
       allow read: if true;

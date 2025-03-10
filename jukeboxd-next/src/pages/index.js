@@ -1,8 +1,19 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
-import LoginPage from "./login-page";
-import { AuthProvider } from "@/backend/auth";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
-export default function Home() {
-    return <LoginPage />;
-}
+export default function () {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (location.pathname === "/") router.push("/login-page");
+    else router.push(location.pathname);
+  }, []);
+
+  return (
+    <div style={{ backgroundColor: 'black', color: 'white', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', margin: 0 }}>
+      <div style={{ fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
+        Loading Page...
+      </div>
+    </div>
+  );
+};
