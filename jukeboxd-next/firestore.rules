@@ -3,17 +3,52 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
+    // 🔹 Users Collection (Only Owners Can Edit Their Profiles)
+    match /users/{userId} {
+      allow read: if request.auth != null; // Any authenticated user can read
+      allow update, delete: if request.auth != null && request.auth.uid == userId; // Only owner can modify/delete
+      allow create: if request.auth != null; // Authenticated users can create profiles
+    }
+
+    // 🔹 Reviews Collection (Public Read, Only Owners Can Modify)
+    match /reviews/{reviewId} {
+      allow read: if true; // Anyone can read reviews
+      allow create: if request.auth != null; // Only authenticated users can create reviews
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.user_id; // Only author can edit/delete
+    }
+
+    // 🔹 Songs & Albums (Public Read, Authenticated Users Can Modify)
+    match /songs/{songId} {
+      allow read: if true; // Anyone can read songs
+      allow create: if request.auth != null; // Only authenticated users can add songs
+      allow update: if request.auth != null; // Any authenticated user can edit songs
+    }
+
+    match /albums/{albumId} {
+      allow read: if true; // Anyone can read albums
+      allow create: if request.auth != null; // Only authenticated users can add albums
+      allow update: if request.auth != null; // Any authenticated user can edit albums
+    }
+
+    // 🔹 Comments (Public Read, Only Owners Can Modify)
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.user_id;
+    }
+
+    // 🔹Likes & Dislikes (Users Can Only Modify Their Own Actions)
+    match /reviews/{reviewId}/likes/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /reviews/{reviewId}/dislikes/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // 🔹 Default Catch-All (Deny All Other Access)
     match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2025, 3, 10);
+      allow read, write: if false; // Deny any unknown paths
     }
   }
 }
