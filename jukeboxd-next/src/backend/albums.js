@@ -20,6 +20,12 @@ import {doc, setDoc, getDoc, runTransaction} from "firebase/firestore";
  */
 export const addAlbumById = async (albumId, albumData) => {
     try {
+      if (!albumId) {
+        throw new Error("Missing albumId parameter");
+      }
+      if (!albumData) {
+          throw new Error("Missing albumData parameter");
+      }
       // Create a reference to the 'albums' collection with albumId as the document ID
       const albumRef = doc(db, "albums", albumId);
   
@@ -29,6 +35,7 @@ export const addAlbumById = async (albumId, albumData) => {
       console.log("Album added successfully!");
     } catch (error) {
       console.error("Error adding album: ", error);
+      throw error;
     }
   };
 /**
@@ -48,6 +55,9 @@ export const addAlbumById = async (albumId, albumData) => {
  */
   export const getAlbumById = async (albumId) => {
     try {
+      if (!albumId) {
+        throw new Error("Missing albumId parameter");
+      }
       // Create a reference to the album document with the given albumId
       const albumRef = doc(db, "albums", albumId);
       const albumSnap = await getDoc(albumRef);
@@ -75,6 +85,13 @@ export const addAlbumById = async (albumId, albumData) => {
  */
   export const addAlbumReviewScore = async (albumId, reviewScore) => {
     try {
+      if (!albumId) {
+        throw new Error("Missing albumId parameter");
+      }
+      if (typeof reviewScore !== "number") {
+        throw new Error("Review score must be a number");
+      }
+
       const albumRef = doc(db, "albums", albumId); // Reference to the album document
   
       // Run a transaction to ensure atomicity of the update

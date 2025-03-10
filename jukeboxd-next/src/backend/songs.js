@@ -24,6 +24,12 @@ import {doc, setDoc, getDoc, runTransaction, getDocs, collection, deleteDoc}  fr
  */
 export const addSongById = async (songId, songData) => {
     try {
+      if (!songId) {
+          throw new Error("Missing songId parameter");
+      }
+      if (!songData) {
+          throw new Error("Missing songData parameter");
+      }
       // Create a document reference in the 'songs' collection, using songId as the document ID
       const songRef = doc(db, "songs", songId);
   
@@ -33,6 +39,7 @@ export const addSongById = async (songId, songData) => {
       console.log("Song added successfully!");
     } catch (error) {
       console.error("Error adding song: ", error);
+      throw error;
     }
   };
 
@@ -61,9 +68,13 @@ export const addSongById = async (songId, songData) => {
  */
   export const getSongById = async (songId) => {
     try {
+      if (!songId) {
+        throw new Error("Missing songId parameter");
+      } 
+
       const songRef = doc(db, "songs", songId); // Reference to the song document
       const songSnap = await getDoc(songRef); // Fetch the document
-  
+
       if (songSnap.exists()) {
         return songSnap.data(); // Return the song data if it exists
       } else {

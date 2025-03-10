@@ -11,6 +11,12 @@ import {doc, setDoc, getDoc} from "firebase/firestore";
  */
 export const addArtistById = async (artistId, artistData) => {
   try {
+    if (!artistId) {
+      throw new Error("Missing artistId parameter");
+    }
+    if (!artistData) {
+        throw new Error("Missing artistData parameter");
+    }
     // Create a reference to the 'artists' collection with artistId as the document ID
     const artistRef = doc(db, "artists", artistId);
 
@@ -20,6 +26,7 @@ export const addArtistById = async (artistId, artistData) => {
     console.log("Artist added successfully!");
   } catch (error) {
     console.error("Error adding artist: ", error);
+    throw error;
   }
 };
 
@@ -33,6 +40,9 @@ export const addArtistById = async (artistId, artistData) => {
  */
 export const getArtistById = async (artistId) => {
   try {
+    if (!artistId) {
+      throw new Error("Missing artistId parameter");
+    }
     // Create a reference to the artist document with the given artistId
     const artistRef = doc(db, "artists", artistId);
     const artistSnap = await getDoc(artistRef);
